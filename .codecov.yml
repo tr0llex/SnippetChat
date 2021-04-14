@@ -1,0 +1,3 @@
+ignore:
+  - "project/src/main.cpp"
+  - "project/tests/*"

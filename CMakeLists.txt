@@ -28,7 +28,7 @@ set(SOURCE ${PROJECT_SOURCE_DIR}/project/src)
 # end libs
 
 file(GLOB prod_sources
-        "${INCLUDE}/*.h"
+        "${INCLUDE}/*.hpp"
         "${SOURCE}/main.cpp")
 
 add_executable(main.out ${SOURCE}/main.cpp)

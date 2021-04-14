@@ -1,5 +1,5 @@
-#ifndef PROJECT_INCLUDE_MODELS_H_
-#define PROJECT_INCLUDE_MODELS_H_
+#ifndef PROJECT_INCLUDE_MODELS_HPP_
+#define PROJECT_INCLUDE_MODELS_HPP_
 
 #include <string>
 #include <utility>
@@ -13,13 +13,12 @@ private:
     std::wstring userPassword_;
     std::vector<uint32_t> userDialogueList_;
     std::wstring userToken_;
-    uint32_t userStatus_;
-public:
-    User() {
-    }
+    int userStatus_;
 
-    ~User() {
-    }
+public:
+    User() = default;
+
+    ~User() = default;
 
     User(uint32_t userId, std::wstring userLogin, std::wstring userPassword,
          std::vector<uint32_t> dialogueList,
@@ -30,9 +29,9 @@ public:
         setStatus(userStatus);
     }
 
-    uint32_t getUserId() {
+    uint32_t getUserId() const {
         return userId_;
-    };
+    }
 
     std::wstring getLogin() {
         return userLogin_;
@@ -50,13 +49,13 @@ public:
         return userToken_;
     }
 
-    int getStatus() {
+    int getStatus() const {
         return userStatus_;
     }
 
     void setUserId(uint32_t userId) {
         userId_ = userId;
-    };
+    }
 
     void setLogin(const std::wstring &userLogin) {
         userLogin_ = userLogin;
@@ -113,7 +112,7 @@ public:
         return password_;
     }
 
-    short get_type() {
+    short get_type() const {
         return loginType_;
     }
 
@@ -128,21 +127,20 @@ public:
     Message(uint32_t messageId, uint32_t dialogueParentId, uint32_t senderId,
             std::wstring messageText, std::wstring messageCode, time_t timeSent) :
             messageId_(messageId), dialogueParentId_(dialogueParentId), senderId_(senderId),
-            messageText_(messageText), messageCode_(messageCode), timeSent_(timeSent) {
+            messageText_(std::move(messageText)), messageCode_(std::move(messageCode)), timeSent_(timeSent) {
     }
 
-    ~Message() {
-    }
+    ~Message() = default;
 
-    uint32_t getMessageId() {
+    uint32_t getMessageId() const {
         return messageId_;
     }
 
-    uint32_t getDialogueParentId() {
+    uint32_t getDialogueParentId() const {
         return dialogueParentId_;
     }
 
-    uint32_t getSenderId() {
+    uint32_t getSenderId() const {
         return senderId_;
     }
 
@@ -154,7 +152,7 @@ public:
         return messageCode_;
     }
 
-    time_t getTimeSent() {
+    time_t getTimeSent() const {
         return timeSent_;
     }
 
@@ -169,11 +167,10 @@ private:
 
 class Dialogue {
 public:
-    Dialogue(uint32_t dialogueId) : dialogueId_(dialogueId) {
+    explicit Dialogue(uint32_t dialogueId) : dialogueId_(dialogueId) {
     }
 
-    ~Dialogue() {
-    }
+    ~Dialogue() = default;
 
     std::vector<uint32_t> getParticipantsList() {
         return participantsList_;
@@ -183,7 +180,7 @@ public:
         return dialogueMessageList_;
     }
 
-    uint32_t getDialogueId() {
+    uint32_t getDialogueId() const {
         return dialogueId_;
     }
 
@@ -191,7 +188,7 @@ public:
         dialogueId_ = id;
     }
 
-    void pushNewMessage(Message newMessage) {
+    void pushNewMessage(const Message& newMessage) {
         dialogueMessageList_.push_back(newMessage);
     }
 
@@ -208,11 +205,11 @@ private:
 
 class Compilation {
 public:
-    Compilation() {}
+    Compilation() = default;
 
-    ~Compilation() {}
+    ~Compilation() = default;
 
-    uint32_t getCompilationId() {
+    uint32_t getCompilationId() const {
         return compilationId_;
     }
 
@@ -220,7 +217,7 @@ public:
         compilationId_ = compilationId;
     }
 
-    uint32_t getMessageId() {
+    uint32_t getMessageId() const {
         return messageId_;
     }
 
@@ -305,4 +302,4 @@ private:
     std::wstring executionTime_;
 };
 
-#endif  // PROJECT_INCLUDE_MODELS_H_
+#endif  // PROJECT_INCLUDE_MODELS_HPP_

@@ -1,0 +1,23 @@
+arch: amd64
+os: linux
+dist: focal
+
+language: c
+
+compiler: gcc
+
+install:
+  - sudo apt-get install valgrind
+  - sudo apt-get install cppcheck
+  - sudo pip install cpplint
+
+script:
+  - cppcheck --enable=all --language=c --check-config project/*/*.hpp project/*/*.cpp --suppress=missingInclude
+  - cpplint project/*/*.hpp project/*/*.cpp
+  - mkdir build && cd build
+  - cmake ..
+  - make clean && make
+  - valgrind --tool=memcheck --leak-check=full ctest
+
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
