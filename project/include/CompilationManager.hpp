@@ -11,12 +11,12 @@ private:
     uint32_t timeLimit;
     ResultWriter resultWriter;
 
-    std::wstring getCodeFromDb(uint32_t messageId);
+    std::string getCodeFromDb(uint32_t messageId);
 
     void logCompilaton(Compilation *compilation);
 
 public:
-    Compilation runCompilation(uint32_t messageId, std::string executionStdin);
+    virtual Compilation runCompilation(uint32_t messageId, std::string executionStdin);
 };
 
 #endif  // PROJECT_INCLUDE_COMPILATIONMANAGER_HPP_

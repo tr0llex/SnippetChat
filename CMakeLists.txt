@@ -11,8 +11,8 @@ execute_process(COMMAND ${CMAKE_COMMAND} --build .
 add_subdirectory(${CMAKE_BINARY_DIR}/googletest-src
         ${CMAKE_BINARY_DIR}/googletest-build)
 
-set(CMAKE_C_FLAGS "-pedantic -fprofile-arcs -ftest-coverage -Wall -Werror -Wpedantic")
-set(CMAKE_CXX_FLAGS "-pedantic -fprofile-arcs -ftest-coverage -Wall -Werror -Wpedantic")
+set(CMAKE_C_FLAGS "-pedantic -Wall")
+set(CMAKE_CXX_FLAGS "-pedantic -Wall")
 
 enable_testing()
 
