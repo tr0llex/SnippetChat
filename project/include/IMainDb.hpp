@@ -4,15 +4,15 @@
 #include <string>
 #include "Models.hpp"
 
-class IMAinDb {
+class IMainDb {
     public:
-        virtual ~IMAinDb() = 0;
+        virtual ~IMainDb() = default;
 
         virtual User* searchUserLogin(std::string login, std::string password) = 0;
         virtual uint32_t writeUser (User& user) = 0;
         virtual int updateUser (User& user) = 0;
 
-        virtual std::string getCodeFromMessage(int messageId) = 0;
+        virtual std::string getCodeFromMessage(uint32_t messageId) = 0;
         virtual void writeMessageToDialogue(Message message) = 0;
         virtual std::vector <Message>* getNMessagesFromDialogue(uint32_t dialogueId, uint32_t senderId, 
                                                                 uint32_t receiverId, long count) = 0;

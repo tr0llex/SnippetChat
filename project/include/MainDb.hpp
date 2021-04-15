@@ -6,7 +6,7 @@
 #include "IMainDb.hpp"
 #include "Models.hpp"
 
-class MainDb : public IMAinDb {
+class MainDb : public IMainDb {
     public:
         MainDb();
         ~MainDb();
@@ -15,7 +15,7 @@ class MainDb : public IMAinDb {
         uint32_t writeUser (User& user) override;
         int updateUser (User& user) override;
 
-        std::string getCodeFromMessage(int messageId) override;
+        std::string getCodeFromMessage(uint32_t messageId) override;
         void writeMessageToDialogue(Message message) override;
         std::vector <Message>* getNMessagesFromDialogue(uint32_t dialogueId, uint32_t senderId, 
                                                         uint32_t receiverId, long count) override;

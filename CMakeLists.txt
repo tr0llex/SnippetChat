@@ -51,6 +51,6 @@ foreach(file ${tests})
             ${SOURCE}/${name}.cpp
             ${file}
             "${PROJECT_SOURCE_DIR}/project/tests/main.cpp")
-    target_link_libraries("${name}_tests" gtest_main gmock_main)
+    target_link_libraries("${name}_tests" gtest_main gmock_main cassandra)
     add_test(NAME ${name} COMMAND "${name}_tests")
 endforeach()

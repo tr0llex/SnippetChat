@@ -33,7 +33,7 @@
         return EXIT_SUCCESS;
     }
 
-    std::string MainDb::getCodeFromMessage(int messageId) {
+    std::string MainDb::getCodeFromMessage(uint32_t messageId) {
         return "";
     }
     void MainDb::writeMessageToDialogue(Message message) {
