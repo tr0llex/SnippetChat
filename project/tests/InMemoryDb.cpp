@@ -28,7 +28,6 @@ public:
     MOCK_METHOD(int, searchToken, (std::string token), (override));
     MOCK_METHOD(std::vector<int>, getOnline, (std::vector<uint32_t> userVector),
                 (override));
-
 };
 
 TEST(writeInMemory, WrittenCorrectly) {
@@ -55,7 +54,7 @@ TEST(getUserName, UserNameNonexistant) {
     EXPECT_CALL(db, getUserName("token2")).WillOnce(Return("0"));
     EXPECT_EQ(db.getUserName("token2"), "0");
 }
-TEST(updateUserStatus, updatesStates){
+TEST(updateUserStatus, updatesStates) {
     MockInMemoryDb db;
     EXPECT_CALL(db, writeInMemory(101, "token1", "userA", 1)).WillOnce(Return(1));
     db.writeInMemory(101, "token1", "userA", 1);

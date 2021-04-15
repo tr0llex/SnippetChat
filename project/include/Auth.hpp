@@ -24,7 +24,7 @@ private:
     std::string user_name_;
     int status_;
 public:
-    int tryLogin(LoginData data); ;
+    int tryLogin(LoginData data);
     int tryToken(LoginData data);
     int validateToken(std::string token);
     int logoutUser(uint32_t user_id);
@@ -37,7 +37,6 @@ private:
 public:
     User currentUser;
     Auth() {
-
     }
 };
-#endif //MESSENGER_AUTH_AUTH_H
+#endif //  MESSENGER_AUTH_AUTH_H

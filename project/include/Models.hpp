@@ -52,7 +52,6 @@ public:
     void setToken(const std::string &userToken);
 
     void setStatus(int userStatus);
-
 };
 
 class LoginData {
@@ -86,7 +85,6 @@ private:
     std::string login_;
     std::string password_;
     short loginType_;
-
 };
 
 class Message {
