@@ -43,4 +43,4 @@ public:
     std::vector<int> getOnline(std::vector<uint32_t> userVector) override;
 };
 
-#endif //  PROJECT_INCLUDE_INMEMORYDB_HPP_
+#endif  //  PROJECT_INCLUDE_INMEMORYDB_HPP_

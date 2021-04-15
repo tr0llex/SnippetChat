@@ -39,4 +39,4 @@ public:
     Auth() {
     }
 };
-#endif //  MESSENGER_AUTH_AUTH_H
+#endif  //  MESSENGER_AUTH_AUTH_H

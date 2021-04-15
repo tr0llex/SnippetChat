@@ -76,11 +76,13 @@ short LoginData::get_type() const {
 }
 
 bool LoginData::operator==(const LoginData &ldt1) const {
-    if (login_ == ldt1.getLogin())
-        if (password_ == ldt1.getPassword())
+    if (login_ == ldt1.getLogin()) {
+        if (password_ == ldt1.getPassword()) {
             if (loginType_ == ldt1.get_type()) {
                 return true;
             }
+        }
+    }
     return false;
 }
 

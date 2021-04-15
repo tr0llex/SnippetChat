@@ -21,8 +21,8 @@ int InMemoryDb::writeInMemory(int userId, std::string token, std::string userNam
 
 int InMemoryDb::updateUserStatus(int userId, int way) {
     // way= 1 ++ way =-1 --
-    userId_=0;
-    status_ =0;
+    userId_ = 0;
+    status_  = 0;
     return 0;
 }
 
