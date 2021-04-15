@@ -1,4 +1,5 @@
 cmake_minimum_required(VERSION 3.16)
+set (CMAKE_CXX_STANDARD 11)
 project(messenger)
 
 configure_file(CMakeLists.txt.in
@@ -11,8 +12,8 @@ execute_process(COMMAND ${CMAKE_COMMAND} --build .
 add_subdirectory(${CMAKE_BINARY_DIR}/googletest-src
         ${CMAKE_BINARY_DIR}/googletest-build)
 
-set(CMAKE_C_FLAGS "-pedantic -fprofile-arcs -ftest-coverage -Wall -Werror -Wpedantic")
-set(CMAKE_CXX_FLAGS "-pedantic -fprofile-arcs -ftest-coverage -Wall -Werror -Wpedantic")
+set(CMAKE_C_FLAGS "-pedantic -Wall ")
+set(CMAKE_CXX_FLAGS "-pedantic -Wall")
 
 enable_testing()
 
@@ -24,7 +25,12 @@ set(INCLUDE ${PROJECT_SOURCE_DIR}/project/include)
 set(SOURCE ${PROJECT_SOURCE_DIR}/project/src)
 
 # adding libs
-
+add_library(auth_service STATIC
+        ${INCLUDE}/Auth.hpp
+        ${SOURCE}/Auth.cpp)
+add_library(in_memory_base STATIC
+        ${INCLUDE}/InMemoryDb.hpp
+        ${SOURCE}/InMemoryDb.cpp)
 # end libs
 
 file(GLOB prod_sources
@@ -32,9 +38,12 @@ file(GLOB prod_sources
         "${SOURCE}/main.cpp")
 
 add_executable(main.out ${SOURCE}/main.cpp)
+target_link_libraries(main.out auth_service in_memory_base)
 
 file(GLOB tests "${PROJECT_SOURCE_DIR}/project/tests/*.cpp")
 list(REMOVE_ITEM tests "${PROJECT_SOURCE_DIR}/project/tests/main.cpp")
+
+
 
 foreach(file ${tests})
     set(name)
@@ -43,6 +52,6 @@ foreach(file ${tests})
             ${SOURCE}/${name}.cpp
             ${file}
             "${PROJECT_SOURCE_DIR}/project/tests/main.cpp")
-    target_link_libraries("${name}_tests" gtest_main)
+    target_link_libraries("${name}_tests" gtest_main gmock_main)
     add_test(NAME ${name} COMMAND "${name}_tests")
 endforeach()
