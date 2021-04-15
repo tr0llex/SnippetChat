@@ -5,19 +5,9 @@
 #include "gtest/gtest.h"
 #include "gmock/gmock.h"
 #include "../include/Auth.hpp"
-#include "../include/Models.hpp"
 #include <string>
 #include <locale>
 #include <codecvt>
-/*
-class AuthInterface {
-public:
-    virtual ~AuthInterface() = 0;
-    virtual std::string loginUser(LoginData loginData) = 0;
-    virtual int logoutUser(uint32_t userId) = 0;
-    virtual int verifyToken(std::string token) = 0;
-};
-  */
 using ::testing::Return;
 class MockAuth : public AuthInterface{
 public:
@@ -43,11 +33,10 @@ TEST(LogoutUser, CorrectLogout) {
 }
 TEST(LoginUser, CorrectLogin) {
     MockAuth mock;
-    LoginData ldt, ldt2;
+    LoginData ldt;
     ldt.setLogin("A");
     ldt.setPassword("b");
     ldt.setType(1);
-    ldt == ldt2;
     EXPECT_CALL(mock, loginUser(ldt)).WillOnce(Return("correct_token"));
     EXPECT_EQ(mock.loginUser(ldt), "correct_token");
 }
@@ -61,3 +50,4 @@ TEST(LoginUser, IncorrectLogin) {
     EXPECT_CALL(mock, loginUser(ldt)).WillOnce(Return("incorrect_message"));
     EXPECT_EQ(mock.loginUser(ldt), "incorrect_message");
 }
+

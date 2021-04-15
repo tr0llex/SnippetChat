@@ -1,9 +1,10 @@
 //
 // Created by Борис Кожуро on 13.04.2021.
 //
-
+#pragma once
 #ifndef MESSENGER_AUTH_AUTH_H
 #define MESSENGER_AUTH_AUTH_H
+
 #include<string>
 #include <vector>
 #include "Models.hpp"
@@ -23,23 +24,11 @@ private:
     std::string user_name_;
     int status_;
 public:
-    int tryLogin(LoginData data) {
-        return 0;
-    } ;
-    int tryToken(LoginData data) {
-        return 0;
-    }
-    int validateToken(std::string token) {
-        return 0;
-    }
-    int logoutUser(uint32_t user_id)  {
-        userId_ = user_id;
-        status_ = -1;
-        return 0;
-    }
-    std::string generateToken() {
-        return "0";
-    }
+    int tryLogin(LoginData data); ;
+    int tryToken(LoginData data);
+    int validateToken(std::string token);
+    int logoutUser(uint32_t user_id);
+    std::string generateToken();
 };
 
 class Auth : public AuthInterface {

@@ -29,53 +29,29 @@ public:
         setStatus(userStatus);
     }
 
-    uint32_t getUserId() const {
-        return userId_;
-    }
+    uint32_t getUserId() const;
 
-    std::string getLogin() {
-        return userLogin_;
-    }
+    std::string getLogin();
 
-    std::string getPassword() {
-        return userPassword_;
-    }
+    std::string getPassword();
 
-    std::vector<uint32_t> getDialogues() {
-        return userDialogueList_;
-    }
+    std::vector<uint32_t> getDialogues();
 
-    std::string getToken() {
-        return userToken_;
-    }
+    std::string getToken();
 
-    int getStatus() const {
-        return userStatus_;
-    }
+    int getStatus() const;
 
-    void setUserId(uint32_t userId) {
-        userId_ = userId;
-    }
+    void setUserId(uint32_t userId);
 
-    void setLogin(const std::string &userLogin) {
-        userLogin_ = userLogin;
-    }
+    void setLogin(const std::string &userLogin);
 
-    void setPassword(const std::string &userPassword) {
-        userPassword_ = userPassword;
-    }
+    void setPassword(const std::string &userPassword);
 
-    void setDialogues(const std::vector<uint32_t> &dialogueList) {
-        userDialogueList_ = dialogueList;
-    }
+    void setDialogues(const std::vector<uint32_t> &dialogueList);
 
-    void setToken(const std::string &userToken) {
-        userToken_ = userToken;
-    }
+    void setToken(const std::string &userToken);
 
-    void setStatus(int userStatus) {
-        userStatus_ = userStatus;
-    }
+    void setStatus(int userStatus);
 
 };
 
@@ -93,37 +69,18 @@ public:
         loginType_ = 1;
     }
 
-    void setLogin(const std::string &login) {
-        login_ = login;
-    }
+    void setLogin(const std::string &login);
 
-    void setPassword(const std::string &password) {
-        password_ = password;
-    }
+    void setPassword(const std::string &password);
 
-    void setType(short type) {
-        loginType_ = type;
-    }
+    void setType(short type);
 
-    std::string getLogin() const {
-        return login_;
-    }
+    std::string getLogin() const;
 
-    std::string getPassword() const {
-        return password_;
-    }
+    std::string getPassword() const;
 
-    short get_type() const {
-        return loginType_;
-    }
-    bool operator== (const LoginData& ldt1) const {
-        if (login_ == ldt1.getLogin())
-            if (password_ == ldt1.getPassword())
-                if (loginType_ == ldt1.get_type()) {
-                    return true;
-                }
-        return false;
-    }
+    short get_type() const;
+    bool operator== (const LoginData& ldt1) const;
 
 private:
     std::string login_;
@@ -142,29 +99,17 @@ public:
 
     ~Message() = default;
 
-    uint32_t getMessageId() const {
-        return messageId_;
-    }
+    uint32_t getMessageId() const;
 
-    uint32_t getDialogueParentId() const {
-        return dialogueParentId_;
-    }
+    uint32_t getDialogueParentId() const;
 
-    uint32_t getSenderId() const {
-        return senderId_;
-    }
+    uint32_t getSenderId() const;
 
-    std::string getMessageText() {
-        return messageText_;
-    }
+    std::string getMessageText();
 
-    std::string getMessageCode() {
-        return messageCode_;
-    }
+    std::string getMessageCode();
 
-    time_t getTimeSent() const {
-        return timeSent_;
-    }
+    time_t getTimeSent() const;
 
 private:
     uint32_t messageId_;
@@ -182,29 +127,17 @@ public:
 
     ~Dialogue() = default;
 
-    std::vector<uint32_t> getParticipantsList() {
-        return participantsList_;
-    }
+    std::vector<uint32_t> getParticipantsList();
 
-    std::vector<Message> getDialogueMessageList() {
-        return dialogueMessageList_;
-    }
+    std::vector<Message> getDialogueMessageList();
 
-    uint32_t getDialogueId() const {
-        return dialogueId_;
-    }
+    uint32_t getDialogueId() const;
 
-    void setDialogueId(uint32_t id) {
-        dialogueId_ = id;
-    }
+    void setDialogueId(uint32_t id);
 
-    void pushNewMessage(const Message& newMessage) {
-        dialogueMessageList_.push_back(newMessage);
-    }
+    void pushNewMessage(const Message& newMessage);
 
-    void pushNewParticipant(uint32_t newParticipantId) {
-        participantsList_.push_back(newParticipantId);
-    }
+    void pushNewParticipant(uint32_t newParticipantId);
 
 private:
     uint32_t dialogueId_;

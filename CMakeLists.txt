@@ -25,10 +25,14 @@ set(INCLUDE ${PROJECT_SOURCE_DIR}/project/include)
 set(SOURCE ${PROJECT_SOURCE_DIR}/project/src)
 
 # adding libs
-add_library(auth_service STATIC
+add_library(Models STATIC
+        ${INCLUDE}/Models.hpp
+        ${SOURCE}/Models.cpp)
+
+add_library(Auth STATIC
         ${INCLUDE}/Auth.hpp
         ${SOURCE}/Auth.cpp)
-add_library(in_memory_base STATIC
+add_library(InMemoryDb STATIC
         ${INCLUDE}/InMemoryDb.hpp
         ${SOURCE}/InMemoryDb.cpp)
 # end libs
@@ -38,12 +42,10 @@ file(GLOB prod_sources
         "${SOURCE}/main.cpp")
 
 add_executable(main.out ${SOURCE}/main.cpp)
-target_link_libraries(main.out auth_service in_memory_base)
+target_link_libraries(main.out Auth InMemoryDb)
 
 file(GLOB tests "${PROJECT_SOURCE_DIR}/project/tests/*.cpp")
 list(REMOVE_ITEM tests "${PROJECT_SOURCE_DIR}/project/tests/main.cpp")
-
-
 
 foreach(file ${tests})
     set(name)
@@ -52,6 +54,6 @@ foreach(file ${tests})
             ${SOURCE}/${name}.cpp
             ${file}
             "${PROJECT_SOURCE_DIR}/project/tests/main.cpp")
-    target_link_libraries("${name}_tests" gtest_main gmock_main)
+    target_link_libraries("${name}_tests" gtest_main gmock_main ${name} Models )
     add_test(NAME ${name} COMMAND "${name}_tests")
 endforeach()

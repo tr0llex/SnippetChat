@@ -34,31 +34,14 @@ public:
 
     }
     ~InMemoryDb() = default;
-    int dbStart() {
-        return 0;
-    }
-    int dbConnect() {
-        return 0;
-    }
-    std::string getUserName(std::string token ) override {
-        return "";
-    }
+    int dbStart();
+    int dbConnect();
+    std::string getUserName(std::string token ) override;
     int writeInMemory(int userId, std::string token,
-                      std::string userName, int status) override {
-        return 0;
-    }
-    int updateUserStatus(int userId, int way) override {
-        // way= 0 ++ way =1 --
-        userId_=0;
-        status_ =0;
-        return 0;
-    }
-    int searchToken(std::string token) override {
-        return 0;
-    }
-    std::vector<int> getOnline(std::vector<uint32_t> userVector) override {
-        return std::vector<int>(0);
-    }
+                      std::string userName, int status) override;
+    int updateUserStatus(int userId, int way) override;
+    int searchToken(std::string token) override;
+    std::vector<int> getOnline(std::vector<uint32_t> userVector) override;
 
 };
 
