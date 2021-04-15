@@ -12,7 +12,7 @@ install:
   - sudo pip install cpplint
   - sudo apt-get install gcc g++ libboost-all-dev cmake
   - wget -c https://github.com/emweb/wt/archive/4.5.0.tar.gz
-  - tar xvxf wt-4.5.0.tar.gz
+  - tar xvxf 4.5.0.tar.gz
 
 script:
   - cd wt-4.5.0
