@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.16)
-set (CMAKE_CXX_STANDARD 11)
+set (CMAKE_CXX_STANDARD 17)
 project(messenger)
 
 configure_file(CMakeLists.txt.in
@@ -12,7 +12,7 @@ execute_process(COMMAND ${CMAKE_COMMAND} --build .
 add_subdirectory(${CMAKE_BINARY_DIR}/googletest-src
         ${CMAKE_BINARY_DIR}/googletest-build)
 
-set(CMAKE_C_FLAGS "-pedantic -Wall ")
+set(CMAKE_C_FLAGS "-pedantic -Wall")
 set(CMAKE_CXX_FLAGS "-pedantic -Wall")
 
 enable_testing()
@@ -42,7 +42,7 @@ file(GLOB prod_sources
         "${SOURCE}/main.cpp")
 
 add_executable(main.out ${SOURCE}/main.cpp)
-target_link_libraries(main.out Auth InMemoryDb)
+target_link_libraries(main.out Auth InMemoryDb Models ${PROJECT_SOURCE_DIR}/hash/hashids.o)
 
 file(GLOB tests "${PROJECT_SOURCE_DIR}/project/tests/*.cpp")
 list(REMOVE_ITEM tests "${PROJECT_SOURCE_DIR}/project/tests/main.cpp")

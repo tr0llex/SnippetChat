@@ -78,7 +78,7 @@ public:
 
     std::string getPassword() const;
 
-    short get_type() const;
+    short getType() const;
     bool operator== (const LoginData& ldt1) const;
 
 private:
