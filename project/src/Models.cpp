@@ -1,7 +1,13 @@
 #include "Models.hpp"
 
-uint32_t User::getUserId() const {
-    return userId_;
+User::User(std::string userLogin, std::string userPassword, 
+           std::vector<std::string> userDialogueList,
+           std::string userToken, int userStatus) :
+    userLogin_(userLogin),
+    userPassword_(userPassword),
+    userDialogueList_(userDialogueList),
+    userToken_(userToken),
+    userStatus_(userStatus) {
 }
 
 std::string User::getLogin() {
@@ -12,7 +18,7 @@ std::string User::getPassword() {
     return userPassword_;
 }
 
-std::vector<uint32_t> User::getDialogues() {
+std::vector<std::string> User::getDialogues() {
     return userDialogueList_;
 }
 
@@ -24,10 +30,6 @@ int User::getStatus() const {
     return userStatus_;
 }
 
-void User::setUserId(uint32_t userId) {
-    userId_ = userId;
-}
-
 void User::setLogin(const std::string &userLogin) {
     userLogin_ = userLogin;
 }
@@ -36,7 +38,7 @@ void User::setPassword(const std::string &userPassword) {
     userPassword_ = userPassword;
 }
 
-void User::setDialogues(const std::vector<uint32_t> &dialogueList) {
+void User::setDialogues(const std::vector<std::string> &dialogueList) {
     userDialogueList_ = dialogueList;
 }
 

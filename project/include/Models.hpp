@@ -2,26 +2,28 @@
 #define PROJECT_INCLUDE_MODELS_HPP_
 
 #include <string>
+#include <set>
 #include <utility>
 #include <vector>
 #include <ctime>
 
 class User {
 private:
-    uint32_t userId_;
     std::string userLogin_;
     std::string userPassword_;
-    std::vector<uint32_t> userDialogueList_;
+    std::vector<std::string> userDialogueList_;
     std::string userToken_;
     int userStatus_;
 
 public:
-    User() = default;
+    User(std::string userLogin = std::string(), std::string userPassword = std::string(), 
+        std::vector<std::string> userDialogueList = {std::string()},
+        std::string userToken = std::string(), int userStatus = 0);
 
     ~User() = default;
 
     User(uint32_t userId, std::string userLogin, std::string userPassword,
-         std::vector<uint32_t> dialogueList,
+         std::vector<std::string> dialogueList,
          std::string userToken, int userStatus) :
             userLogin_(std::move(userLogin)), userPassword_(std::move(userPassword)),
             userDialogueList_(std::move(dialogueList)), userToken_(std::move(userToken)) {
@@ -35,7 +37,7 @@ public:
 
     std::string getPassword();
 
-    std::vector<uint32_t> getDialogues();
+   std::vector<std::string> getDialogues();
 
     std::string getToken();
 
@@ -47,7 +49,7 @@ public:
 
     void setPassword(const std::string &userPassword);
 
-    void setDialogues(const std::vector<uint32_t> &dialogueList);
+    void setDialogues(const std::vector<std::string> &dialogueList);
 
     void setToken(const std::string &userToken);
 

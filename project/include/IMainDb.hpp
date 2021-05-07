@@ -9,7 +9,7 @@ class IMainDb {
         virtual ~IMainDb() = default;
 
         virtual User* searchUserLogin(std::string login, std::string password) = 0;
-        virtual uint32_t writeUser (User& user) = 0;
+        virtual void writeUser (User& user) = 0;
         virtual int updateUser (User& user) = 0;
 
         virtual std::string getCodeFromMessage(uint32_t messageId) = 0;

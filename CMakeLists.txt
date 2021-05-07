@@ -44,13 +44,13 @@ target_link_libraries(main.out MainDb Models cassandra)
 file(GLOB tests "${PROJECT_SOURCE_DIR}/project/tests/*.cpp")
 list(REMOVE_ITEM tests "${PROJECT_SOURCE_DIR}/project/tests/main.cpp")
 
-foreach(file ${tests})
-    set(name)
-    get_filename_component(name ${file} NAME_WE)
-    add_executable("${name}_tests"
-            ${SOURCE}/${name}.cpp
-            ${file}
-            "${PROJECT_SOURCE_DIR}/project/tests/main.cpp")
-    target_link_libraries("${name}_tests" gtest_main gmock_main cassandra)
-    add_test(NAME ${name} COMMAND "${name}_tests")
-endforeach()
+# foreach(file ${tests})
+#     set(name)
+#     get_filename_component(name ${file} NAME_WE)
+#     add_executable("${name}_tests"
+#             ${SOURCE}/${name}.cpp
+#             ${file}
+#             "${PROJECT_SOURCE_DIR}/project/tests/main.cpp")
+#     target_link_libraries("${name}_tests" gtest_main gmock_main cassandra)
+#     add_test(NAME ${name} COMMAND "${name}_tests")
+# endforeach()

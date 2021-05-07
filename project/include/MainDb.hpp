@@ -12,7 +12,7 @@ class MainDb : public IMainDb {
         ~MainDb();
 
         User* searchUserLogin(std::string login, std::string password) override;
-        uint32_t writeUser (User& user) override;
+        void writeUser (User& user) override;
         int updateUser (User& user) override;
 
         std::string getCodeFromMessage(uint32_t messageId) override;
@@ -27,6 +27,8 @@ class MainDb : public IMainDb {
 
         void connectToDb(const char* contactPoints);
         void disconnectFromDb();
+
+        void migrate();
     private:
         CassFuture* connect_future_;
         CassFuture* close_future_;
