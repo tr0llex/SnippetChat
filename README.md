@@ -19,7 +19,8 @@ tarantool
 
 box.cfg{listen = 3301}
 
-<<<<<<< HEAD
+s = box.schema.space.create('keys')
+
 s = box.schema.space.create('unames', {id = 600})
 
 
@@ -27,23 +28,6 @@ s:format({{name = 'UserName', type = 'string'},{name = 'token', type = 'string'}
 
 s:create_index('primary', {type = 'hash', parts = {'UserName'}})
 s:create_index('secondary', {type = 'hash', parts = {'token'}})
-=======
-s = box.schema.space.create('keys')
-
-s:format({{name = 'id', type = 'integer'},
-{name = 'UserName', type = 'string'},
-{name = 'token', type = 'string'},
-{name = 'status', type = 'integer'}
-})
-
-s:create_index('primary', {
-         type = 'hash',
-         parts = {'id'}
-         })
-         
- s = box.schema.space.create('keys')
->>>>>>> 9939d1c27647151fa0d33df0114b74e2c0b7b848
-
 
 s:insert{1, 'admin', 'AAA', 0}
 s:insert{2, 'test_1', 'BBA', 1}
