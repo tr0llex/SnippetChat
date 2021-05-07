@@ -14,7 +14,7 @@ int main() {
     TokenManager tman;
     std::cout <<tman.generateToken(4) <<std::endl;*/
     Auth ServAuth;
-    ServAuth.logoutUser(1);
+    ServAuth.logoutUser("admin");
     LoginData ldt;
     ldt.setLogin("created_by_C");
     ldt.setPassword("BBB");

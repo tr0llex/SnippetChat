@@ -6,3 +6,38 @@
 Technopark Mail.ru 1st semester C++ project
 
 
+Загрузить турунтул:
+curl -L https://tarantool.io/VBBRNxO/release/2.7/installer.sh | bash
+sudo apt-get -y install tarantool
+
+После этого в терминале:
+
+mkdir tarantool_sandbox
+cd tarantool_sandbox
+
+tarantool
+
+box.cfg{listen = 3301}
+
+s = box.schema.space.create('unames', {id = 600})
+
+
+s:format({{name = 'UserName', type = 'string'},{name = 'token', type = 'string'},{name = 'status', type = 'integer'}})
+
+s:create_index('primary', {type = 'hash', parts = {'UserName'}})
+s:create_index('secondary', {type = 'hash', parts = {'token'}})
+
+
+s:insert{1, 'admin', 'AAA', 0}
+s:insert{2, 'test_1', 'BBA', 1}
+s:insert{3, 'test_2', 'BBQ', 1}
+
+=иногда турунтул засыпает, чтобы фиксить надо:
+
+tarantool
+
+box.cfg{listen = 3301}
+
+Замечание:
+sudo lsof -i :3301
+проверить что порт свободен, нет - kill по занимающим

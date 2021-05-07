@@ -30,6 +30,8 @@ add_library(Models STATIC
         ${SOURCE}/Models.cpp)
 
 add_library(Auth STATIC
+        ${PROJECT_SOURCE_DIR}/hash/md5.h
+        ${PROJECT_SOURCE_DIR}/hash/md5.cpp
         ${INCLUDE}/Auth.hpp
         ${SOURCE}/Auth.cpp)
 add_library(InMemoryDb STATIC
@@ -42,7 +44,7 @@ file(GLOB prod_sources
         "${SOURCE}/main.cpp")
 
 add_executable(main.out ${SOURCE}/main.cpp)
-target_link_libraries(main.out Auth InMemoryDb Models ${PROJECT_SOURCE_DIR}/hash/hashids.o)
+target_link_libraries(main.out Auth InMemoryDb Models)
 
 file(GLOB tests "${PROJECT_SOURCE_DIR}/project/tests/*.cpp")
 list(REMOVE_ITEM tests "${PROJECT_SOURCE_DIR}/project/tests/main.cpp")
@@ -53,7 +55,7 @@ foreach(file ${tests})
     add_executable("${name}_tests"
             ${SOURCE}/${name}.cpp
             ${file}
-            "${PROJECT_SOURCE_DIR}/project/tests/main.cpp")
+            "${PROJECT_SOURCE_DIR}/project/tests/main.cpp" hash/md5.cpp)
     target_link_libraries("${name}_tests" gtest_main gmock_main ${name} Models )
     add_test(NAME ${name} COMMAND "${name}_tests")
 endforeach()

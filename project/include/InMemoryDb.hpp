@@ -19,11 +19,11 @@
 class InMemoryDbInterface {
 public:
     virtual std::string getUserName(std::string token) = 0;
-    virtual int writeInMemory(int userId, std::string token,
-                               std::string userName, int status) = 0;
-    virtual int updateUserStatus(int userId, int way) = 0;
-    virtual int searchToken(std::string token) = 0;
-    virtual std::vector<bool> getOnline(std::vector<uint32_t> userVector) = 0;
+    virtual int writeInMemory(std::string userName, std::string token,
+                               int status) = 0;
+    virtual int updateUserStatus(std::string userName, int way) = 0;
+    virtual std::string searchToken(std::string token) = 0;
+    virtual std::vector<bool> getOnline(std::vector<std::string> userVector) = 0;
 };
 class InMemoryDb  : public InMemoryDbInterface {
 private:
@@ -43,11 +43,11 @@ public:
     ~InMemoryDb() = default;
     int dbStart();
     std::string getUserName(std::string token) override;
-    int writeInMemory(int userId, std::string token,
-                      std::string userName, int status) override;
-    int updateUserStatus(int userId, int way) override;
-    int searchToken(std::string token) override;
-    std::vector<bool> getOnline(std::vector<uint32_t> userVector) override;
+    int writeInMemory(std::string userName, std::string token,
+                       int status) override;
+    int updateUserStatus(std::string userName, int way) override;
+    std::string searchToken(std::string token) override;
+    std::vector<bool> getOnline(std::vector<std::string> userVector) override;
 
     int dbConnect(Connector<tnt::Buffer<16384>, DefaultNetProvider<tnt::Buffer<16384>, NetworkEngine >> &client,
                   Connection<tnt::Buffer<16384>, DefaultNetProvider<tnt::Buffer<16384>, NetworkEngine >> &conn);

@@ -9,15 +9,14 @@ using Network_t = NetworkEngine;
 using Net_t = DefaultNetProvider<Buf_t, Network_t >;
 
 struct UserTuple {
-    uint32_t field1 = 0;
+    std::string field1;
     std::string field2;
-    std::string field3;
-    uint32_t field4 = 0;
+    uint32_t field3 = 0;
 };
 
 std::ostream& operator<<(std::ostream& strm, const UserTuple &t)
 {
-return strm << "Tuple: field1=" << t.field1 << " field2=" << t.field2 << " field3=" << t.field3 <<" field4=" << t.field4;
+return strm << "Tuple: field1=" << t.field1 << " field2=" << t.field2 << " field3=" << t.field3;
 }
 
 //region READER
@@ -29,20 +28,13 @@ struct UserTupleValueReader : mpp::DefaultErrorHandler {
     template <class T>
     void Value(const BufIter_t&, mpp::compact::Type, T v)
     {
-        if (first) {
-            tuple.field1 = v;
-            first = false;
-        } else {
-            tuple.field4 = v;
-            first = true;
-        }
-
+        tuple.field3 = v;
     }
     void Value(const BufIter_t& itr, mpp::compact::Type, mpp::StrValue v)
     {
         BufIter_t tmp = itr;
         tmp += v.offset;
-        std::string &dst = tuple.field3;
+        std::string &dst = tuple.field1;
         while (v.size) {
             dst.push_back(*tmp);
             ++tmp;
@@ -67,7 +59,7 @@ struct UserTupleReader : mpp::SimpleReaderBase<BUFFER, mpp::MP_ARR> {
 
     void Value(const iterator_t<BUFFER>&, mpp::compact::Type, mpp::ArrValue u)
     {
-        assert(u.size == 4);
+        assert(u.size == 3);
         dec.SetReader(false, UserTupleValueReader{tuple});
     }
     mpp::Dec<BUFFER>& dec;
@@ -113,10 +105,11 @@ std::vector<UserTuple> printResponse(Connection<BUFFER, Net_t> &conn, Response<B
 
         for (auto & t : tuples) {
             std::string delimiter = "\t";
-            t.field2 = t.field3.substr(0, t.field3.find(delimiter));
-            t.field3 = t.field3.substr( t.field3.find(delimiter) + 1, t.field3.size() - t.field3.find(delimiter)-2);
-            if (t.field4 < 0)
-                t.field4 = 0;
+
+            t.field2 = t.field1.substr( t.field1.find(delimiter) + 1, t.field1.size() - t.field1.find(delimiter)-2);
+            t.field1 = t.field1.substr(0, t.field1.find(delimiter));
+            if (t.field3 < 0)
+                t.field3 = 0;
             std::cout << t << std::endl;
         }
         return tuples;
@@ -145,7 +138,7 @@ std::string InMemoryDb::getUserName(std::string token) {
     Connector<Buf_t, Net_t> client;
     Connection<Buf_t, Net_t> conn(client);
     this->dbConnect(client, conn);
-    uint32_t space_id = 512;
+    uint32_t space_id = 600;
     std::string pk_value = token;
     uint32_t index_id = 1;
     uint32_t limit = 1;
@@ -162,17 +155,17 @@ std::string InMemoryDb::getUserName(std::string token) {
     if (res.empty()) {
         return "";
     }
-    return res[0].field2;
+    return res[0].field1;
 }
 
 
 
-int InMemoryDb::writeInMemory(int userId,  std::string userName, std::string token, int status) {
+int InMemoryDb::writeInMemory(std::string userName, std::string token, int status) {
     Connector<Buf_t, Net_t> client;
     Connection<Buf_t, Net_t> conn(client);
     this->dbConnect(client, conn);
-    uint32_t space_id = 512;
-    std::tuple data = std::make_tuple(userId, userName, token, status);
+    uint32_t space_id = 600;
+    std::tuple data = std::make_tuple(userName, token, status);
     rid_t replace = conn.space[space_id].replace(data);
     int resp = client.wait(conn, replace);
     client.close(conn);
@@ -182,13 +175,13 @@ int InMemoryDb::writeInMemory(int userId,  std::string userName, std::string tok
     return 0;
 }
 
-int InMemoryDb::updateUserStatus(int userId, int way) {
+int InMemoryDb::updateUserStatus(std::string userName, int way) {
     // way= 1 ++ way =-1 --
     Connector<Buf_t, Net_t> client;
     Connection<Buf_t, Net_t> conn(client);
     this->dbConnect(client, conn);
-    uint32_t space_id = 512;
-    int pk_value = userId;
+    uint32_t space_id = 600;
+    std::string pk_value = userName;
     uint32_t index_id = 0;
     uint32_t limit = 1;
     uint32_t offset = 0;
@@ -203,12 +196,12 @@ int InMemoryDb::updateUserStatus(int userId, int way) {
     if (res.empty()) {
         return -1;
     }
-    if (!(res[0].field4 == 0 && way == -1)) {
-        res[0].field4 = res[0].field4 + way;
+    if (!(res[0].field3 == 0 && way == -1)) {
+        res[0].field3 = res[0].field3 + way;
     }
 
 
-    std::tuple data = std::make_tuple(res[0].field1, res[0].field2, res[0].field3, res[0].field4);
+    std::tuple data = std::make_tuple(res[0].field1, res[0].field2, res[0].field3);
     rid_t replace = conn.space[space_id].replace(data);
     int resp = client.wait(conn, replace);
     client.close(conn);
@@ -218,11 +211,11 @@ int InMemoryDb::updateUserStatus(int userId, int way) {
     return 0;
 }
 
-int InMemoryDb::searchToken(std::string token) {
+std::string InMemoryDb::searchToken(std::string token) {
     Connector<Buf_t, Net_t> client;
     Connection<Buf_t, Net_t> conn(client);
     this->dbConnect(client, conn);
-    uint32_t space_id = 512;
+    uint32_t space_id = 600;
     std::string pk_value = token;
     uint32_t index_id = 1;
     uint32_t limit = 1;
@@ -235,20 +228,20 @@ int InMemoryDb::searchToken(std::string token) {
     std::optional<Response<Buf_t>> response = conn.getResponse(select);
     client.close(conn);
     if (response == std::nullopt) {
-        return -1;
+        return "";
     }
     std::vector<UserTuple> res = printResponse<Buf_t>(conn, *response);
     if (res.empty()) {
-        return -1;
+        return "";
     }
-    return (int) res[0].field1;
+    return res[0].field1;
 }
 
-std::vector<bool> InMemoryDb::getOnline(std::vector<uint32_t> userVector) {
+std::vector<bool> InMemoryDb::getOnline(std::vector<std::string> userVector) {
     Connector<Buf_t, Net_t> client;
     Connection<Buf_t, Net_t> conn(client);
     this->dbConnect(client, conn);
-    uint32_t space_id = 512;
+    uint32_t space_id = 600;
     uint32_t index_id = 0;
     uint32_t limit = 1;
     uint32_t offset = 0;
@@ -256,12 +249,12 @@ std::vector<bool> InMemoryDb::getOnline(std::vector<uint32_t> userVector) {
     std::vector<bool> a(userVector.size(), false);
     IteratorType iter = IteratorType::EQ;
     for (int i = 0; i < userVector.size(); i++) {
-        uint32_t pk_value = userVector[i];
+        std::string pk_value = userVector[i];
         rid_t select = j.select(std::make_tuple(pk_value), limit, offset, iter);
         client.wait(conn, select);
         std::optional<Response<Buf_t>> response = conn.getResponse(select);
         std::vector<UserTuple> res = printResponse<Buf_t>(conn, *response);
-        if (res[0].field4 > 0) {
+        if (res[0].field3 > 0) {
             a[i] = true;
         }
     }

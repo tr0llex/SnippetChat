@@ -9,7 +9,7 @@
 #include <vector>
 #include "Models.hpp"
 #include "InMemoryDb.hpp"
-#include "../../hash/hashids.h"
+#include "../../hash/md5.h"
 
 class AuthInterface {
 public:
@@ -18,14 +18,14 @@ public:
     /// \param loginData
     /// \return  Отдает Токен для правильных данных, "" для пустого
     virtual std::string loginUser(LoginData loginData) = 0;
-    /// Функция принимает  id
+    /// Функция принимает  userName
     /// \param userId
     /// \return Отдает 0 при удачном логауте -1 при ошибке
-    virtual int logoutUser(uint32_t userId) = 0;
+    virtual int logoutUser(std::string userId) = 0;
     /// Принимает токен
     /// \param token
-    /// \return  отдает userId к которому тот привязан, -1 при отсутствии
-    virtual int verifyToken(std::string token) = 0;
+    /// \return  отдает userName к которому тот привязан, -1 при отсутствии
+    virtual std::string verifyToken(std::string token) = 0;
     ///  Регистрирует пользователя в основной БД + заносит сессию
     /// \param userLogin
     /// \param userPassword
@@ -43,12 +43,12 @@ private:
 public:
     TokenManager() = default;
     ~TokenManager() = default;
-    int tryLogin(LoginData data);
-    int tryToken(LoginData data);
-    int validateToken(std::string token);
-    int logoutUser(uint32_t userId);
-    std::string generateToken(uint32_t userId);
-    int writeInMemory(int userId,  const std::string& userName, const std::string& token, int status);
+    std::string tryLogin(LoginData data);
+    std::string tryToken(LoginData data);
+    std::string validateToken(std::string token);
+    int logoutUser(std::string userName);
+    std::string generateToken(std::string userName);
+    int writeInMemory(const std::string& userName, const std::string& token, int status);
 };
 
 class Auth : public AuthInterface {
@@ -57,20 +57,20 @@ private:
 public:
     User currentUser;
     Auth() = default;
-    int logoutUser (uint32_t userId) override  {
-        int result = tokenMan.logoutUser(userId);
+    int logoutUser (std::string userName) override  {
+        int result = tokenMan.logoutUser(userName);
         return result;
     }
     std::string loginUser (LoginData data) override {
         if (data.getType() == -1) {
-            int result = tokenMan.tryToken(data);
-            if (result >= 0) {
+            std::string result = tokenMan.tryToken(data);
+            if (!result.empty()) {
                 return data.getPassword();
             }
             return "";
         }
-        int result = tokenMan.tryLogin(data);
-        if (result == -1) {
+        std::string result = tokenMan.tryLogin(data);
+        if (result.empty()) {
             return "";
         }
         return tokenMan.generateToken(result);
@@ -78,11 +78,11 @@ public:
     std::string registerUser(std::string userLogin, std::string userPassword) override {
         // TODO - write in cassandra
         int userId = 100; //override on cassandra
-        std::string token = tokenMan.generateToken(userId);
-        tokenMan.writeInMemory(userId, userLogin, token, 1);
+        std::string token = tokenMan.generateToken(userLogin);
+        tokenMan.writeInMemory(userLogin, token, 1);
         return token;
     }
-    int verifyToken(std::string token) override {
+    std::string verifyToken(std::string token) override {
         return tokenMan.validateToken(token);
     }
 };
