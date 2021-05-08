@@ -18,8 +18,8 @@ set(CMAKE_CXX_FLAGS "-pedantic -fprofile-arcs -ftest-coverage -Wall -Werror -Wpe
 set(CMAKE_CXX_STANDARD 14)
 
 find_package(Wt REQUIRED)
-link_directories("/usr/lib")
-link_directories("/usr/local/lib")
+#link_directories("/usr/lib")
+#link_directories("/usr/local/lib")
 
 include_directories("${PROJECT_SOURCE_DIR}/project/include")
 
@@ -33,11 +33,7 @@ set(SOURCE ${PROJECT_SOURCE_DIR}/project/src)
 
 file(GLOB prod_sources
         "${INCLUDE}/*.hpp"
-        "${SOURCE}/ChatApplication.cpp"
-        "${SOURCE}/ChatWidget.cpp"
-        "${SOURCE}/ChatEvent.cpp"
-        "${SOURCE}/ChatServer.cpp"
-        "${SOURCE}/main.cpp")
+        "${SOURCE}/*.cpp")
 
 add_executable(${PROJECT_NAME} ${prod_sources})
 

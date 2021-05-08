@@ -1,7 +1,7 @@
 #ifndef PROJECT_INCLUDE_CHATEVENT_HPP_
 #define PROJECT_INCLUDE_CHATEVENT_HPP_
 
-#include "Models.hpp"
+#include "VovaModels.hpp"
 
 #include <Wt/WSignal.h>
 #include <Wt/WString.h>

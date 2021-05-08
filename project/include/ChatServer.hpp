@@ -2,6 +2,7 @@
 #define PROJECT_INCLUDE_CHATSERVER_HPP_
 
 
+#include "VovaModels.hpp"
 #include "ChatEvent.hpp"
 
 #include <mutex>
