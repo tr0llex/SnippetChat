@@ -24,6 +24,11 @@ public:
         return username_;
     }
 
+    void updateData(const User &newData) {
+        username_ = newData.username_;
+        userPassword_ = newData.userPassword_;
+    }
+
     bool operator==(const User &user) const {
         return id_ == user.id_;
     }
@@ -42,10 +47,13 @@ private:
 class Message {
 public:
     Message() = default;
-    Message(const User &senderId, uint32_t dialogueParentId, const std::wstring &messageText);
+    Message(const User &sender, uint32_t dialogueParentId, const std::wstring &messageText);
     Message(uint32_t senderId, uint32_t dialogueParentId, const std::wstring &messageText);
 
-    uint32_t getDialogueParentId() const {
+    uint32_t getSenderId() const {
+        return senderId_;
+    }
+    uint32_t getDialogueId() const {
         return dialogueParentId_;
     }
     std::wstring getMessageText() const {
@@ -53,6 +61,14 @@ public:
     }
     time_t getTimeSent() const {
         return timeSent_;
+    }
+
+    std::wstring timeSent() const {
+        return std::to_wstring(timeSent_);
+    }
+
+    bool isMyMessage(const User &requester) const {
+        return senderId_ == requester.getId();
     }
 
 private:
@@ -63,16 +79,37 @@ private:
 };
 
 
-struct DialogueInfo {
-    std::wstring dialogueName;
-    Message lastMessage;
-
+class DialogueInfo {
+public:
     DialogueInfo() = default;
-    DialogueInfo(const std::wstring &name, const Message &message) : dialogueName(name), lastMessage(message) {}
+    DialogueInfo(const std::wstring &name, const Message &message) : dialogueName_(name), numberOfUnread_(0), lastMessage_(message) {}
+
+    void newMessage(const Message &message) {
+        lastMessage_ = message;
+        numberOfUnread_++;
+    }
+
+    uint32_t getId() const {
+        return lastMessage_.getDialogueId();
+    }
+    const std::wstring& getName() const {
+        return dialogueName_;
+    }
+    const Message& getMessage() const {
+        return lastMessage_;
+    }
+    bool withYourself(const User &requester) const {
+        return dialogueName_ == requester.getUsername();
+    }
+
+private:
+    std::wstring dialogueName_;
+    uint16_t numberOfUnread_;
+    Message lastMessage_;
 };
 struct ComparatorDialogueInfo {
     bool operator()(const DialogueInfo &lhs, const DialogueInfo &rhs) {
-        return lhs.lastMessage.getTimeSent() < rhs.lastMessage.getTimeSent();
+        return lhs.getMessage().getTimeSent() < rhs.getMessage().getTimeSent();
     }
 };
 typedef std::multiset<DialogueInfo, ComparatorDialogueInfo> DialogueList;
@@ -84,15 +121,16 @@ public:
     Dialogue(uint32_t dialogueId, const User &firstUser, const User &secondUser)
     : dialogueId_(dialogueId) {
         names.push_back(firstUser.getUsername());
-        names.push_back(secondUser.getUsername());
-
         participantsList_.push_back(firstUser.getId());
-        participantsList_.push_back(secondUser.getId());
-
         dialogueMessageList_.emplace_back(0, dialogueId_, std::wstring());
+
+        if (firstUser != secondUser) {
+            names.push_back(secondUser.getUsername());
+            participantsList_.push_back(secondUser.getId());
+        }
     }
 
-    uint32_t getDialogueId() const {
+    uint32_t getId() const {
         return dialogueId_;
     }
     std::vector<uint32_t> getParticipants() const {
@@ -120,21 +158,27 @@ public:
             return DialogueInfo();
         }
 
-        std::wstring name;
-        for (const auto &curName : names) {
-            if (requester.getUsername() != curName) {
-                name = curName;
-                break;
-            }
-        }
-
+        std::wstring name = getName(requester);
         Message message = dialogueMessageList_.back();
 
         return DialogueInfo(name, message);
     }
+    std::wstring getName(const User &requester) const {
+        for (const auto &curName : names) {
+            if (requester.getUsername() != curName) {
+                return curName;
+            }
+        }
+
+        return requester.getUsername();
+    }
 
     void newMessage(const Message &message) {
         dialogueMessageList_.emplace_back(message);
+    }
+
+    bool withYourself() const {
+        return participantsList_.size() == 1;
     }
 
     bool operator==(const Dialogue &dialogue) const {
@@ -146,6 +190,13 @@ public:
         return true;
     }
     bool operator!=(const Dialogue &dialogue) const {
+        return !(*this == dialogue);
+    }
+
+    bool operator==(const DialogueInfo &dialogue) const {
+        return dialogueId_ == dialogue.getId();
+    }
+    bool operator!=(const DialogueInfo &dialogue) const {
         return !(*this == dialogue);
     }
 
@@ -162,21 +213,36 @@ public:
     DB() = default;
 
 
-    bool addNewUser(const User &user) {
+    bool addNewUser(User &user) {
         if (!nameIsFree(user)) {
             return false;
         }
 
+        user.setId(users_.size());
         users_.push_back(user);
         return true;
     }
-
     void addUserToAllDialogues(const User &user) {
         for (auto &curUser : users_) {
             newDialogue(curUser, user);
         }
     }
+    bool updateUser(User& user, const User& newUser) {
+        if (!nameIsFree(newUser)) {
+            return false;
+        }
 
+        int i = findUser(user);
+        if (i == -1) {
+            return false;
+        }
+
+        users_[i].updateData(newUser);
+
+        user = users_[i];
+
+        return true;
+    }
     bool newDialogue(const User &firstUser, const User &secondUser) {
         Dialogue dialogue(dialogues_.size(), firstUser, secondUser);
 
@@ -204,7 +270,7 @@ public:
     }
     Dialogue getDialogue(uint32_t dialogueId) const {
         for (const auto &dialogue : dialogues_) {
-            if (dialogue.getDialogueId() == dialogueId) {
+            if (dialogue.getId() == dialogueId) {
                 return dialogue;
             }
         }
@@ -242,7 +308,7 @@ private:
     }
     int findDialogue(const Message &message) const {
         for (size_t i = 0; i < dialogues_.size(); ++i) {
-            if (dialogues_[i].getDialogueId() == message.getDialogueParentId()) {
+            if (dialogues_[i].getId() == message.getDialogueId()) {
                 return (int) i;
             }
         }

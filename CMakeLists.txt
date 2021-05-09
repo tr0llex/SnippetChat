@@ -39,6 +39,8 @@ add_executable(${PROJECT_NAME} ${prod_sources})
 
 target_link_libraries(${PROJECT_NAME} wthttp wt)
 
+add_definitions(-DSOURCE_DIR="${CMAKE_CURRENT_SOURCE_DIR}")
+
 file(GLOB tests "${PROJECT_SOURCE_DIR}/project/tests/*.cpp")
 list(REMOVE_ITEM tests "${PROJECT_SOURCE_DIR}/project/tests/main.cpp")
 

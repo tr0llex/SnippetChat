@@ -2,10 +2,12 @@
 #define PROJECT_INCLUDE_CHATSERVER_HPP_
 
 
-#include "VovaModels.hpp"
-#include "ChatEvent.hpp"
-
+#include <map>
+#include <thread>
 #include <mutex>
+
+#include "ChatEvent.hpp"
+#include "VovaModels.hpp"
 
 
 class ChatServer {
@@ -18,20 +20,36 @@ public:
     ChatServer(const ChatServer &) = delete;
     ChatServer &operator=(const ChatServer &) = delete;
 
-    bool connect(Client *client, const ChatEventCallback& handleEvent);
+    bool connect(Client *client, const User &user, const ChatEventCallback& handleEvent);
     bool disconnect(Client *client);
-    bool login(const User& user);
-    void logout(const User& user);
-    bool signUp(const User& user);
-    void changeProfile(User& user, const User& newUser);
-    void sendMessage(const User& user, const Wt::WString& message);
-    void runCode(const User& user, const Wt::WString& dataStdin);
+
+    bool signUp(User& user);
+    bool login(User& user);
+    void logout(const User &user);
+
+    bool changeProfile(User& user, const User& newUser);
+
+    DialogueList getDialogueList(const User &user) const;
+    Dialogue getDialogue(uint32_t dialogueId) const;
+
+    void sendMessage(const User &user, const Dialogue &dialogue, const Message &message);
 
 private:
-    Wt::WServer&         server_;
-    std::recursive_mutex mutex_;
-
     void postChatEvent(const ChatEvent& event);
+    void notifyUser(const ChatEvent& event);
+
+private:
+    struct ClientInfo {
+        std::string       sessionId;
+        uint32_t          userId;
+        ChatEventCallback eventCallback;
+    };
+    typedef std::map<Client *, ClientInfo> ClientMap;
+
+    Wt::WServer&            server_;
+    std::recursive_mutex    mutex_;
+    ClientMap               clients_;
+    DB                      db_;
 };
 
 

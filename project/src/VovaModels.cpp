@@ -6,8 +6,8 @@ static inline int64_t getTimeS() {
             (std::chrono::system_clock::now().time_since_epoch()).count();
 }
 
-Message::Message(const User &senderId, uint32_t dialogueParentId, const std::wstring &messageText)
-        : Message(senderId.getId(), dialogueParentId, messageText) {}
+Message::Message(const User &sender, uint32_t dialogueParentId, const std::wstring &messageText)
+        : Message(sender.getId(), dialogueParentId, messageText) {}
 
 Message::Message(uint32_t senderId, uint32_t dialogueParentId, const std::wstring &messageText)
         : senderId_(senderId),

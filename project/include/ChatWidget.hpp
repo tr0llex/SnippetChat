@@ -7,28 +7,39 @@
 
 #include "ChatServer.hpp"
 
+
 class ChatEvent;
 
 class ChatWidget : public Wt::WContainerWidget,
                    public ChatServer::Client {
 public:
     explicit ChatWidget(ChatServer& server);
-    ~ChatWidget();
+    ~ChatWidget() override;
 
-    void connect();
+    void connect(const User &user);
     void disconnect();
+
+    void letSignUp();
     void letLogin();
-    void letRegistration();
+    void letSetting();
+
+    void startChat();
+    void switchDialogue(const DialogueInfo& dialogue);
     void changeProfile(const User& newUser);
-    bool startChat(const User& user);
     void logout();
 
 protected:
-    virtual void createLayout(std::unique_ptr<Wt::WWidget> messages, std::unique_ptr<Wt::WWidget> userList,
-                              std::unique_ptr<Wt::WWidget> messageEdit,
-                              std::unique_ptr<Wt::WWidget> sendButton, std::unique_ptr<Wt::WWidget> logoutButton);
+    virtual void createLayout(
+            std::unique_ptr<WWidget> dialogueName,
+            std::unique_ptr<WWidget> messages,
+            std::unique_ptr<WWidget> dialogueList,
+            std::unique_ptr<WWidget> messageEdit,
+            std::unique_ptr<WWidget> sendButton,
+            std::unique_ptr<WWidget> settingButton,
+            std::unique_ptr<WWidget> logoutButton);
 
     virtual void updateDialogueList();
+    virtual void newMessage();
 
     virtual void render(Wt::WFlags<Wt::RenderFlag> flags);
 
@@ -36,28 +47,32 @@ protected:
     bool loggedIn() const;
 
 private:
-    typedef std::map<Wt::WString, bool> UserMap;
-    UserMap users_;
-
-    ChatServer&   server_;
-    bool          loggedIn_;
-
-    User          user_;
-
-    Wt::WLineEdit                *userNameEdit_;
-    Wt::WText                    *statusMsg_;
-
-    Wt::WContainerWidget         *messages_;
-    Wt::WTextArea                *messageEdit_;
-    Wt::Core::observing_ptr<Wt::WPushButton> sendButton_;
-    Wt::Core::observing_ptr<Wt::WContainerWidget> userList_;
-
+    void signUp();
     void login();
-    void changeName(const Wt::WString& name);
     void send();
-    void updateUser(Wt::WCheckBox *b);
 
     void processChatEvent(const ChatEvent& event);
+
+private:
+    ChatServer    &server_;
+
+    bool           loggedIn_;
+    User           user_;
+    Dialogue       currentDialogue_;
+    DialogueList   dialogueList_;
+
+    Wt::WLineEdit *userNameEdit_;
+    Wt::WText     *statusMsg_;
+
+    Wt::WText                                    *dialogueName_;
+    Wt::WContainerWidget                         *messages_;
+    Wt::WTextArea                                *messageEdit_;
+    Wt::JSlot                                     clearInput_;
+    Wt::Core::observing_ptr<Wt::WPushButton>      sendButton_;
+    Wt::Core::observing_ptr<Wt::WContainerWidget> dialogues_;
+
+    std::unique_ptr<Wt::WSound> soundLogin_;
+    std::unique_ptr<Wt::WSound> soundMessageReceived_;
 };
 
 
