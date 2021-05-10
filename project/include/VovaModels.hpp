@@ -23,6 +23,9 @@ public:
     std::wstring getUsername() const {
         return username_;
     }
+    std::wstring getPassword() const {
+        return userPassword_;
+    }
 
     void updateData(const User &newData) {
         username_ = newData.username_;
@@ -109,7 +112,7 @@ private:
 };
 struct ComparatorDialogueInfo {
     bool operator()(const DialogueInfo &lhs, const DialogueInfo &rhs) {
-        return lhs.getMessage().getTimeSent() < rhs.getMessage().getTimeSent();
+        return lhs.getMessage().getTimeSent() > rhs.getMessage().getTimeSent();
     }
 };
 typedef std::multiset<DialogueInfo, ComparatorDialogueInfo> DialogueList;
@@ -182,11 +185,16 @@ public:
     }
 
     bool operator==(const Dialogue &dialogue) const {
+        if (participantsList_.size() != dialogue.getParticipants().size()) {
+            return false;
+        }
+
         for (const auto &otherParticipant : dialogue.getParticipants()) {
             if (!thereIsParticipant(otherParticipant)) {
                 return false;
             }
         }
+
         return true;
     }
     bool operator!=(const Dialogue &dialogue) const {
@@ -220,6 +228,16 @@ public:
 
         user.setId(users_.size());
         users_.push_back(user);
+        return true;
+    }
+    bool isCorrectUser(User &user) {
+        int i = findUserByName(user);
+        if (i == -1 || users_[i].getPassword() != user.getPassword()) {
+            return false;
+        }
+
+        user = users_[i];
+
         return true;
     }
     void addUserToAllDialogues(const User &user) {
@@ -287,10 +305,23 @@ public:
         dialogues_[i].newMessage(message);
     }
 
+    /// TODO
+    const User& getUser(uint32_t id) {
+        for (const auto &user : users_) {
+            if (user.getId() == id) {
+                return user;
+            }
+        }
+        return users_[0];
+    }
+    const std::vector<User>& getUsers() const {
+        return users_;
+    }
+
 private:
     bool nameIsFree(const User &user) const {
-        for (const auto & i : users_) {
-            if (i.getUsername() == user.getUsername()) {
+        for (const auto & otherUser : users_) {
+            if (otherUser.getUsername() == user.getUsername()) {
                 return false;
             }
         }
@@ -300,6 +331,15 @@ private:
     int findUser(const User &user) const {
         for (size_t i = 0; i < users_.size(); ++i) {
             if (users_[i] == user) {
+                return (int) i;
+            }
+        }
+
+        return -1;
+    }
+    int findUserByName(const User &user) const {
+        for (size_t i = 0; i < users_.size(); ++i) {
+            if (users_[i].getUsername() == user.getUsername()) {
                 return (int) i;
             }
         }

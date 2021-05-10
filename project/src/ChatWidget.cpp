@@ -200,21 +200,11 @@ void ChatWidget::startChat() {
     joinMsg->bindWidget("name", std::move(nameEdit));
     joinMsg->setStyleClass("chat-msg");
 
+    switchDialogue(*dialogueList_.begin());
     updateDialogueList();
 }
 
 /// TODO
-static inline Wt::WString formattedMessage(const User &user, const Message& message) {
-    Wt::WString result;
-
-    result = Wt::WString("<span class='")
-             + ((message.isMyMessage(user)) ?
-                "chat-self" :
-                "chat-user")
-             + "'>" + Wt::WWebWidget::escapeText(std::to_wstring(message.getSenderId())) + ":</span>";
-
-    return result + message.getMessageText() + " " + message.timeSent();
-}
 void ChatWidget::switchDialogue(const DialogueInfo &dialogue) {
     messages_->clear();
 
@@ -222,20 +212,7 @@ void ChatWidget::switchDialogue(const DialogueInfo &dialogue) {
     dialogueName_->setText(currentDialogue_.getName(user_));
 
     for (const auto& message : currentDialogue_.getMessages()) {
-        Wt::WText *w = messages_->addWidget(std::make_unique<Wt::WText>());
-
-        /// TODO
-        w->setText(formattedMessage(user_, message));
-
-        w->setInline(false);
-        w->setStyleClass("chat-msg");
-
-        if (messages_->count() > 100) {
-            messages_->removeChild(messages_->children()[0]);
-        }
-
-        /*app->doJavaScript(messages_->jsRef() + ".scrollTop += "
-                          + messages_->jsRef() + ".scrollHeight;");*/
+        showNewMessage(message);
     }
 }
 
@@ -302,13 +279,13 @@ void ChatWidget::createLayout(std::unique_ptr<WWidget> dialogueName, std::unique
 }
 
 void ChatWidget::updateDialogueList() {
-    if (dialogues_) {
+    if (!dialogues_) {
         return;
     }
 
     dialogues_->clear();
 
-    dialogueList_ = server_.getDialogueList(user_);
+//    dialogueList_ = server_.getDialogueList(user_);
 
     for (const auto& dialogue : dialogueList_) {
         Wt::WText *w = dialogues_->addWidget(std::make_unique<Wt::WText>(escapeText(dialogue.getName())));
@@ -326,8 +303,33 @@ void ChatWidget::updateDialogueList() {
     }
 }
 
-void ChatWidget::newMessage() {
+static inline Wt::WString formattedMessage(const User &user, const Message& message) {
+    Wt::WString result;
 
+    result = Wt::WString("<span class='")
+             + ((message.isMyMessage(user)) ?
+                "chat-self" :
+                "chat-user")
+             + "'>" + Wt::WWebWidget::escapeText(std::to_wstring(message.getSenderId())) + ":</span>";
+
+    return result + message.getMessageText() + " " + message.timeSent();
+}
+void ChatWidget::showNewMessage(const Message &message) {
+    Wt::WApplication *app = Wt::WApplication::instance();
+
+    Wt::WText *w = messages_->addWidget(std::make_unique<Wt::WText>());
+
+    w->setText(formattedMessage(user_, message));
+
+    w->setInline(false);
+    w->setStyleClass("chat-msg");
+
+    if (messages_->count() > 100) {
+        messages_->removeChild(messages_->children()[0]);
+    }
+
+    app->doJavaScript(messages_->jsRef() + ".scrollTop += "
+                      + messages_->jsRef() + ".scrollHeight;");
 }
 
 void ChatWidget::render(Wt::WFlags<Wt::RenderFlag> flags) {
@@ -349,27 +351,16 @@ bool ChatWidget::loggedIn() const {
 }
 
 void ChatWidget::signUp() {
-    if (!loggedIn()) {
+    if (loggedIn()) {
         return;
     }
 
     Wt::WString username = userNameEdit_->text();
 
-    if (!soundMessageReceived_) {
-        soundMessageReceived_ = std::make_unique<Wt::WSound>("resources/sounds/message_received.mp3");
-    }
-
     user_ = User(username);
 
     if (server_.signUp(user_)) {
-        loggedIn_ = true;
-        dialogueList_ = server_.getDialogueList(user_);
-        uint32_t lastDialogueId = dialogueList_.begin()->getId();
-        currentDialogue_ = server_.getDialogue(lastDialogueId);
-
-        connect(user_);
-
-        startChat();
+        login();
     } else {
         statusMsg_->setText("Sorry, name '" + escapeText(username) +
                             "' is already taken.");
@@ -392,15 +383,16 @@ void ChatWidget::login() {
     if (server_.login(user_)) {
         loggedIn_ = true;
         dialogueList_ = server_.getDialogueList(user_);
-        uint32_t lastDialogueId = dialogueList_.begin()->getId();
-        currentDialogue_ = server_.getDialogue(lastDialogueId);
+
+        if (soundLogin_) {
+            soundLogin_->play();
+        }
 
         connect(user_);
 
         startChat();
     } else {
-        statusMsg_->setText("Sorry, name '" + escapeText(username) +
-                            "' is already taken.");
+        statusMsg_->setText("Incorrect login or password");
     }
 }
 
@@ -408,6 +400,8 @@ void ChatWidget::send() {
     if (!messageEdit_->text().empty()) {
         Message message(user_, currentDialogue_.getId(), messageEdit_->text());
         server_.sendMessage(user_, currentDialogue_, message);
+
+        showNewMessage(message);
     }
 }
 
@@ -434,23 +428,16 @@ void ChatWidget::processChatEvent(const ChatEvent &event) {
             break;
         }
         case ChatEvent::NewMessage: {
-            if (currentDialogue_ != event.dialogue()) {
-                Wt::WText *w = messages_->addWidget(std::make_unique<Wt::WText>());
+            if (event.getSenderId() != user_.getId()) {
+                if (currentDialogue_ == event.dialogue()) {
+                    showNewMessage(event.dialogue().getMessage());
 
-                w->setText(formattedMessage(user_, event.dialogue().getMessage()));
-
-                w->setInline(false);
-                w->setStyleClass("chat-msg");
-
-                if (messages_->count() > 100)
-                    messages_->removeChild(messages_->children()[0]);
-
-                app->doJavaScript(messages_->jsRef() + ".scrollTop += "
-                                  + messages_->jsRef() + ".scrollHeight;");
-            }
-
-            if (!event.dialogue().withYourself(user_) && soundMessageReceived_) {
-                soundMessageReceived_->play();
+                    if (soundMessageReceived_) {
+                        soundMessageReceived_->play();
+                    }
+                }
+            } else {
+                // заебись сообщение отправлено
             }
 
             break;

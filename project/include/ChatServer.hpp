@@ -32,7 +32,7 @@ public:
     DialogueList getDialogueList(const User &user) const;
     Dialogue getDialogue(uint32_t dialogueId) const;
 
-    void sendMessage(const User &user, const Dialogue &dialogue, const Message &message);
+    void sendMessage(const User &user, Dialogue &dialogue, const Message &message);
 
 private:
     void postChatEvent(const ChatEvent& event);

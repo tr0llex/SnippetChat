@@ -39,7 +39,7 @@ protected:
             std::unique_ptr<WWidget> logoutButton);
 
     virtual void updateDialogueList();
-    virtual void newMessage();
+    virtual void showNewMessage(const Message &message);
 
     virtual void render(Wt::WFlags<Wt::RenderFlag> flags);
 

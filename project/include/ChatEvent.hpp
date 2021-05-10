@@ -23,6 +23,10 @@ public:
     const User& user() const { return user_; }
     const DialogueInfo& dialogue() const { return dialogueInfo_; }
 
+    uint32_t getSenderId() const {
+        return dialogueInfo_.getMessage().getSenderId();
+    }
+
     const Wt::WString formattedHTML(const User &user,
                                     Wt::TextFormat format) const;
 

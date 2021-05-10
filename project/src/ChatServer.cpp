@@ -37,10 +37,11 @@ bool ChatServer::signUp(User &user) {
 
         /// TODO
         /// Создавать диалог только с самими собой, оповещать никого не надо
-        db_.addUserToAllDialogues(user);
-
-//        DialogueInfo dialogueInfo();
-//        postChatEvent(ChatEvent(ChatEvent::SignUp, user, ));
+        for (const auto &curUser : db_.getUsers()) {
+            db_.newDialogue(user, curUser);
+            DialogueInfo dialogueInfo;
+            notifyUser(ChatEvent(ChatEvent::NewDialogue, curUser, dialogueInfo));
+        }
 
         return true;
     }
@@ -51,7 +52,7 @@ bool ChatServer::signUp(User &user) {
 bool ChatServer::login(User &user) {
     std::unique_lock<std::recursive_mutex> lock(mutex_);
 
-    if (/* Вызов функции Бориса */true) {
+    if (/* Вызов функции Бориса */db_.isCorrectUser(user)) {
         /// Оповестить только друзей
 //        postChatEvent(ChatEvent(ChatEvent::Login, user));
 
@@ -88,15 +89,18 @@ Dialogue ChatServer::getDialogue(uint32_t dialogueId) const {
     return db_.getDialogue(dialogueId);
 }
 
-void ChatServer::sendMessage(const User &user, const Dialogue &dialogue, const Message &message) {
+void ChatServer::sendMessage(const User &user, Dialogue &dialogue, const Message &message) {
     std::unique_lock<std::recursive_mutex> lock(mutex_);
 
     db_.saveMessage(message);
+    dialogue.newMessage(message);
 
-//    notifyUser(ChatEvent(message)); // оповестить себя
+    notifyUser(ChatEvent(ChatEvent::NewMessage, user, DialogueInfo())); // оповестить себя
 
-    if (!dialogue.withYourself()) {
-        notifyUser(ChatEvent(ChatEvent::NewMessage, user, dialogue.getInfo(user))); // оповестить получателя
+    for (const auto &participantId : dialogue.getParticipants()) {
+        if (!dialogue.withYourself()) {
+            notifyUser(ChatEvent(ChatEvent::NewMessage, db_.getUser(participantId), dialogue.getInfo(user))); // оповестить получателя
+        }
     }
 }
 
