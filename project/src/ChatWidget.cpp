@@ -117,6 +117,9 @@ void ChatWidget::startChat() {
     userNameEdit_ = nullptr;
 
     auto dialogueNamePtr = std::make_unique<Wt::WText>(currentDialogue_.getName(user_));
+    auto userNameSearchPtr = std::make_unique<Wt::WLineEdit>();
+    auto searchButtonPtr = std::make_unique<Wt::WPushButton>("find");
+    auto snippetButtonPtr = std::make_unique<Wt::WPushButton>("</>");
     auto messagesPtr = std::make_unique<WContainerWidget>();
     auto userListPtr = std::make_unique<WContainerWidget>();
     auto messageEditPtr = std::make_unique<Wt::WTextArea>();
@@ -125,6 +128,9 @@ void ChatWidget::startChat() {
     auto logoutButtonPtr = std::make_unique<Wt::WPushButton>("Logout");
 
     dialogueName_ = dialogueNamePtr.get();
+    userNameSearch_ = userNameSearchPtr.get();
+    searchButton_ = searchButtonPtr.get();
+    snippetButton_ = snippetButtonPtr.get();
     messages_ = messagesPtr.get();
     dialogues_ = userListPtr.get();
     messageEdit_ = messageEditPtr.get();
@@ -140,8 +146,13 @@ void ChatWidget::startChat() {
     messages_->setOverflow(Wt::Overflow::Auto);
     dialogues_->setOverflow(Wt::Overflow::Auto);
 
+    settingButton->minimumHeight();
+    logoutButton->minimumHeight();
 
     createLayout(std::move(dialogueNamePtr),
+                 std::move(userNameSearchPtr),
+                 std::move(searchButtonPtr),
+                 std::move(snippetButtonPtr),
                  std::move(messagesPtr),
                  std::move(userListPtr),
                  std::move(messageEditPtr),
@@ -232,48 +243,75 @@ void ChatWidget::logout() {
     }
 }
 
-void ChatWidget::createLayout(std::unique_ptr<WWidget> dialogueName, std::unique_ptr<WWidget> messages,
-                              std::unique_ptr<WWidget> dialogueList, std::unique_ptr<WWidget> messageEdit,
-                              std::unique_ptr<WWidget> sendButton, std::unique_ptr<WWidget> settingButton,
-                              std::unique_ptr<WWidget> logoutButton) {
+void ChatWidget::createLayout(std::unique_ptr<WWidget> dialogueName, std::unique_ptr<WWidget> userNameSearch,
+                              std::unique_ptr<WWidget> searchButton, std::unique_ptr<WWidget> snippetButton,
+                              std::unique_ptr<WWidget> messages, std::unique_ptr<WWidget> dialogueList,
+                              std::unique_ptr<WWidget> messageEdit, std::unique_ptr<WWidget> sendButton,
+                              std::unique_ptr<WWidget> settingButton, std::unique_ptr<WWidget> logoutButton) {
     auto vLayout = std::make_unique<Wt::WVBoxLayout>();
 
-    // Create a horizontal layout for the messages | userslist.
     auto hLayout = std::make_unique<Wt::WHBoxLayout>();
 
-    // хз
     hLayout->setPreferredImplementation(Wt::LayoutImplementation::JavaScript);
 
-    // кнопки
-    hLayout->addWidget(std::move(dialogueName), 1);
+    /// <Шапка>
+    hLayout->addWidget(std::make_unique<Wt::WText>(Wt::WString::tr("projectName")), 1);
     hLayout->addWidget(std::move(settingButton));
     hLayout->addWidget(std::move(logoutButton));
     vLayout->addLayout(std::move(hLayout), 0);
+    /// </Шапка>
 
-    // Обновили горизонтальный слой
+    /// <Тело>
     hLayout = std::make_unique<Wt::WHBoxLayout>();
 
-    // список диалогов
+    /// <Левая часть>
+    auto vLeftLayout = std::make_unique<Wt::WVBoxLayout>();
+
+    /// <Поиск>
+    auto hSearchLayout = std::make_unique<Wt::WHBoxLayout>();
+    userNameSearch->setStyleClass("search");
+    hSearchLayout->addWidget(std::move(userNameSearch), 1);
+    hSearchLayout->addWidget(std::move(searchButton));
+    vLeftLayout->addLayout(std::move(hSearchLayout));
+    /// </Поиск>
+
+    /// <Список диалогов>
     dialogueList->setStyleClass("chat-getDialoguesView");
-    hLayout->addWidget(std::move(dialogueList));
-//    hLayout->setResizable(0, true);
+    vLeftLayout->addWidget(std::move(dialogueList), 1);
+    /// </Список диалогов>
 
-    // диалог+эдит
-    auto v2Layout = std::make_unique<Wt::WVBoxLayout>();
+    hLayout->addLayout(std::move(vLeftLayout));
+    /// </Левая часть>
+
+    /// <Правая часть>
+    auto vRightLayout = std::make_unique<Wt::WVBoxLayout>();
+
+    /// <Шапка диалога>
+    auto hRightLayout = std::make_unique<Wt::WHBoxLayout>();
+    hRightLayout->addWidget(std::move(dialogueName));
+    vRightLayout->addLayout(std::move(hRightLayout), 0);
+    /// </Шапка диалога>
+
+    /// <Сообщения>
     messages->setStyleClass("chat-msgs");
-    v2Layout->addWidget(std::move(messages), 1);
+    vRightLayout->addWidget(std::move(messages), 1);
+    /// </Сообщения>
 
-    auto hEditLayout = std::make_unique<Wt::WHBoxLayout>();
+    /// <Поле ввода>
+    hRightLayout = std::make_unique<Wt::WHBoxLayout>();
+    hRightLayout->addWidget(std::move(snippetButton));
     messageEdit->setStyleClass("chat-noedit");
-    hEditLayout->addWidget(std::move(messageEdit), 1);
-    hEditLayout->addWidget(std::move(sendButton));
-    v2Layout->addLayout(std::move(hEditLayout));
+    hRightLayout->addWidget(std::move(messageEdit), 1);
+    hRightLayout->addWidget(std::move(sendButton));
+    /// </Поле ввода>
 
-    hLayout->addLayout(std::move(v2Layout), 1);
+    vRightLayout->addLayout(std::move(hRightLayout));
+    /// </Правая часть>
 
+    hLayout->addLayout(std::move(vRightLayout), 1);
+    /// </Тело>
 
     vLayout->addLayout(std::move(hLayout), 1);
-
 
     this->setLayout(std::move(vLayout));
 }

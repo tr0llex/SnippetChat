@@ -13,8 +13,6 @@ ChatApplication::ChatApplication(const Wt::WEnvironment& env,
 
     messageResourceBundle().use(appRoot() + "resources/SnippetChat");
 
-    root()->addWidget(std::make_unique<Wt::WText>(Wt::WString::tr("introduction")));
-
     ChatWidget *chatWidget =
             root()->addWidget(std::make_unique<ChatWidget>(server_));
     chatWidget->setStyleClass("chat");

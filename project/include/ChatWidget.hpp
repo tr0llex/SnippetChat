@@ -31,6 +31,9 @@ public:
 protected:
     virtual void createLayout(
             std::unique_ptr<WWidget> dialogueName,
+            std::unique_ptr<WWidget> userNameSearch,
+            std::unique_ptr<WWidget> searchButton,
+            std::unique_ptr<WWidget> snippetButton,
             std::unique_ptr<WWidget> messages,
             std::unique_ptr<WWidget> dialogueList,
             std::unique_ptr<WWidget> messageEdit,
@@ -62,9 +65,13 @@ private:
     DialogueList   dialogueList_;
 
     Wt::WLineEdit *userNameEdit_;
+    Wt::WLineEdit *passwordEdit_;
     Wt::WText     *statusMsg_;
 
     Wt::WText                                    *dialogueName_;
+    Wt::WLineEdit                                *userNameSearch_;
+    Wt::Core::observing_ptr<Wt::WPushButton>      searchButton_;
+    Wt::Core::observing_ptr<Wt::WPushButton>      snippetButton_;
     Wt::WContainerWidget                         *messages_;
     Wt::WTextArea                                *messageEdit_;
     Wt::JSlot                                     clearInput_;

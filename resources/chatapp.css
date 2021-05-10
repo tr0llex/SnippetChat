@@ -9,6 +9,8 @@ h1 {
 
 h2, h3, h4, h5 {
   color: #505050;
+  margin-top: 4px;
+  margin-bottom: 6px;
 }
 
 h2 {
@@ -29,12 +31,9 @@ button {
 
 .chat {
   border: 2px solid #CCCCCC;
-  margin-left: auto;
-  margin-right: auto;
-  margin-top: 10px;
-  margin-bottom: 10px;
+  margin: 10px auto;
   width: 85%;
-  height: 300px;
+  height: 650px;
 }
 
 span.chat-info {
@@ -67,7 +66,7 @@ textarea.chat-noedit {
 }
 
 .chat-msgs {
-  margin: 0px 1px;
+  margin: 0 1px;
 }
 
 .chat-users {
@@ -84,6 +83,10 @@ textarea.chat-noedit {
 
 .chat-users div .chat-self {
   font-weight: bold;
+}
+
+.search {
+  width: 320px;
 }
 
 .chat-dialogue-name {
