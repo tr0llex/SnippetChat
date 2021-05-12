@@ -53,6 +53,10 @@ public:
     Message() = default;
     Message(const User &sender, uint32_t dialogueParentId, const std::wstring &messageText);
     Message(uint32_t senderId, uint32_t dialogueParentId, const std::wstring &messageText);
+    Message(const User &sender, uint32_t dialogueParentId,
+            const std::wstring &messageText, const std::wstring &codeText);
+    Message(uint32_t senderId, uint32_t dialogueParentId,
+            const std::wstring &messageText, const std::wstring &codeText);
 
     uint32_t getSenderId() const {
         return senderId_;
@@ -63,6 +67,9 @@ public:
     std::wstring getMessageText() const {
         return messageText_;
     }
+    std::wstring getCodeText() const {
+        return codeText_;
+    }
     time_t getTimeSent() const {
         return timeSent_;
     }
@@ -70,9 +77,17 @@ public:
     Wt::WString timeSent() const {
         uint64_t minutes = timeSent_ / 60;
         uint64_t hours = minutes / 60;
+
         uint8_t mm = minutes % 60;
-        uint8_t hh = 3 + hours % 24;
-        return std::to_string(hh) + ":" + std::to_string(mm);
+        uint8_t hh = (3 + hours) % 24;
+
+        Wt::WString minutesStr;
+        if (mm < 10) {
+            minutesStr += "0";
+        }
+        minutesStr += std::to_string(mm);
+
+        return std::to_string(hh) + ":" + minutesStr;
     }
 
     bool isMyMessage(const User &requester) const {

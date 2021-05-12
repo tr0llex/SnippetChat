@@ -74,11 +74,16 @@ textarea.chat-noedit {
 }
 
 .chat-msg {
+  width: fit-content;
   margin: 5px;
   border: 2px solid gray;
   background: #e0ebed;
   padding: 4px;
   border-radius: 6px;
+}
+
+.msg-right {
+  margin: 5px 5px 5px auto;
 }
 
 .chat-users div {
@@ -100,10 +105,14 @@ textarea.chat-noedit {
   width: 200px;
 }
 
-.code-msg {
-  width: 60%;
-  border: 2px solid gray;
-  background: #e0ebed;
+.text-in-msg {
+  font-size: medium;
   padding: 4px;
-  border-radius: 6px;
+}
+
+.time-in-msg {
+  font-size: small;
+  text-align: left;
+  font-weight: 100;
+  color: gray;
 }

@@ -44,7 +44,6 @@ protected:
 
     virtual void updateDialogueList();
     virtual void showNewMessage(const Message &message);
-    virtual void showNewSnippet(const Message &message);
 
     virtual void render(Wt::WFlags<Wt::RenderFlag> flags);
 

@@ -2,7 +2,7 @@
 
 CodeWidget::CodeWidget(const Message &message)
 : message_(message) {
-    setStyleClass("code-msg");
+    setWidth(500);
 
     auto programTextPtr = std::make_unique<Wt::WPanel>();
     auto runButtonPtr = std::make_unique<Wt::WPushButton>("Run");
@@ -23,7 +23,7 @@ CodeWidget::CodeWidget(const Message &message)
 
     programText_->setAnimation(animation);
     programText_->collapse();
-    programText_->setCentralWidget(Wt::cpp14::make_unique<Wt::WText>(message_.getMessageText()));
+    programText_->setCentralWidget(Wt::cpp14::make_unique<Wt::WText>(message_.getCodeText()));
 
     stdinEdit_->setRows(3);
 

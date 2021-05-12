@@ -13,7 +13,7 @@
 #include <Wt/WCheckBox.h>
 
 #include "ChatServer.hpp"
-#include "CodeWidget.hpp"
+#include "MessageWidget.hpp"
 
 #include "ChatWidget.hpp"
 
@@ -356,41 +356,17 @@ void ChatWidget::updateDialogueList() {
     }
 }
 
-static inline Wt::WString formattedMessage(const User &user, const Message& message) {
-    Wt::WString result;
-
-    result = Wt::WString("<span class='")
-             + ((message.isMyMessage(user)) ?
-                "chat-self" :
-                "chat-user")
-             + "'>" + Wt::WWebWidget::escapeText(std::to_wstring(message.getSenderId())) + ":</span>";
-
-    return result + message.getMessageText() + " " + message.timeSent();
-}
 void ChatWidget::showNewMessage(const Message &message) {
     Wt::WApplication *app = Wt::WApplication::instance();
 
-    Wt::WText *w = messages_->addWidget(std::make_unique<Wt::WText>());
-
-    Wt::AlignmentFlag alignmentFlag = (message.isMyMessage(user_)) ? Wt::AlignmentFlag::Right : Wt::AlignmentFlag::Left;
-    w->setTextAlignment(alignmentFlag);
-
-    w->setText(formattedMessage(user_, message));
+    MessageWidget *w = messages_->addWidget(std::make_unique<MessageWidget>(message));
 
     w->setInline(false);
     w->setStyleClass("chat-msg");
 
-    if (messages_->count() > 100) {
-        messages_->removeChild(messages_->children()[0]);
+    if (message.isMyMessage(user_)) {
+        w->addStyleClass("msg-right");
     }
-
-    app->doJavaScript(messages_->jsRef() + ".scrollTop += "
-                      + messages_->jsRef() + ".scrollHeight;");
-}
-void ChatWidget::showNewSnippet(const Message &message) {
-    Wt::WApplication *app = Wt::WApplication::instance();
-
-    messages_->addWidget(std::make_unique<CodeWidget>(message));
 
     if (messages_->count() > 100) {
         messages_->removeChild(messages_->children()[0]);
@@ -517,10 +493,11 @@ void ChatWidget::send() {
 
 void ChatWidget::sendSnippet() {
     if (!messageEdit_->text().empty() && !currentDialogue_.empty()) {
-        Message message(user_, currentDialogue_.getId(), messageEdit_->text());
+        std::wstring emptyMsg;
+        Message message(user_, currentDialogue_.getId(), emptyMsg, messageEdit_->text());
         server_.sendMessage(user_, currentDialogue_, message);
 
-        showNewSnippet(message);
+        showNewMessage(message);
     }
 }
 
