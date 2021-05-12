@@ -74,7 +74,11 @@ textarea.chat-noedit {
 }
 
 .chat-msg {
-  padding: 2px;
+  margin: 5px;
+  border: 2px solid gray;
+  background: #e0ebed;
+  padding: 4px;
+  border-radius: 6px;
 }
 
 .chat-users div {
@@ -85,13 +89,21 @@ textarea.chat-noedit {
   font-weight: bold;
 }
 
-.search {
-  width: 320px;
-}
-
 .chat-dialogue-name {
   color: blue;
   font-size: 20px;
   font-weight: 400;
   text-align: center;
+}
+
+.chat-search {
+  width: 200px;
+}
+
+.code-msg {
+  width: 60%;
+  border: 2px solid gray;
+  background: #e0ebed;
+  padding: 4px;
+  border-radius: 6px;
 }

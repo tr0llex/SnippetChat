@@ -13,6 +13,7 @@
 #include <Wt/WCheckBox.h>
 
 #include "ChatServer.hpp"
+#include "CodeWidget.hpp"
 
 #include "ChatWidget.hpp"
 
@@ -116,9 +117,15 @@ void ChatWidget::startChat() {
 
     userNameEdit_ = nullptr;
 
-    auto dialogueNamePtr = std::make_unique<Wt::WText>(currentDialogue_.getName(user_));
+    Wt::WString dialogueName;
+    if (!currentDialogue_.empty()) {
+        dialogueName = currentDialogue_.getName(user_);
+    }
+
+    auto dialogueNamePtr = std::make_unique<Wt::WText>(dialogueName);
     auto userNameSearchPtr = std::make_unique<Wt::WLineEdit>();
     auto searchButtonPtr = std::make_unique<Wt::WPushButton>("find");
+    auto backButtonPtr = std::make_unique<Wt::WPushButton>("back");
     auto snippetButtonPtr = std::make_unique<Wt::WPushButton>("</>");
     auto messagesPtr = std::make_unique<WContainerWidget>();
     auto userListPtr = std::make_unique<WContainerWidget>();
@@ -130,6 +137,7 @@ void ChatWidget::startChat() {
     dialogueName_ = dialogueNamePtr.get();
     userNameSearch_ = userNameSearchPtr.get();
     searchButton_ = searchButtonPtr.get();
+    backButton_ = backButtonPtr.get();
     snippetButton_ = snippetButtonPtr.get();
     messages_ = messagesPtr.get();
     dialogues_ = userListPtr.get();
@@ -146,12 +154,10 @@ void ChatWidget::startChat() {
     messages_->setOverflow(Wt::Overflow::Auto);
     dialogues_->setOverflow(Wt::Overflow::Auto);
 
-    settingButton->minimumHeight();
-    logoutButton->minimumHeight();
-
     createLayout(std::move(dialogueNamePtr),
                  std::move(userNameSearchPtr),
                  std::move(searchButtonPtr),
+                 std::move(backButtonPtr),
                  std::move(snippetButtonPtr),
                  std::move(messagesPtr),
                  std::move(userListPtr),
@@ -160,9 +166,13 @@ void ChatWidget::startChat() {
                  std::move(settingButtonPtr),
                  std::move(logoutButtonPtr));
 
-    clearInput_.setJavaScript
+    clearMessageInput_.setJavaScript
             ("function(o, e) { setTimeout(function() {"
              "" + messageEdit_->jsRef() + ".value='';"
+                                          "}, 0); }");
+    clearSearchInput_.setJavaScript
+            ("function(o, e) { setTimeout(function() {"
+             "" + userNameSearch_->jsRef() + ".value='';"
                                           "}, 0); }");
 
     Wt::WApplication::instance()->setConnectionMonitor(
@@ -179,18 +189,33 @@ void ChatWidget::startChat() {
                                       "}"
                                       "}");
 
+    searchButton_->clicked().connect(this, &ChatWidget::searchUser);
+    searchButton_->clicked().connect(clearSearchInput_);
+
+    userNameSearch_->enterPressed().connect(this, &ChatWidget::searchUser);
+    userNameSearch_->enterPressed().connect(clearSearchInput_);
+
+    backButton_->clicked().connect(this, &ChatWidget::back);
+    backButton_->clicked().connect(clearSearchInput_);
+
+
     if (sendButton_) {
         sendButton_->clicked().connect(this, &ChatWidget::send);
-        sendButton_->clicked().connect(clearInput_);
+        sendButton_->clicked().connect(clearMessageInput_);
         sendButton_->clicked().connect((WWidget *) messageEdit_,
                                        &WWidget::setFocus);
     }
     messageEdit_->enterPressed().connect(this, &ChatWidget::send);
-    messageEdit_->enterPressed().connect(clearInput_);
+    messageEdit_->enterPressed().connect(clearMessageInput_);
     messageEdit_->enterPressed().connect((WWidget *) messageEdit_,
                                          &WWidget::setFocus);
 
     messageEdit_->enterPressed().preventDefaultAction();
+
+    snippetButton_->clicked().connect(this, &ChatWidget::sendSnippet);
+    snippetButton_->clicked().connect(clearMessageInput_);
+    snippetButton_->clicked().connect((WWidget *) messageEdit_,
+                                   &WWidget::setFocus);
 
     if (settingButton) {
 //        settingButton->clicked().connect(this, &ChatWidget::changeProfile);
@@ -200,18 +225,6 @@ void ChatWidget::startChat() {
         logoutButton->clicked().connect(this, &ChatWidget::logout);
     }
 
-    /// TODO
-    auto nameEdit = std::make_unique<Wt::WInPlaceEdit>();
-    nameEdit->addStyleClass("name-edit");
-    nameEdit->setButtonsEnabled(false);
-    nameEdit->setText(user_.getUsername());
-//    nameEdit->valueChanged().connect(this, &SimpleChatWidget::changeName);
-
-    Wt::WTemplate *joinMsg = messages_->addWidget(std::make_unique<Wt::WTemplate>(tr("join-msg.template")));
-    joinMsg->bindWidget("name", std::move(nameEdit));
-    joinMsg->setStyleClass("chat-msg");
-
-    switchDialogue(*dialogueList_.begin());
     updateDialogueList();
 }
 
@@ -244,10 +257,11 @@ void ChatWidget::logout() {
 }
 
 void ChatWidget::createLayout(std::unique_ptr<WWidget> dialogueName, std::unique_ptr<WWidget> userNameSearch,
-                              std::unique_ptr<WWidget> searchButton, std::unique_ptr<WWidget> snippetButton,
-                              std::unique_ptr<WWidget> messages, std::unique_ptr<WWidget> dialogueList,
-                              std::unique_ptr<WWidget> messageEdit, std::unique_ptr<WWidget> sendButton,
-                              std::unique_ptr<WWidget> settingButton, std::unique_ptr<WWidget> logoutButton) {
+                              std::unique_ptr<WWidget> searchButton, std::unique_ptr<WWidget> backButton,
+                              std::unique_ptr<WWidget> snippetButton, std::unique_ptr<WWidget> messages,
+                              std::unique_ptr<WWidget> dialogueList, std::unique_ptr<WWidget> messageEdit,
+                              std::unique_ptr<WWidget> sendButton, std::unique_ptr<WWidget> settingButton,
+                              std::unique_ptr<WWidget> logoutButton) {
     auto vLayout = std::make_unique<Wt::WVBoxLayout>();
 
     auto hLayout = std::make_unique<Wt::WHBoxLayout>();
@@ -269,9 +283,10 @@ void ChatWidget::createLayout(std::unique_ptr<WWidget> dialogueName, std::unique
 
     /// <Поиск>
     auto hSearchLayout = std::make_unique<Wt::WHBoxLayout>();
-    userNameSearch->setStyleClass("search");
+    userNameSearch->setStyleClass("chat-search");
     hSearchLayout->addWidget(std::move(userNameSearch), 1);
     hSearchLayout->addWidget(std::move(searchButton));
+    hSearchLayout->addWidget(std::move(backButton));
     vLeftLayout->addLayout(std::move(hSearchLayout));
     /// </Поиск>
 
@@ -280,7 +295,7 @@ void ChatWidget::createLayout(std::unique_ptr<WWidget> dialogueName, std::unique
     vLeftLayout->addWidget(std::move(dialogueList), 1);
     /// </Список диалогов>
 
-    hLayout->addLayout(std::move(vLeftLayout));
+    hLayout->addLayout(std::move(vLeftLayout), 0);
     /// </Левая часть>
 
     /// <Правая часть>
@@ -357,10 +372,25 @@ void ChatWidget::showNewMessage(const Message &message) {
 
     Wt::WText *w = messages_->addWidget(std::make_unique<Wt::WText>());
 
+    Wt::AlignmentFlag alignmentFlag = (message.isMyMessage(user_)) ? Wt::AlignmentFlag::Right : Wt::AlignmentFlag::Left;
+    w->setTextAlignment(alignmentFlag);
+
     w->setText(formattedMessage(user_, message));
 
     w->setInline(false);
     w->setStyleClass("chat-msg");
+
+    if (messages_->count() > 100) {
+        messages_->removeChild(messages_->children()[0]);
+    }
+
+    app->doJavaScript(messages_->jsRef() + ".scrollTop += "
+                      + messages_->jsRef() + ".scrollHeight;");
+}
+void ChatWidget::showNewSnippet(const Message &message) {
+    Wt::WApplication *app = Wt::WApplication::instance();
+
+    messages_->addWidget(std::make_unique<CodeWidget>(message));
 
     if (messages_->count() > 100) {
         messages_->removeChild(messages_->children()[0]);
@@ -434,12 +464,63 @@ void ChatWidget::login() {
     }
 }
 
+void ChatWidget::searchUser() {
+    if (!userNameSearch_->text().empty()) {
+        User findUser(userNameSearch_->text());
+
+        dialogues_->clear();
+
+        foundUsers_ = server_.getUsersByUserName(findUser);
+
+        for (const auto& foundUser : foundUsers_) {
+            Wt::WText *w = dialogues_->addWidget(std::make_unique<Wt::WText>(escapeText(foundUser.getUsername())));
+            w->setStyleClass("reactive");
+
+            w->setInline(false);
+
+            w->clicked().connect([&] {
+                for (const auto &dialogue : dialogueList_) {
+                    if (dialogue.getName() == foundUser.getUsername()) {
+                        switchDialogue(dialogue);
+                        updateDialogueList();
+                        return;
+                    }
+                }
+
+                DialogueInfo dialogueInfo = server_.createDialogue(user_, foundUser);
+
+                dialogueList_.insert(dialogueInfo);
+
+                updateDialogueList();
+            });
+
+            if (user_ == foundUser) {
+                w->setStyleClass("chat-self");
+            }
+        }
+    }
+}
+
+void ChatWidget::back() {
+/// TODO
+    updateDialogueList();
+}
+
 void ChatWidget::send() {
-    if (!messageEdit_->text().empty()) {
+    if (!messageEdit_->text().empty() && !currentDialogue_.empty()) {
         Message message(user_, currentDialogue_.getId(), messageEdit_->text());
         server_.sendMessage(user_, currentDialogue_, message);
 
         showNewMessage(message);
+    }
+}
+
+void ChatWidget::sendSnippet() {
+    if (!messageEdit_->text().empty() && !currentDialogue_.empty()) {
+        Message message(user_, currentDialogue_.getId(), messageEdit_->text());
+        server_.sendMessage(user_, currentDialogue_, message);
+
+        showNewSnippet(message);
     }
 }
 
@@ -462,17 +543,22 @@ void ChatWidget::processChatEvent(const ChatEvent &event) {
             break;
         }
         case ChatEvent::NewDialogue: {
+            dialogueList_.insert(event.dialogue());
             updateDialogueList();
+
+            if (soundMessageReceived_) {
+                soundMessageReceived_->play();
+            }
             break;
         }
         case ChatEvent::NewMessage: {
             if (event.getSenderId() != user_.getId()) {
                 if (currentDialogue_ == event.dialogue()) {
                     showNewMessage(event.dialogue().getMessage());
+                }
 
-                    if (soundMessageReceived_) {
-                        soundMessageReceived_->play();
-                    }
+                if (soundMessageReceived_) {
+                    soundMessageReceived_->play();
                 }
             } else {
                 // заебись сообщение отправлено

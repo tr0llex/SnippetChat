@@ -10,7 +10,6 @@
 class ChatEvent {
 public:
     enum Type {
-        SignUp, /// TODO потом удалить
         Login,
         Logout,
         UpdateProfile,

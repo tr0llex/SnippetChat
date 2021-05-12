@@ -32,6 +32,9 @@ public:
     DialogueList getDialogueList(const User &user) const;
     Dialogue getDialogue(uint32_t dialogueId) const;
 
+    std::vector<User> getUsersByUserName(const User &findUser) const;
+    DialogueInfo createDialogue(const User &user, const User &otherUser);
+
     void sendMessage(const User &user, Dialogue &dialogue, const Message &message);
 
 private:

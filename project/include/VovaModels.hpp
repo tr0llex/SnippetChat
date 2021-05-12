@@ -1,6 +1,7 @@
 #ifndef SNIPPETCHAT_VOVAMODELS_HPP
 #define SNIPPETCHAT_VOVAMODELS_HPP
 
+#include <Wt/WString.h>
 
 #include <set>
 #include <vector>
@@ -66,18 +67,26 @@ public:
         return timeSent_;
     }
 
-    std::wstring timeSent() const {
-        return std::to_wstring(timeSent_);
+    Wt::WString timeSent() const {
+        uint64_t minutes = timeSent_ / 60;
+        uint64_t hours = minutes / 60;
+        uint8_t mm = minutes % 60;
+        uint8_t hh = 3 + hours % 24;
+        return std::to_string(hh) + ":" + std::to_string(mm);
     }
 
     bool isMyMessage(const User &requester) const {
         return senderId_ == requester.getId();
+    }
+    bool isCode() const {
+        return !codeText_.empty();
     }
 
 private:
     uint32_t senderId_;
     uint32_t dialogueParentId_;
     std::wstring messageText_;
+    std::wstring codeText_;
     time_t timeSent_;
 };
 
@@ -85,15 +94,26 @@ private:
 class DialogueInfo {
 public:
     DialogueInfo() = default;
-    DialogueInfo(const std::wstring &name, const Message &message) : dialogueName_(name), numberOfUnread_(0), lastMessage_(message) {}
+    DialogueInfo(uint32_t dialogueId, const std::wstring &name)
+    : dialogueId_(dialogueId),
+      dialogueName_(name),
+      numberOfUnread_(0),
+      noMessages_(true) {}
+    DialogueInfo(const std::wstring &name, const Message &message)
+    : dialogueId_(message.getDialogueId()),
+      dialogueName_(name),
+      numberOfUnread_(0),
+      noMessages_(false),
+      lastMessage_(message) {}
 
     void newMessage(const Message &message) {
         lastMessage_ = message;
+        noMessages_ = false;
         numberOfUnread_++;
     }
 
     uint32_t getId() const {
-        return lastMessage_.getDialogueId();
+        return dialogueId_;
     }
     const std::wstring& getName() const {
         return dialogueName_;
@@ -104,10 +124,15 @@ public:
     bool withYourself(const User &requester) const {
         return dialogueName_ == requester.getUsername();
     }
+    bool isNoMessage() const {
+        return noMessages_;
+    }
 
 private:
+    uint32_t dialogueId_;
     std::wstring dialogueName_;
     uint16_t numberOfUnread_;
+    bool noMessages_;
     Message lastMessage_;
 };
 struct ComparatorDialogueInfo {
@@ -121,11 +146,15 @@ typedef std::multiset<DialogueInfo, ComparatorDialogueInfo> DialogueList;
 class Dialogue {
 public:
     Dialogue() : dialogueId_(0) {}
+    Dialogue(uint32_t dialogueId, const User &user)
+            : dialogueId_(dialogueId) {
+        names.push_back(user.getUsername());
+        participantsList_.push_back(user.getId());
+    }
     Dialogue(uint32_t dialogueId, const User &firstUser, const User &secondUser)
-    : dialogueId_(dialogueId) {
+            : dialogueId_(dialogueId) {
         names.push_back(firstUser.getUsername());
         participantsList_.push_back(firstUser.getId());
-        dialogueMessageList_.emplace_back(0, dialogueId_, std::wstring());
 
         if (firstUser != secondUser) {
             names.push_back(secondUser.getUsername());
@@ -162,6 +191,11 @@ public:
         }
 
         std::wstring name = getName(requester);
+
+        if (dialogueMessageList_.empty()) {
+            return DialogueInfo(dialogueId_, name);
+        }
+
         Message message = dialogueMessageList_.back();
 
         return DialogueInfo(name, message);
@@ -182,6 +216,9 @@ public:
 
     bool withYourself() const {
         return participantsList_.size() == 1;
+    }
+    bool empty() const {
+        return participantsList_.empty();
     }
 
     bool operator==(const Dialogue &dialogue) const {
@@ -261,18 +298,31 @@ public:
 
         return true;
     }
-    bool newDialogue(const User &firstUser, const User &secondUser) {
-        Dialogue dialogue(dialogues_.size(), firstUser, secondUser);
+    DialogueInfo newDialogue(const User &user) {
+        Dialogue dialogue(dialogues_.size(), user);
 
         for (const auto &curDialogue : dialogues_) {
             if (dialogue == curDialogue) {
-                return false;
+                return curDialogue.getInfo(user);
             }
         }
 
         dialogues_.push_back(dialogue);
 
-        return true;
+        return DialogueInfo(dialogue.getId(), dialogue.getName(user));
+    }
+    DialogueInfo newDialogue(const User &user, const User &otherUser) {
+        Dialogue dialogue(dialogues_.size(), user, otherUser);
+
+        for (const auto &curDialogue : dialogues_) {
+            if (dialogue == curDialogue) {
+                return curDialogue.getInfo(user);
+            }
+        }
+
+        dialogues_.push_back(dialogue);
+
+        return DialogueInfo(dialogue.getId(), dialogue.getName(user));
     }
 
     DialogueList getDialogueList(const User &user) const {
@@ -294,6 +344,21 @@ public:
         }
 
         return Dialogue();
+    }
+
+    std::vector<User> getUsersByUserName(const User &findUser) const {
+        std::vector<User> users;
+
+        for (const auto &user : users_) {
+            std::wstring curName = user.getUsername();
+            std::wstring findName = findUser.getUsername();
+
+            if (curName.find(findName) != std::wstring::npos) {
+                users.push_back(user);
+            }
+        }
+
+        return users;
     }
 
     void saveMessage(const Message &message) {

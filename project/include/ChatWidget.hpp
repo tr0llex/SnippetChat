@@ -33,6 +33,7 @@ protected:
             std::unique_ptr<WWidget> dialogueName,
             std::unique_ptr<WWidget> userNameSearch,
             std::unique_ptr<WWidget> searchButton,
+            std::unique_ptr<WWidget> backButton,
             std::unique_ptr<WWidget> snippetButton,
             std::unique_ptr<WWidget> messages,
             std::unique_ptr<WWidget> dialogueList,
@@ -43,6 +44,7 @@ protected:
 
     virtual void updateDialogueList();
     virtual void showNewMessage(const Message &message);
+    virtual void showNewSnippet(const Message &message);
 
     virtual void render(Wt::WFlags<Wt::RenderFlag> flags);
 
@@ -52,7 +54,10 @@ protected:
 private:
     void signUp();
     void login();
+    void searchUser();
+    void back();
     void send();
+    void sendSnippet();
 
     void processChatEvent(const ChatEvent& event);
 
@@ -63,6 +68,7 @@ private:
     User           user_;
     Dialogue       currentDialogue_;
     DialogueList   dialogueList_;
+    std::vector<User> foundUsers_;
 
     Wt::WLineEdit *userNameEdit_;
     Wt::WLineEdit *passwordEdit_;
@@ -71,10 +77,12 @@ private:
     Wt::WText                                    *dialogueName_;
     Wt::WLineEdit                                *userNameSearch_;
     Wt::Core::observing_ptr<Wt::WPushButton>      searchButton_;
+    Wt::Core::observing_ptr<Wt::WPushButton>      backButton_;
     Wt::Core::observing_ptr<Wt::WPushButton>      snippetButton_;
     Wt::WContainerWidget                         *messages_;
     Wt::WTextArea                                *messageEdit_;
-    Wt::JSlot                                     clearInput_;
+    Wt::JSlot                                     clearMessageInput_;
+    Wt::JSlot                                     clearSearchInput_;
     Wt::Core::observing_ptr<Wt::WPushButton>      sendButton_;
     Wt::Core::observing_ptr<Wt::WContainerWidget> dialogues_;
 

@@ -34,14 +34,8 @@ bool ChatServer::signUp(User &user) {
     std::unique_lock<std::recursive_mutex> lock(mutex_);
 
     if (db_.addNewUser(user)) {
-
-        /// TODO
         /// Создавать диалог только с самими собой, оповещать никого не надо
-        for (const auto &curUser : db_.getUsers()) {
-            db_.newDialogue(user, curUser);
-            DialogueInfo dialogueInfo;
-            notifyUser(ChatEvent(ChatEvent::NewDialogue, curUser, dialogueInfo));
-        }
+        db_.newDialogue(user);
 
         return true;
     }
@@ -87,6 +81,21 @@ DialogueList ChatServer::getDialogueList(const User &user) const {
 
 Dialogue ChatServer::getDialogue(uint32_t dialogueId) const {
     return db_.getDialogue(dialogueId);
+}
+
+std::vector<User> ChatServer::getUsersByUserName(const User &findUser) const {
+    return db_.getUsersByUserName(findUser);
+}
+
+DialogueInfo ChatServer::createDialogue(const User &user, const User &otherUser) {
+    std::unique_lock<std::recursive_mutex> lock(mutex_);
+
+    DialogueInfo dialogueInfo = db_.newDialogue(user, otherUser);
+
+    DialogueInfo dialogueInfoOther(dialogueInfo.getId(), user.getUsername());
+    notifyUser(ChatEvent(ChatEvent::NewDialogue, otherUser, dialogueInfoOther));
+
+    return dialogueInfo;
 }
 
 void ChatServer::sendMessage(const User &user, Dialogue &dialogue, const Message &message) {

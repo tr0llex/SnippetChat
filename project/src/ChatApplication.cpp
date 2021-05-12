@@ -1,6 +1,3 @@
-#include <Wt/WPushButton.h>
-#include <Wt/WText.h>
-
 #include "ChatApplication.hpp"
 
 ChatApplication::ChatApplication(const Wt::WEnvironment& env,
