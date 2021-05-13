@@ -12,13 +12,12 @@ class MainDb : public IMainDb {
         ~MainDb();
 
         User* searchUserLogin(std::string login, std::string password) override;
-        void writeUser (User& user) override;
-        int updateUser (User& user) override;
+        void writeUser(User& user) override;
+        int updateUser(User& user) override;
 
-        std::string getCodeFromMessage(uint32_t messageId) override;
-        void writeMessageToDialogue(Message message) override;
-        std::vector <Message>* getNMessagesFromDialogue(uint32_t dialogueId, uint32_t senderId, 
-                                                        uint32_t receiverId, long count) override;
+        std::string getCodeFromMessage(std::string messageId) override;
+        void writeMessage(Message& message) override;
+        std::vector <Message>* getNMessagesFromDialogue(std::string dialogueId, long count) override;
 
         std::vector <Dialogue>* getDialoguessByUserId(int userId) override;
         uint32_t createDialogue(uint32_t senderId, uint32_t receiverId) override;  // return dialogId

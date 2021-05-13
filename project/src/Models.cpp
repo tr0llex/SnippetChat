@@ -85,15 +85,15 @@ bool LoginData::operator==(const LoginData &ldt1) const {
     return false;
 }
 
-uint32_t Message::getMessageId() const {
+std::string Message::getMessageId() const {
     return messageId_;
 }
 
-uint32_t Message::getDialogueParentId() const {
+std::string Message::getDialogueParentId() const {
     return dialogueParentId_;
 }
 
-uint32_t Message::getSenderId() const {
+std::string Message::getSenderId() const {
     return senderId_;
 }
 
@@ -107,6 +107,10 @@ std::string Message::getMessageCode() {
 
 time_t Message::getTimeSent() const {
     return timeSent_;
+}
+
+bool Message::isRead() {
+    return isRead_;
 }
 
 std::vector<Message> Dialogue::getDialogueMessageList() {

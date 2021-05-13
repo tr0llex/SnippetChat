@@ -91,19 +91,20 @@ private:
 
 class Message {
 public:
-    Message(uint32_t messageId, uint32_t dialogueParentId, uint32_t senderId,
-            std::string messageText, std::string messageCode, time_t timeSent) :
+    Message(std::string messageId, std::string dialogueParentId, std::string senderId,
+            std::string messageText, std::string messageCode, time_t timeSent, bool isRead) :
             messageId_(messageId), dialogueParentId_(dialogueParentId), senderId_(senderId),
-            messageText_(std::move(messageText)), messageCode_(std::move(messageCode)), timeSent_(timeSent) {
+            messageText_(std::move(messageText)), messageCode_(std::move(messageCode)), 
+            timeSent_(timeSent), isRead_(isRead) {
     }
 
     ~Message() = default;
 
-    uint32_t getMessageId() const;
+    std::string getMessageId() const;
 
-    uint32_t getDialogueParentId() const;
+    std::string getDialogueParentId() const;
 
-    uint32_t getSenderId() const;
+    std::string getSenderId() const;
 
     std::string getMessageText();
 
@@ -111,13 +112,16 @@ public:
 
     time_t getTimeSent() const;
 
+    bool isRead();
+
 private:
-    uint32_t messageId_;
-    uint32_t dialogueParentId_;
-    uint32_t senderId_;
+    std::string messageId_;
+    std::string dialogueParentId_;
+    std::string senderId_;
     std::string messageText_;
     std::string messageCode_;
     time_t timeSent_;
+    bool isRead_;
 };
 
 class Dialogue {

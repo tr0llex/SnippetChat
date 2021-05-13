@@ -12,10 +12,9 @@ class IMainDb {
         virtual void writeUser (User& user) = 0;
         virtual int updateUser (User& user) = 0;
 
-        virtual std::string getCodeFromMessage(uint32_t messageId) = 0;
-        virtual void writeMessageToDialogue(Message message) = 0;
-        virtual std::vector <Message>* getNMessagesFromDialogue(uint32_t dialogueId, uint32_t senderId, 
-                                                                uint32_t receiverId, long count) = 0;
+        virtual std::string getCodeFromMessage(std::string messageId) = 0;
+        virtual void writeMessage(Message& message) = 0;
+        virtual std::vector <Message>* getNMessagesFromDialogue(std::string dialogueId, long count) = 0;
 
         virtual std::vector <Dialogue>* getDialoguessByUserId(int userId) = 0;
         virtual uint32_t createDialogue(uint32_t senderId, uint32_t receiverId) = 0;  // return dialogId
