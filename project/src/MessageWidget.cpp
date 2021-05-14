@@ -1,10 +1,10 @@
 #include "MessageWidget.hpp"
 
-MessageWidget::MessageWidget(const Message &message)
-        : message_(message), code_(nullptr) {
+MessageWidget::MessageWidget(ChatServer& server, const Message &message)
+        : server_(server), message_(message), code_(nullptr) {
     auto textPtr = std::make_unique<Wt::WText>(message.getMessageText());
     auto timePtr = std::make_unique<Wt::WText>(message.timeSent());
-    auto codePtr = (message.isCode()) ? std::make_unique<CodeWidget>(message) : nullptr;
+    auto codePtr = (message.isCode()) ? std::make_unique<CodeWidget>(server_, message) : nullptr;
 
     text_ = textPtr.get();
     time_ = timePtr.get();

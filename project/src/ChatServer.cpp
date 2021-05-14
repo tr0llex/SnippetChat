@@ -93,24 +93,43 @@ DialogueInfo ChatServer::createDialogue(const User &user, const User &otherUser)
     DialogueInfo dialogueInfo = db_.newDialogue(user, otherUser);
 
     DialogueInfo dialogueInfoOther(dialogueInfo.getId(), user.getUsername());
-    notifyUser(ChatEvent(ChatEvent::NewDialogue, otherUser, dialogueInfoOther));
+    notifyUser(ChatEvent(ChatEvent::NewDialogue, otherUser.getId(), dialogueInfoOther));
 
     return dialogueInfo;
 }
 
-void ChatServer::sendMessage(const User &user, Dialogue &dialogue, const Message &message) {
+void ChatServer::sendMessage(const User &user, Dialogue &dialogue, Message &message) {
     std::unique_lock<std::recursive_mutex> lock(mutex_);
 
     db_.saveMessage(message);
     dialogue.newMessage(message);
 
-    notifyUser(ChatEvent(ChatEvent::NewMessage, user, DialogueInfo())); // оповестить себя
+    notifyUser(ChatEvent(ChatEvent::NewMessage, user.getId(), DialogueInfo())); // оповестить себя
 
     for (const auto &participantId : dialogue.getParticipants()) {
         if (!dialogue.withYourself()) {
-            notifyUser(ChatEvent(ChatEvent::NewMessage, db_.getUser(participantId), dialogue.getInfo(user))); // оповестить получателя
+            notifyUser(ChatEvent(ChatEvent::NewMessage, participantId, dialogue.getInfo(user))); // оповестить получателя
         }
     }
+}
+
+#include "unistd.h"
+
+/*void handlerCompilation(std::list<Wt::WString> &resultList, const User &user, const Message &message, const std::wstring &stdIn) {
+    sleep(5);
+    const std::wstring& stdOut = stdIn;
+
+    /// TODO
+    DialogueInfo dialogueInfo(user.getUsername(), message);
+
+    ChatEvent event(ChatEvent::CompilationCode, user.getId(), dialogueInfo, stdOut);
+
+    auto callback = std::bind(client.eventCallback, event);
+    server.post(client.sessionId, callback);
+}*/
+void ChatServer::runCompilation(const User &user, const Message &message, const std::wstring &stdIn) {
+//    std::thread compile(handlerCompilation, resultList_, user, message, stdIn);
+//    compile.detach();
 }
 
 void ChatServer::postChatEvent(const ChatEvent &event) {
@@ -133,7 +152,7 @@ void ChatServer::notifyUser(const ChatEvent& event) {
     std::unique_lock<std::recursive_mutex> lock(mutex_);
 
     for (const auto &i : clients_) {
-        if (i.second.userId == event.user_.getId()) {
+        if (i.second.userId == event.userId_) {
             auto callback = std::bind(i.second.eventCallback, event);
             server_.post(i.second.sessionId, callback);
             return;

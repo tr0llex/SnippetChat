@@ -359,7 +359,7 @@ void ChatWidget::updateDialogueList() {
 void ChatWidget::showNewMessage(const Message &message) {
     Wt::WApplication *app = Wt::WApplication::instance();
 
-    MessageWidget *w = messages_->addWidget(std::make_unique<MessageWidget>(message));
+    MessageWidget *w = messages_->addWidget(std::make_unique<MessageWidget>(server_, message));
 
     w->setInline(false);
     w->setStyleClass("chat-msg");
@@ -543,7 +543,13 @@ void ChatWidget::processChatEvent(const ChatEvent &event) {
 
             break;
         }
-        case ChatEvent::RunCode: {
+        case ChatEvent::CompilationCode: {
+            for (int i = 0; i < messages_->count(); ++i) {
+                auto messageWidget = dynamic_cast<MessageWidget*>(messages_->widget(i));
+                if (messageWidget.) {
+
+                }
+            }
             break;
         }
         default:

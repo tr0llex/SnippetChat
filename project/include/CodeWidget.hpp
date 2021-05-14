@@ -12,11 +12,14 @@
 #include <Wt/WTextArea.h>
 
 #include "VovaModels.hpp"
+#include "ChatServer.hpp"
 
 
 class CodeWidget : public Wt::WContainerWidget {
 public:
-    explicit CodeWidget(const Message &message);
+    CodeWidget(ChatServer& server, User &user, const Message &message);
+
+    void setResultCompilation(const Wt::WString &result);
 
 protected:
     void createLayout(
@@ -29,6 +32,9 @@ private:
     void runCode();
 
 private:
+    ChatServer    &server_;
+    User          &user_;
+
     Message    message_;
 
     Wt::WPanel                               *programText_;

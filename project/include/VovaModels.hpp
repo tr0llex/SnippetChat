@@ -58,6 +58,12 @@ public:
     Message(uint32_t senderId, uint32_t dialogueParentId,
             const std::wstring &messageText, const std::wstring &codeText);
 
+    void setId(uint32_t id) {
+        id_ = id;
+    }
+    uint32_t getId() const {
+        return id_;
+    }
     uint32_t getSenderId() const {
         return senderId_;
     }
@@ -98,6 +104,7 @@ public:
     }
 
 private:
+    uint32_t id_;
     uint32_t senderId_;
     uint32_t dialogueParentId_;
     std::wstring messageText_;
@@ -225,7 +232,8 @@ public:
         return requester.getUsername();
     }
 
-    void newMessage(const Message &message) {
+    void newMessage(Message &message) {
+        message.setId(dialogueMessageList_.size());
         dialogueMessageList_.emplace_back(message);
     }
 
@@ -376,7 +384,7 @@ public:
         return users;
     }
 
-    void saveMessage(const Message &message) {
+    void saveMessage(Message &message) {
         int i = findDialogue(message);
         if (i == -1) {
             return;

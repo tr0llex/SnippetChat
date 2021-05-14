@@ -15,30 +15,32 @@ public:
         UpdateProfile,
         NewDialogue,
         NewMessage,
-        RunCode, /// пока не понятно
+        CompilationCode, /// пока не понятно
     };
 
     Type type() const { return type_; }
-    const User& user() const { return user_; }
+    uint32_t userId() const { return userId_; }
     const DialogueInfo& dialogue() const { return dialogueInfo_; }
+    const Wt::WString& resultCompilation() const { return resultCompilation_; }
 
     uint32_t getSenderId() const {
         return dialogueInfo_.getMessage().getSenderId();
     }
 
-    const Wt::WString formattedHTML(const User &user,
-                                    Wt::TextFormat format) const;
-
 private:
-    ChatEvent(Type type, const User& user, const DialogueInfo& dialogueInfo)
-            : type_(type), user_(user), dialogueInfo_(dialogueInfo) {}
+    ChatEvent(Type type, uint32_t userId, const DialogueInfo& dialogueInfo)
+            : type_(type), userId_(userId), dialogueInfo_(dialogueInfo) {}
+
+    ChatEvent(Type type, uint32_t userId, const DialogueInfo& dialogueInfo, const Wt::WString &resultCompilation)
+            : type_(type), userId_(userId), dialogueInfo_(dialogueInfo), resultCompilation_(resultCompilation) {}
 
     friend class ChatServer;
 
 private:
     Type         type_;
-    User         user_;
+    uint32_t     userId_;
     DialogueInfo dialogueInfo_;
+    Wt::WString  resultCompilation_;
 };
 
 typedef std::function<void (const ChatEvent&)> ChatEventCallback;

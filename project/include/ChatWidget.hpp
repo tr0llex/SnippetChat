@@ -68,6 +68,7 @@ private:
     Dialogue       currentDialogue_;
     DialogueList   dialogueList_;
     std::vector<User> foundUsers_;
+    int            runCodeIndex_;
 
     Wt::WLineEdit *userNameEdit_;
     Wt::WLineEdit *passwordEdit_;

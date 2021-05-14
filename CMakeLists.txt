@@ -13,8 +13,8 @@ add_subdirectory(${CMAKE_BINARY_DIR}/googletest-src
 
 enable_testing()
 
-set(CMAKE_C_FLAGS "-pedantic -fprofile-arcs -ftest-coverage -Wall -Werror -Wpedantic")
-set(CMAKE_CXX_FLAGS "-pedantic -fprofile-arcs -ftest-coverage -Wall -Werror -Wpedantic")
+set(CMAKE_C_FLAGS "-pthread -pedantic -fprofile-arcs -ftest-coverage -Wall -Werror -Wpedantic")
+set(CMAKE_CXX_FLAGS "-pthread -pedantic -fprofile-arcs -ftest-coverage -Wall -Werror -Wpedantic")
 set(CMAKE_CXX_STANDARD 14)
 
 find_package(Wt REQUIRED)

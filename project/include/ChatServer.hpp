@@ -35,7 +35,9 @@ public:
     std::vector<User> getUsersByUserName(const User &findUser) const;
     DialogueInfo createDialogue(const User &user, const User &otherUser);
 
-    void sendMessage(const User &user, Dialogue &dialogue, const Message &message);
+    void sendMessage(const User &user, Dialogue &dialogue, Message &message);
+
+    void runCompilation(const User &user, const Message &message, const std::wstring &stdIn);
 
 private:
     void postChatEvent(const ChatEvent& event);
@@ -53,6 +55,8 @@ private:
     std::recursive_mutex    mutex_;
     ClientMap               clients_;
     DB                      db_;
+
+//    std::list<Wt::WString> resultList_;
 };
 
 
