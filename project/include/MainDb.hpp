@@ -6,23 +6,27 @@
 #include "IMainDb.hpp"
 #include "Models.hpp"
 
+// getAllMessagesFromDialogue with PAGINATION
+// updateMessageIsRead, messageText, messageCode
 class MainDb : public IMainDb {
     public:
         MainDb();
         ~MainDb();
 
         User* searchUserLogin(std::string login, std::string password) override;
-        void writeUser(User& user) override;
-        int updateUser(User& user) override;
+        void writeUser(const User& user) override;
+        void changePassword(const User& user) override;
 
         std::string getCodeFromMessage(std::string messageId) override;
         void writeMessage(Message& message) override; // проставить айдишник если не проставлен
-        std::vector <Message>* getNMessagesFromDialogue(std::string dialogueId, long count) override;
-        DialogueList& getLastNDialoguesWithLastMessage(User user, long count) override;
+        std::vector<Message> getNLastMessagesFromDialogue(std::string dialogueId, long count) override;
+        DialogueList getLastNDialoguesWithLastMessage(User user, long count) override;
+        std::vector<std::string> getParticipantsLoginsFromDialogue(std::string dialogueId) override;
 
-        std::vector <std::string>* getDialogueListByLogin(std::string login) override;
+        std::vector<std::string> getAllDialoguesIdByLogin(std::string login) override;
+        std::vector<std::string> getLastNDialoguesIdByLogin(std::string login, long count) override;
         Dialogue createDialogue(std::string firstId, std::string secondId) override;
-        // std::string createDialogue(std::string senderId, std::string receiverId, std::string dialogueName) override; with yourself
+
         void deleteMessage(Message& message) override;
         void deleteDialogue(Dialogue& dialogue) override;
 

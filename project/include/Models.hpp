@@ -7,19 +7,13 @@
 #include <vector>
 #include <ctime>
 
-struct ComparatorDialogue {
-    bool operator()(const Dialogue &lhs, const Dialogue &rhs) {
-        // return lhs.getMessage().getTimeSent() > rhs.getMessage().getTimeSent();
-    }
-};
-typedef std::multiset<Dialogue, ComparatorDialogue> DialogueList;
 
 class User {
 private:
     std::string userLogin_;
     std::string userPassword_;
     std::string userToken_;
-    std::vector<std::string> dialoguesList_;
+    std::vector<std::string> dialoguesList_;  // do we need this??????
     int userStatus_;
 
 public:
@@ -27,6 +21,12 @@ public:
 
     User(std::string userLogin, std::string userPassword,
          std::string userToken, std::vector<std::string> dialoguesList_, int userStatus) :
+            userLogin_(std::move(userLogin)), userPassword_(std::move(userPassword)),
+            userToken_(std::move(userToken)), userStatus_(userStatus) {
+    }
+
+    User(std::string userLogin, std::string userPassword,
+         std::string userToken, int userStatus) :
             userLogin_(std::move(userLogin)), userPassword_(std::move(userPassword)),
             userToken_(std::move(userToken)), userStatus_(userStatus) {
     }
@@ -121,14 +121,16 @@ private:
 
 class Dialogue {
 public:
-    Dialogue(std::string dialogueId, std::string dialogueName,
+    Dialogue(std::string dialogueId,
             std::vector<std::string> participantsList,
             std::vector<Message> dialogueMessageList) :
-            dialogueId_(dialogueId), dialogueName_(dialogueName),
+            dialogueId_(dialogueId),
             dialogueMessageList_(dialogueMessageList) {
     }
 
     ~Dialogue() = default;
+
+    Message getLastMessage() const;
 
     std::vector<std::string> getParticipantsList();
 
@@ -144,7 +146,6 @@ public:
 
 private:
     std::string dialogueId_;
-    std::string dialogueName_;
     std::vector<Message> dialogueMessageList_;
     std::vector<std::string> participantsList_;
 };
@@ -248,5 +249,13 @@ private:
     std::string executionUsedMemory_;
     std::string executionTime_;
 };
+
+struct ComparatorDialogue {
+    bool operator()(const Dialogue &lhs, const Dialogue &rhs) {
+        return lhs.getLastMessage().getTimeSent() > rhs.getLastMessage().getTimeSent();
+    }
+};
+
+typedef std::multiset<Dialogue, ComparatorDialogue> DialogueList;
 
 #endif  // PROJECT_INCLUDE_MODELS_HPP_

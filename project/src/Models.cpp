@@ -12,6 +12,10 @@ std::string User::getToken() const {
     return userToken_;
 }
 
+Message Dialogue::getLastMessage() const {
+    return *dialogueMessageList_.begin();
+}
+
 int User::getStatus() const {
     return userStatus_;
 }
@@ -121,7 +125,7 @@ std::string Dialogue::getName(User& user) const {
 
 
 void Dialogue::pushNewMessage(const Message &newMessage) {
-    dialogueMessageList_.push_back(newMessage);
+    dialogueMessageList_.insert(dialogueMessageList_.begin(), newMessage);
 }
 
 void Dialogue::pushNewParticipant(std::string newParticipantId) {
