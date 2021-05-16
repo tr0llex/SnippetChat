@@ -3,204 +3,152 @@
 #define PROJECT_INCLUDE_MODELS_HPP_
 
 #include <string>
+#include <set>
 #include <utility>
 #include <vector>
 #include <ctime>
 
+
 class User {
 private:
-    uint32_t userId_;
-    std::wstring userLogin_;
-    std::wstring userPassword_;
-    std::vector<uint32_t> userDialogueList_;
-    std::wstring userToken_;
+    std::string userLogin_;
+    std::string userPassword_;
+    std::string userToken_;
+    std::vector<std::string> dialoguesList_;  // do we need this??????
     int userStatus_;
 
 public:
-    User() = default;
-
     ~User() = default;
 
-    User(uint32_t userId, std::wstring userLogin, std::wstring userPassword,
-         std::vector<uint32_t> dialogueList,
-         std::wstring userToken, int userStatus) :
+    User(std::string userLogin, std::string userPassword,
+         std::string userToken, std::vector<std::string> dialoguesList_, int userStatus) :
             userLogin_(std::move(userLogin)), userPassword_(std::move(userPassword)),
-            userDialogueList_(std::move(dialogueList)), userToken_(std::move(userToken)) {
-        setUserId(userId);
-        setStatus(userStatus);
+            userToken_(std::move(userToken)), userStatus_(userStatus) {
     }
 
-    uint32_t getUserId() const {
-        return userId_;
+    User(std::string userLogin, std::string userPassword,
+         std::string userToken, int userStatus) :
+            userLogin_(std::move(userLogin)), userPassword_(std::move(userPassword)),
+            userToken_(std::move(userToken)), userStatus_(userStatus) {
     }
 
-    std::wstring getLogin() {
-        return userLogin_;
-    }
 
-    std::wstring getPassword() {
-        return userPassword_;
-    }
+    std::string getLogin() const;
 
-    std::vector<uint32_t> getDialogues() {
-        return userDialogueList_;
-    }
+    std::string getPassword() const;
 
-    std::wstring getToken() {
-        return userToken_;
-    }
+    std::string getToken() const;
 
-    int getStatus() const {
-        return userStatus_;
-    }
+    int getStatus() const;
 
-    void setUserId(uint32_t userId) {
-        userId_ = userId;
-    }
+    std::vector<std::string> getDialoguesList() const;
 
-    void setLogin(const std::wstring &userLogin) {
-        userLogin_ = userLogin;
-    }
+    void addDialogueToList(std::string dialogueId);
 
-    void setPassword(const std::wstring &userPassword) {
-        userPassword_ = userPassword;
-    }
+    void setPassword(const std::string &userPassword);
 
-    void setDialogues(const std::vector<uint32_t> &dialogueList) {
-        userDialogueList_ = dialogueList;
-    }
+    void setToken(const std::string &userToken);
 
-    void setToken(const std::wstring &userToken) {
-        userToken_ = userToken;
-    }
-
-    void setStatus(int userStatus) {
-        userStatus_ = userStatus;
-    }
+    void setStatus(int userStatus);
 };
 
 class LoginData {
 public:
     LoginData() {
-        login_ = std::wstring();
-        password_ = std::wstring();
+        login_ = std::string();
+        password_ = std::string();
         loginType_ = -1;
     }
 
-    LoginData(const std::wstring &login, const std::wstring &password) {
+    LoginData(const std::string &login, const std::string &password) {
         login_ = login;
         password_ = password;
         loginType_ = 1;
     }
 
-    void setLogin(const std::wstring &login) {
-        login_ = login;
-    }
+    void setLogin(const std::string &login);
 
-    void setPassword(const std::wstring &password) {
-        password_ = password;
-    }
+    void setPassword(const std::string &password);
 
-    void setType(short type) {
-        loginType_ = type;
-    }
+    void setType(short type);
 
-    std::wstring getLogin() {
-        return login_;
-    }
+    std::string getLogin() const;
 
-    std::wstring getPassword() {
-        return password_;
-    }
+    std::string getPassword() const;
 
-    short get_type() const {
-        return loginType_;
-    }
+    short get_type() const;
+    bool operator== (const LoginData& ldt1) const;
 
 private:
-    std::wstring login_;
-    std::wstring password_;
+    std::string login_;
+    std::string password_;
     short loginType_;
 };
 
 class Message {
 public:
-    Message(uint32_t messageId, uint32_t dialogueParentId, uint32_t senderId,
-            std::wstring messageText, std::wstring messageCode, time_t timeSent) :
+    Message(std::string messageId, std::string dialogueParentId, std::string senderId,
+            std::string messageText, std::string messageCode, time_t timeSent, bool isRead) :
             messageId_(messageId), dialogueParentId_(dialogueParentId), senderId_(senderId),
-            messageText_(std::move(messageText)), messageCode_(std::move(messageCode)), timeSent_(timeSent) {
+            messageText_(std::move(messageText)), messageCode_(std::move(messageCode)), 
+            timeSent_(timeSent), isRead_(isRead) {
     }
 
     ~Message() = default;
 
-    uint32_t getMessageId() const {
-        return messageId_;
-    }
+    std::string getMessageId() const;
 
-    uint32_t getDialogueParentId() const {
-        return dialogueParentId_;
-    }
+    std::string getDialogueParentId() const;
 
-    uint32_t getSenderId() const {
-        return senderId_;
-    }
+    std::string getSenderId() const;
 
-    std::wstring getMessageText() {
-        return messageText_;
-    }
+    std::string getMessageText();
 
-    std::wstring getMessageCode() {
-        return messageCode_;
-    }
+    std::string getMessageCode();
 
-    time_t getTimeSent() const {
-        return timeSent_;
-    }
+    time_t getTimeSent() const;
+
+    bool isRead();
 
 private:
-    uint32_t messageId_;
-    uint32_t dialogueParentId_;
-    uint32_t senderId_;
-    std::wstring messageText_;
-    std::wstring messageCode_;
+    std::string messageId_;
+    std::string dialogueParentId_;
+    std::string senderId_;
+    std::string messageText_;
+    std::string messageCode_;
     time_t timeSent_;
+    bool isRead_;
 };
 
 class Dialogue {
 public:
-    explicit Dialogue(uint32_t dialogueId) : dialogueId_(dialogueId) {
+    Dialogue(std::string dialogueId,
+            std::vector<std::string> participantsList,
+            std::vector<Message> dialogueMessageList) :
+            dialogueId_(dialogueId),
+            dialogueMessageList_(dialogueMessageList) {
     }
 
     ~Dialogue() = default;
 
-    std::vector<uint32_t> getParticipantsList() {
-        return participantsList_;
-    }
+    Message getLastMessage() const;
 
-    std::vector<Message> getDialogueMessageList() {
-        return dialogueMessageList_;
-    }
+    std::vector<std::string> getParticipantsList();
 
-    uint32_t getDialogueId() const {
-        return dialogueId_;
-    }
+    std::vector<Message> getDialogueMessageList();
 
-    void setDialogueId(uint32_t id) {
-        dialogueId_ = id;
-    }
+    std::string getDialogueId() const;
 
-    void pushNewMessage(const Message& newMessage) {
-        dialogueMessageList_.push_back(newMessage);
-    }
+    void pushNewMessage(const Message& newMessage);
 
-    void pushNewParticipant(uint32_t newParticipantId) {
-        participantsList_.push_back(newParticipantId);
-    }
+    void pushNewParticipant(std::string newParticipantId);
+
+    std::string getName(User& user) const;
 
 private:
-    uint32_t dialogueId_;
+    std::string dialogueId_;
     std::vector<Message> dialogueMessageList_;
-    std::vector<uint32_t> participantsList_;
+    std::vector<std::string> participantsList_;
 };
 
 
@@ -226,82 +174,90 @@ public:
         messageId_ = messageId;
     }
 
-    std::wstring getMessageCode() {
+    std::string getMessageCode() {
         return messageCode_;
     }
 
-    void setMessageCode(const std::wstring &messageCode) {
+    void setMessageCode(const std::string &messageCode) {
         messageCode_ = messageCode;
     }
 
-    std::wstring getCompilerStderr() {
+    std::string getCompilerStderr() {
         return compilerStderr_;
     }
 
-    void setCompilerStderr(const std::wstring &compilerStderr) {
+    void setCompilerStderr(const std::string &compilerStderr) {
         compilerStderr_ = compilerStderr;
     }
 
-    std::wstring getCompilerStdout() {
+    std::string getCompilerStdout() {
         return compilerStdout_;
     }
 
-    void setCompilerStdout(const std::wstring &compilerStdout) {
+    void setCompilerStdout(const std::string &compilerStdout) {
         compilerStdout_ = compilerStdout;
     }
 
-    std::wstring getExecutionStderr() {
+    std::string getExecutionStderr() {
         return executionStderr_;
     }
 
-    void setExecutionStderr(const std::wstring &executionStderr) {
+    void setExecutionStderr(const std::string &executionStderr) {
         executionStderr_ = executionStderr;
     }
 
-    std::wstring getExecutionStdin() {
+    std::string getExecutionStdin() {
         return executionStdin_;
     }
 
-    void setExecutionStdin(const std::wstring &executionStdin) {
+    void setExecutionStdin(const std::string &executionStdin) {
         executionStdin_ = executionStdin;
     }
 
-    std::wstring getExecutionStdout() {
+    std::string getExecutionStdout() {
         return executionStdout_;
     }
 
-    void setExecutionStdout(const std::wstring &executionStdout) {
+    void setExecutionStdout(const std::string &executionStdout) {
         executionStdout_ = executionStdout;
     }
 
-    std::wstring getExecutionUsedMemory() {
+    std::string getExecutionUsedMemory() {
         return executionUsedMemory_;
     }
 
-    void setExecutionUsedMemory(const std::wstring &executionUsedMemory) {
+    void setExecutionUsedMemory(const std::string &executionUsedMemory) {
         executionUsedMemory_ = executionUsedMemory;
     }
 
-    std::wstring getExecutionTime() {
+    std::string getExecutionTime() {
         return executionTime_;
     }
 
-    void setExecutionTime(const std::wstring &executionTime) {
+    void setExecutionTime(const std::string &executionTime) {
         executionTime_ = executionTime;
     }
 
 private:
     uint32_t compilationId_;
     uint32_t messageId_;
-    std::wstring messageCode_;
-    std::wstring compilerStderr_;
-    std::wstring compilerStdout_;
-    std::wstring executionStderr_;
-    std::wstring executionStdin_;
-    std::wstring executionStdout_;
-    std::wstring executionUsedMemory_;
-    std::wstring executionTime_;
+    std::string messageCode_;
+    std::string compilerStderr_;
+    std::string compilerStdout_;
+    std::string executionStderr_;
+    std::string executionStdin_;
+    std::string executionStdout_;
+    std::string executionUsedMemory_;
+    std::string executionTime_;
 };
+
+struct ComparatorDialogue {
+    bool operator()(const Dialogue &lhs, const Dialogue &rhs) {
+        return lhs.getLastMessage().getTimeSent() > rhs.getLastMessage().getTimeSent();
+    }
+};
+
+typedef std::multiset<Dialogue, ComparatorDialogue> DialogueList;
 
 #endif  // PROJECT_INCLUDE_MODELS_HPP_
 */

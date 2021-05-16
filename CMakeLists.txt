@@ -28,7 +28,14 @@ set(INCLUDE ${PROJECT_SOURCE_DIR}/project/include)
 set(SOURCE ${PROJECT_SOURCE_DIR}/project/src)
 
 # adding libs
+add_library(Models STATIC
+        ${INCLUDE}/Models.hpp
+        ${SOURCE}/Models.cpp)
 
+add_library(MainDb STATIC
+        ${INCLUDE}/MainDb.hpp
+        ${INCLUDE}/IMainDb.hpp
+        ${SOURCE}/MainDb.cpp)
 # end libs
 
 file(GLOB prod_sources
@@ -37,20 +44,18 @@ file(GLOB prod_sources
 
 add_executable(${PROJECT_NAME} ${prod_sources})
 
-target_link_libraries(${PROJECT_NAME} wthttp wt)
-
-add_definitions(-DSOURCE_DIR="${CMAKE_CURRENT_SOURCE_DIR}")
+target_link_libraries(${PROJECT_NAME} wthttp wt MainDb Models cassandra)
 
 file(GLOB tests "${PROJECT_SOURCE_DIR}/project/tests/*.cpp")
 list(REMOVE_ITEM tests "${PROJECT_SOURCE_DIR}/project/tests/main.cpp")
 
-foreach(file ${tests})
-    set(name)
-    get_filename_component(name ${file} NAME_WE)
-    add_executable("${name}_tests"
-            ${SOURCE}/${name}.cpp
-            ${file}
-            "${PROJECT_SOURCE_DIR}/project/tests/main.cpp")
-    target_link_libraries("${name}_tests" gtest_main)
-    add_test(NAME ${name} COMMAND "${name}_tests")
-endforeach()
+# foreach(file ${tests})
+#     set(name)
+#     get_filename_component(name ${file} NAME_WE)
+#     add_executable("${name}_tests"
+#             ${SOURCE}/${name}.cpp
+#             ${file}
+#             "${PROJECT_SOURCE_DIR}/project/tests/main.cpp")
+#     target_link_libraries("${name}_tests" gtest_main gmock_main cassandra)
+#     add_test(NAME ${name} COMMAND "${name}_tests")
+# endforeach()
