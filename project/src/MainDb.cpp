@@ -133,7 +133,7 @@ void MainDb::disconnectFromDb() {
     cass_future_free(close_future_);
 }
 
-User* MainDb::searchUserLogin(std::string login, std::string password) {  // function pull dialogues_list
+User* MainDb::searchUserPassword(std::string login, std::string password) {  // function pull dialogues_list
     const char* searchUser = "SELECT * FROM maindb.users_by_login "
                              "WHERE login = ? LIMIT 1;";
     CassStatement* returnedUser = cass_statement_new(searchUser, 1);
@@ -179,7 +179,51 @@ User* MainDb::searchUserLogin(std::string login, std::string password) {  // fun
     return new User(login, password, "", 1);
 }
 
-void MainDb::writeUser(const User& user) {
+bool MainDb::searchUserLogin(std::string login) {  // function pull dialogues_list
+    const char* searchUser = "SELECT * FROM maindb.users_by_login "
+                             "WHERE login = ? LIMIT 1;";
+    CassStatement* returnedUser = cass_statement_new(searchUser, 1);
+    cass_statement_bind_string(returnedUser, 0, login.data());
+    CassFuture* returnedUser_future = cass_session_execute(session_, returnedUser);
+
+    CassError rc = cass_future_error_code(returnedUser_future);
+
+    if (rc != CASS_OK) {
+        /* Display connection error message */
+        const char* message;
+        size_t message_length;
+        cass_future_error_message(returnedUser_future, &message, &message_length);
+        fprintf(stderr, "St error: '%.*s'\n", (int)message_length, message);
+    }
+
+    const CassResult* result = cass_future_get_result(returnedUser_future);
+    if (result == NULL) {  // throw exception
+        cass_statement_free(returnedUser);
+        cass_future_free(returnedUser_future);
+        return false;
+    }
+
+    const CassRow* row = cass_result_first_row(result);
+    if (row == NULL) {  // user doesn't exist
+        cass_result_free(result);
+        cass_statement_free(returnedUser);
+        cass_future_free(returnedUser_future);
+        return false;
+    }
+
+
+    cass_result_free(result);
+    cass_statement_free(returnedUser);
+    cass_future_free(returnedUser_future);
+
+    return true;
+}
+
+int MainDb::writeUser(const User& user) {
+    if (!searchUserLogin(user.getLogin())) {
+        return EXIT_FAILURE;  // user is already exists
+    }
+
     const char* insertUser = "INSERT INTO maindb.users_by_login "
     "(login, password) VALUES "
     "(?, ?)"
@@ -194,6 +238,8 @@ void MainDb::writeUser(const User& user) {
 
     cass_statement_free(newUser);
     cass_future_free(newUser_future);
+
+    return EXIT_SUCCESS;
 }
 
 void MainDb::changePassword(const User& user) {
@@ -324,10 +370,10 @@ void MainDb::writeMessage(Message& message) {
     cass_future_free(getTimeUpdateSt_future);
 }
 
-std::vector<Message> MainDb::getNLastMessagesFromDialogue(std::string dialogueId, long count) {
+std::vector<Message> MainDb::getNLastMessagesFromDialogue(std::string dialogueId, long count) const {
     std::vector<Message> messages;
-    char* getNMessagesQ = "SELECT * FROM maindb.messages_by_id "
-                          "WHERE dialogue_id = ? LIMIT ?;";
+    const char* getNMessagesQ = "SELECT * FROM maindb.messages_by_id "
+                                "WHERE dialogue_id = ? LIMIT ?;";
     CassStatement* getNMessagesSt = cass_statement_new(getNMessagesQ, 2);
     CassUuid uuid;
     cass_uuid_from_string(dialogueId.data(), &uuid);
@@ -373,8 +419,8 @@ std::vector<Message> MainDb::getNLastMessagesFromDialogue(std::string dialogueId
 
         CassUuid dialogueUuid;
         char dialogueUuidStr[CASS_UUID_STRING_LENGTH];
-        const CassValue* dialogueId = cass_row_get_column_by_name(row, "dialogue_id");
-        cass_value_get_uuid(dialogueId, &dialogueUuid);
+        const CassValue* currDialogueId = cass_row_get_column_by_name(row, "dialogue_id");
+        cass_value_get_uuid(currDialogueId, &dialogueUuid);
         cass_uuid_string(dialogueUuid, dialogueUuidStr);
 
         CassUuid senderUuid;
@@ -455,11 +501,11 @@ std::vector<std::string> MainDb::getAllDialoguesIdByLogin(std::string login) {
 
     CassIterator* dialogues_iterator = cass_iterator_from_result(result);
     while (cass_iterator_next(dialogues_iterator)) {
-        const CassRow* row = cass_iterator_get_row(dialogues_iterator);
+        const CassRow* сurrRow = cass_iterator_get_row(dialogues_iterator);
 
         CassUuid dialogueUuid;
         char dialogueUuidStr[CASS_UUID_STRING_LENGTH];
-        const CassValue* dialogueId = cass_row_get_column_by_name(row, "dialogue_id");
+        const CassValue* dialogueId = cass_row_get_column_by_name(сurrRow, "dialogue_id");
         cass_value_get_uuid(dialogueId, &dialogueUuid);
         cass_uuid_string(dialogueUuid, dialogueUuidStr);
 
@@ -474,7 +520,7 @@ std::vector<std::string> MainDb::getAllDialoguesIdByLogin(std::string login) {
     return dialoguesId;
 }
 
-std::vector<std::string> MainDb::getLastNDialoguesIdByLogin(std::string login, long count) {
+std::vector<std::string> MainDb::getLastNDialoguesIdByLogin(std::string login, long count) const {
     std::vector <std::string> dialoguesId;
     const char* searchDialogues = "SELECT dialogue_id FROM maindb.user_dialogues "
                                   "WHERE login = ? LIMIT = ?;";
@@ -511,11 +557,11 @@ std::vector<std::string> MainDb::getLastNDialoguesIdByLogin(std::string login, l
 
     CassIterator* dialogues_iterator = cass_iterator_from_result(result);
     while (cass_iterator_next(dialogues_iterator)) {
-        const CassRow* row = cass_iterator_get_row(dialogues_iterator);
+        const CassRow* сurrRow = cass_iterator_get_row(dialogues_iterator);
 
         CassUuid dialogueUuid;
         char dialogueUuidStr[CASS_UUID_STRING_LENGTH];
-        const CassValue* dialogueId = cass_row_get_column_by_name(row, "dialogue_id");
+        const CassValue* dialogueId = cass_row_get_column_by_name(сurrRow, "dialogue_id");
         cass_value_get_uuid(dialogueId, &dialogueUuid);
         cass_uuid_string(dialogueUuid, dialogueUuidStr);
 
@@ -530,7 +576,7 @@ std::vector<std::string> MainDb::getLastNDialoguesIdByLogin(std::string login, l
     return dialoguesId;
 }
 
-std::vector<std::string> MainDb::getParticipantsLoginsFromDialogue(std::string dialogueId) {
+std::vector<std::string> MainDb::getParticipantsLoginsFromDialogue(std::string dialogueId) const {
     std::vector<std::string> participantsLogins;
     const char* searchUser = "SELECT participants_logins FROM maindb.dialogues_by_id "
                              "WHERE dialogue_id = ? LIMIT 1;";
@@ -578,7 +624,7 @@ std::vector<std::string> MainDb::getParticipantsLoginsFromDialogue(std::string d
     return participantsLogins;
 }
 
-DialogueList MainDb::getLastNDialoguesWithLastMessage(User user, long count) {
+DialogueList MainDb::getLastNDialoguesWithLastMessage(const User& user, long count) const {
     std::vector<std::string> dialoguesId = getLastNDialoguesIdByLogin(user.getLogin(), count);
     DialogueList dialogues;
 
@@ -586,7 +632,7 @@ DialogueList MainDb::getLastNDialoguesWithLastMessage(User user, long count) {
         std::vector<Message> messagesFromCurrDialogue = getNLastMessagesFromDialogue(dialoguesId[i], 1);
         std::vector<std::string> participantsList = getParticipantsLoginsFromDialogue(dialoguesId[i]);
         Dialogue currDialogue(dialoguesId[i], participantsList, messagesFromCurrDialogue);
-        dialogues.emplace();
+        dialogues.emplace(currDialogue);
     }
 
     return dialogues;
@@ -627,8 +673,11 @@ Dialogue MainDb::createDialogue(std::string firstId, std::string secondId) {
     }
     std::vector<Message> messages;
     std::vector<std::string> participants;
+
     participants.push_back(firstId);
-    participants.push_back(secondId);
+    if (firstId != secondId) {
+        participants.push_back(secondId);
+    }
 
     return Dialogue(uuidStr, participants, messages);
 }

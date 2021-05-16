@@ -7,7 +7,8 @@
 #include <mutex>
 
 #include "ChatEvent.hpp"
-#include "VovaModels.hpp"
+#include "Models.hpp"
+#include "MainDb.hpp"
 
 
 class ChatServer {
@@ -30,10 +31,10 @@ public:
     bool changeProfile(User& user, const User& newUser);
 
     DialogueList getDialogueList(const User &user) const;
-    Dialogue getDialogue(uint32_t dialogueId) const;
+    Dialogue getDialogue(const std::string dialogueId) const;
 
     std::vector<User> getUsersByUserName(const User &findUser) const;
-    DialogueInfo createDialogue(const User &user, const User &otherUser);
+    Dialogue createDialogue(const User &user, const User &otherUser);
 
     void sendMessage(const User &user, Dialogue &dialogue, Message &message);
 
@@ -46,7 +47,7 @@ private:
 private:
     struct ClientInfo {
         std::string       sessionId;
-        uint32_t          userId;
+        std::string          userId;
         ChatEventCallback eventCallback;
     };
     typedef std::map<Client *, ClientInfo> ClientMap;
@@ -54,7 +55,7 @@ private:
     Wt::WServer&            server_;
     std::recursive_mutex    mutex_;
     ClientMap               clients_;
-    DB                      db_;
+    MainDb                  db_;
 
 //    std::list<Wt::WString> resultList_;
 };

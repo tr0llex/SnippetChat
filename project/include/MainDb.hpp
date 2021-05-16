@@ -13,18 +13,19 @@ class MainDb : public IMainDb {
         MainDb();
         ~MainDb();
 
-        User* searchUserLogin(std::string login, std::string password) override;
-        void writeUser(const User& user) override;
+        User* searchUserPassword(std::string login, std::string password) override;
+        bool searchUserLogin(std::string login) override;
+        int writeUser(const User& user) override;
         void changePassword(const User& user) override;
 
         std::string getCodeFromMessage(std::string messageId) override;
         void writeMessage(Message& message) override; // проставить айдишник если не проставлен
-        std::vector<Message> getNLastMessagesFromDialogue(std::string dialogueId, long count) override;
-        DialogueList getLastNDialoguesWithLastMessage(User user, long count) override;
-        std::vector<std::string> getParticipantsLoginsFromDialogue(std::string dialogueId) override;
+        std::vector<Message> getNLastMessagesFromDialogue(std::string dialogueId, long count) const override;
+        DialogueList getLastNDialoguesWithLastMessage(const User& user, long count) const override;
+        std::vector<std::string> getParticipantsLoginsFromDialogue(std::string dialogueId) const override;
 
         std::vector<std::string> getAllDialoguesIdByLogin(std::string login) override;
-        std::vector<std::string> getLastNDialoguesIdByLogin(std::string login, long count) override;
+        std::vector<std::string> getLastNDialoguesIdByLogin(std::string login, long count) const override;
         Dialogue createDialogue(std::string firstId, std::string secondId) override;
 
         void deleteMessage(Message& message) override;

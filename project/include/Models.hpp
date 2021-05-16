@@ -1,4 +1,3 @@
-/*
 #ifndef PROJECT_INCLUDE_MODELS_HPP_
 #define PROJECT_INCLUDE_MODELS_HPP_
 
@@ -100,7 +99,7 @@ public:
 
     std::string getDialogueParentId() const;
 
-    std::string getSenderId() const;
+    std::string getSenderLogin() const;
 
     std::string getMessageText();
 
@@ -260,4 +259,3 @@ struct ComparatorDialogue {
 typedef std::multiset<Dialogue, ComparatorDialogue> DialogueList;
 
 #endif  // PROJECT_INCLUDE_MODELS_HPP_
-*/

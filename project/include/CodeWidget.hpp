@@ -11,7 +11,7 @@
 #include <Wt/WText.h>
 #include <Wt/WTextArea.h>
 
-#include "VovaModels.hpp"
+#include "Models.hpp"
 #include "ChatServer.hpp"
 
 

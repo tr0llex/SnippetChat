@@ -13,7 +13,7 @@ std::string User::getToken() const {
 }
 
 Message Dialogue::getLastMessage() const {
-    return *dialogueMessageList_.begin();
+    return dialogueMessageList_.back();
 }
 
 int User::getStatus() const {
@@ -83,7 +83,7 @@ std::string Message::getDialogueParentId() const {
     return dialogueParentId_;
 }
 
-std::string Message::getSenderId() const {
+std::string Message::getSenderLogin() const {
     return senderId_;
 }
 

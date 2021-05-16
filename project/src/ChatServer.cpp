@@ -13,7 +13,7 @@ bool ChatServer::connect(ChatServer::Client *client, const User &user, const Cha
         ClientInfo clientInfo;
 
         clientInfo.sessionId = Wt::WApplication::instance()->sessionId();
-        clientInfo.userId = user.getId();
+        clientInfo.userId = user.getLogin();
         clientInfo.eventCallback = handleEvent;
 
         clients_[client] = clientInfo;
@@ -33,9 +33,8 @@ bool ChatServer::disconnect(ChatServer::Client *client) {
 bool ChatServer::signUp(User &user) {
     std::unique_lock<std::recursive_mutex> lock(mutex_);
 
-    if (db_.addNewUser(user)) {
-        /// Создавать диалог только с самими собой, оповещать никого не надо
-        db_.newDialogue(user); //  std::string createDialogue(const User &user, std::string dialogueName) override;
+    if (db_.writeUser(user) == 0) {
+        db_.createDialogue(user.getLogin(), user.getLogin());
 
         return true;
     }
@@ -46,7 +45,7 @@ bool ChatServer::signUp(User &user) {
 bool ChatServer::login(User &user) {
     std::unique_lock<std::recursive_mutex> lock(mutex_);
 
-    if (/* Вызов функции Бориса */db_.isCorrectUser(user)) {
+    if (db_.searchUserPassword(user.getLogin(), user.getPassword())) {
         /// Оповестить только друзей
 //        postChatEvent(ChatEvent(ChatEvent::Login, user));
 
@@ -65,34 +64,36 @@ void ChatServer::logout(const User &user) {
 bool ChatServer::changeProfile(User &user, const User &newUser) {
     std::unique_lock<std::recursive_mutex> lock(mutex_);
 
-    if (db_.updateUser(user, newUser)) {
+    db_.changePassword(newUser);
+
+//    if () {
 
 //        postChatEvent(ChatEvent(ChatEvent::UpdateProfile, user));
 
-        return true;
-    }
+//        return true;
+//    }
 
     return false;
 }
 
 DialogueList ChatServer::getDialogueList(const User &user) const {
-    return db_.getDialogueList(user);
+    return db_.getLastNDialoguesWithLastMessage(user, 20);
 }
 
-Dialogue ChatServer::getDialogue(uint32_t dialogueId) const { // Dialogue.getId()
-    return db_.getDialogue(dialogueId); // std::vector<Message> getNMessagesFromDialogue(std::string Dialogue.getId(), long count) override;
+Dialogue ChatServer::getDialogue(const std::string dialogueId) const { // Dialogue.getId()
+    return db_.getNLastMessagesFromDialogue(dialogueId, 100);
 }
 
 std::vector<User> ChatServer::getUsersByUserName(const User &findUser) const {
     return db_.getUsersByUserName(findUser);
 }
 
-DialogueInfo ChatServer::createDialogue(const User &user, const User &otherUser) { // Dialog createDialogue(std::string firstId, std::string secondId) override; with yourself
+Dialogue ChatServer::createDialogue(const User &user, const User &otherUser) { // Dialog createDialogue(std::string firstId, std::string secondId) override; with yourself
     std::unique_lock<std::recursive_mutex> lock(mutex_);
 
-    DialogueInfo dialogueInfo = db_.newDialogue(user, otherUser);
+    Dialogue dialogueInfo = db_.newDialogue(user, otherUser);
 
-    DialogueInfo dialogueInfoOther(dialogueInfo.getId(), user.getUsername());
+    Dialogue dialogueInfoOther(dialogueInfo.getId(), user.getUsername());
     notifyUser(ChatEvent(ChatEvent::NewDialogue, otherUser.getId(), dialogueInfoOther));
 
     return dialogueInfo;

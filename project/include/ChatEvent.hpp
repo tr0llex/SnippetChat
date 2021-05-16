@@ -4,7 +4,7 @@
 #include <Wt/WSignal.h>
 #include <Wt/WString.h>
 
-#include "VovaModels.hpp"
+#include "Models.hpp"
 
 
 class ChatEvent {
@@ -19,27 +19,27 @@ public:
     };
 
     Type type() const { return type_; }
-    uint32_t userId() const { return userId_; }
-    const DialogueInfo& dialogue() const { return dialogueInfo_; }
+    std::string userId() const { return userId_; }
+    const Dialogue& dialogue() const { return dialogue_; }
     const Wt::WString& resultCompilation() const { return resultCompilation_; }
 
-    uint32_t getSenderId() const {
-        return dialogueInfo_.getMessage().getSenderId();
+    std::string getSenderId() const {
+        return dialogue_.getLastMessage().getSenderLogin();
     }
 
 private:
-    ChatEvent(Type type, uint32_t userId, const DialogueInfo& dialogueInfo)
-            : type_(type), userId_(userId), dialogueInfo_(dialogueInfo) {}
+    ChatEvent(Type type, std::string userId, const Dialogue& dialogueInfo)
+            : type_(type), userId_(userId), dialogue_(dialogueInfo) {}
 
-    ChatEvent(Type type, uint32_t userId, const DialogueInfo& dialogueInfo, const Wt::WString &resultCompilation)
-            : type_(type), userId_(userId), dialogueInfo_(dialogueInfo), resultCompilation_(resultCompilation) {}
+    ChatEvent(Type type, std::string userId, const Dialogue& dialogueInfo, const Wt::WString &resultCompilation)
+            : type_(type), userId_(userId), dialogue_(dialogueInfo), resultCompilation_(resultCompilation) {}
 
     friend class ChatServer;
 
 private:
     Type         type_;
-    uint32_t     userId_;
-    DialogueInfo dialogueInfo_;
+    std::string  userId_;
+    Dialogue     dialogue_;
     Wt::WString  resultCompilation_;
 };
 
