@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<messages>
+    <message id="projectName">
+        <h4>
+            <span>SnippetChat</span>
+        </h4>
+    </message>
+
+    <message id="join-msg.template">
+        <span class='chat-info'>You are joining as ${name}.</span>
+    </message>
+</messages>

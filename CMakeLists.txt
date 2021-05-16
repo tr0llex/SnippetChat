@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.16)
-project(messenger)
+project(SnippetChat)
 
 configure_file(CMakeLists.txt.in
         googletest-download/CMakeLists.txt)
@@ -11,11 +11,15 @@ execute_process(COMMAND ${CMAKE_COMMAND} --build .
 add_subdirectory(${CMAKE_BINARY_DIR}/googletest-src
         ${CMAKE_BINARY_DIR}/googletest-build)
 
-set(CMAKE_C_FLAGS "-pedantic -fprofile-arcs -ftest-coverage -Wall -Werror -Wpedantic")
-set(CMAKE_CXX_FLAGS "-pedantic -fprofile-arcs -ftest-coverage -Wall -Werror -Wpedantic")
-
 enable_testing()
 
+set(CMAKE_C_FLAGS "-pthread -pedantic -fprofile-arcs -ftest-coverage -Wall -Werror -Wpedantic")
+set(CMAKE_CXX_FLAGS "-pthread -pedantic -fprofile-arcs -ftest-coverage -Wall -Werror -Wpedantic")
+set(CMAKE_CXX_STANDARD 14)
+
+find_package(Wt REQUIRED)
+#link_directories("/usr/lib")
+#link_directories("/usr/local/lib")
 
 include_directories("${PROJECT_SOURCE_DIR}/project/include")
 
@@ -29,9 +33,13 @@ set(SOURCE ${PROJECT_SOURCE_DIR}/project/src)
 
 file(GLOB prod_sources
         "${INCLUDE}/*.hpp"
-        "${SOURCE}/main.cpp")
+        "${SOURCE}/*.cpp")
 
-add_executable(main.out ${SOURCE}/main.cpp)
+add_executable(${PROJECT_NAME} ${prod_sources})
+
+target_link_libraries(${PROJECT_NAME} wthttp wt)
+
+add_definitions(-DSOURCE_DIR="${CMAKE_CURRENT_SOURCE_DIR}")
 
 file(GLOB tests "${PROJECT_SOURCE_DIR}/project/tests/*.cpp")
 list(REMOVE_ITEM tests "${PROJECT_SOURCE_DIR}/project/tests/main.cpp")

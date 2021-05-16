@@ -10,8 +10,16 @@ install:
   - sudo apt-get install valgrind
   - sudo apt-get install cppcheck
   - sudo pip install cpplint
+  - sudo apt-get install gcc g++ libboost-all-dev cmake
+  - wget -c https://github.com/emweb/wt/archive/4.5.0.tar.gz
+  - tar xvxf 4.5.0.tar.gz
 
 script:
+  - cd wt-4.5.0
+  - mkdir build; cd build
+  - cmake ..
+  - make wt wthttp -j4
+  - cd ../..
   - cppcheck --enable=all --language=c --check-config project/*/*.hpp project/*/*.cpp --suppress=missingInclude
   - cpplint project/*/*.hpp project/*/*.cpp
   - mkdir build && cd build

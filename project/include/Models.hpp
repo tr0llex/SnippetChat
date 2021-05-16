@@ -1,3 +1,4 @@
+/*
 #ifndef PROJECT_INCLUDE_MODELS_HPP_
 #define PROJECT_INCLUDE_MODELS_HPP_
 
@@ -303,3 +304,4 @@ private:
 };
 
 #endif  // PROJECT_INCLUDE_MODELS_HPP_
+*/
