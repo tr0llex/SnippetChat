@@ -1,28 +1,14 @@
 #include "Models.hpp"
 
-User::User(std::string userLogin, std::string userPassword, 
-           std::vector<std::string> userDialogueList,
-           std::string userToken, int userStatus) :
-    userLogin_(userLogin),
-    userPassword_(userPassword),
-    userDialogueList_(userDialogueList),
-    userToken_(userToken),
-    userStatus_(userStatus) {
-}
-
-std::string User::getLogin() {
+std::string User::getLogin() const {
     return userLogin_;
 }
 
-std::string User::getPassword() {
+std::string User::getPassword() const {
     return userPassword_;
 }
 
-std::vector<std::string> User::getDialogues() {
-    return userDialogueList_;
-}
-
-std::string User::getToken() {
+std::string User::getToken() const {
     return userToken_;
 }
 
@@ -30,16 +16,16 @@ int User::getStatus() const {
     return userStatus_;
 }
 
-void User::setLogin(const std::string &userLogin) {
-    userLogin_ = userLogin;
+std::vector<std::string> User::getDialoguesList() const {
+    return dialoguesList_;
+}
+
+void User::addDialogueToList(std::string dialogueId) {
+    dialoguesList_.push_back(dialogueId);
 }
 
 void User::setPassword(const std::string &userPassword) {
     userPassword_ = userPassword;
-}
-
-void User::setDialogues(const std::vector<std::string> &dialogueList) {
-    userDialogueList_ = dialogueList;
 }
 
 void User::setToken(const std::string &userToken) {
@@ -117,22 +103,27 @@ std::vector<Message> Dialogue::getDialogueMessageList() {
     return dialogueMessageList_;
 }
 
-std::vector<uint32_t> Dialogue::getParticipantsList() {
+std::vector<std::string> Dialogue::getParticipantsList() {
     return participantsList_;
 }
 
-uint32_t Dialogue::getDialogueId() const {
+std::string Dialogue::getDialogueId() const {
     return dialogueId_;
 }
 
-void Dialogue::setDialogueId(uint32_t id) {
-    dialogueId_ = id;
+std::string Dialogue::getName(User& user) const {
+    if (participantsList_[0] == user.getLogin()) {
+        return participantsList_[1];
+    } else {
+        return participantsList_[0];
+    }
 }
+
 
 void Dialogue::pushNewMessage(const Message &newMessage) {
     dialogueMessageList_.push_back(newMessage);
 }
 
-void Dialogue::pushNewParticipant(uint32_t newParticipantId) {
+void Dialogue::pushNewParticipant(std::string newParticipantId) {
     participantsList_.push_back(newParticipantId);
 }

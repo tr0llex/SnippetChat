@@ -15,11 +15,14 @@ class IMainDb {
         virtual std::string getCodeFromMessage(std::string messageId) = 0;
         virtual void writeMessage(Message& message) = 0;
         virtual std::vector <Message>* getNMessagesFromDialogue(std::string dialogueId, long count) = 0;
+        virtual DialogueList& getLastNDialoguesWithLastMessage(User user, long count) = 0;
+    
 
-        virtual std::vector <Dialogue>* getDialoguessByUserId(int userId) = 0;
-        virtual uint32_t createDialogue(uint32_t senderId, uint32_t receiverId) = 0;  // return dialogId
-        virtual void deleteMessageFromDialogue(Message& message) = 0;
+        virtual std::vector <std::string>* getDialogueListByLogin(std::string login) = 0;
+        virtual Dialogue createDialogue(std::string firstId, std::string secondId) = 0;
+        virtual void deleteMessage(Message& message) = 0;
         virtual void deleteDialogue(Dialogue& dialogue) = 0;
+        virtual std::vector<User> getUsersByUserName(const User &findUser) const = 0;
 };
 
 #endif  // PROJECT_INCLUDE_IMAINDB_HPP_

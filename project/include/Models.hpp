@@ -7,49 +7,44 @@
 #include <vector>
 #include <ctime>
 
+struct ComparatorDialogue {
+    bool operator()(const Dialogue &lhs, const Dialogue &rhs) {
+        // return lhs.getMessage().getTimeSent() > rhs.getMessage().getTimeSent();
+    }
+};
+typedef std::multiset<Dialogue, ComparatorDialogue> DialogueList;
+
 class User {
 private:
     std::string userLogin_;
     std::string userPassword_;
-    std::vector<std::string> userDialogueList_;
     std::string userToken_;
+    std::vector<std::string> dialoguesList_;
     int userStatus_;
 
 public:
-    User(std::string userLogin = std::string(), std::string userPassword = std::string(), 
-        std::vector<std::string> userDialogueList = {std::string()},
-        std::string userToken = std::string(), int userStatus = 0);
-
     ~User() = default;
 
-    User(uint32_t userId, std::string userLogin, std::string userPassword,
-         std::vector<std::string> dialogueList,
-         std::string userToken, int userStatus) :
+    User(std::string userLogin, std::string userPassword,
+         std::string userToken, std::vector<std::string> dialoguesList_, int userStatus) :
             userLogin_(std::move(userLogin)), userPassword_(std::move(userPassword)),
-            userDialogueList_(std::move(dialogueList)), userToken_(std::move(userToken)) {
-        setUserId(userId);
-        setStatus(userStatus);
+            userToken_(std::move(userToken)), userStatus_(userStatus) {
     }
 
-    uint32_t getUserId() const;
 
-    std::string getLogin();
+    std::string getLogin() const;
 
-    std::string getPassword();
+    std::string getPassword() const;
 
-   std::vector<std::string> getDialogues();
-
-    std::string getToken();
+    std::string getToken() const;
 
     int getStatus() const;
 
-    void setUserId(uint32_t userId);
+    std::vector<std::string> getDialoguesList() const;
 
-    void setLogin(const std::string &userLogin);
+    void addDialogueToList(std::string dialogueId);
 
     void setPassword(const std::string &userPassword);
-
-    void setDialogues(const std::vector<std::string> &dialogueList);
 
     void setToken(const std::string &userToken);
 
@@ -126,27 +121,32 @@ private:
 
 class Dialogue {
 public:
-    explicit Dialogue(uint32_t dialogueId) : dialogueId_(dialogueId) {
+    Dialogue(std::string dialogueId, std::string dialogueName,
+            std::vector<std::string> participantsList,
+            std::vector<Message> dialogueMessageList) :
+            dialogueId_(dialogueId), dialogueName_(dialogueName),
+            dialogueMessageList_(dialogueMessageList) {
     }
 
     ~Dialogue() = default;
 
-    std::vector<uint32_t> getParticipantsList();
+    std::vector<std::string> getParticipantsList();
 
     std::vector<Message> getDialogueMessageList();
 
-    uint32_t getDialogueId() const;
-
-    void setDialogueId(uint32_t id);
+    std::string getDialogueId() const;
 
     void pushNewMessage(const Message& newMessage);
 
-    void pushNewParticipant(uint32_t newParticipantId);
+    void pushNewParticipant(std::string newParticipantId);
+
+    std::string getName(User& user) const;
 
 private:
-    uint32_t dialogueId_;
+    std::string dialogueId_;
+    std::string dialogueName_;
     std::vector<Message> dialogueMessageList_;
-    std::vector<uint32_t> participantsList_;
+    std::vector<std::string> participantsList_;
 };
 
 

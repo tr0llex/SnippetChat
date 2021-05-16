@@ -16,12 +16,14 @@ class MainDb : public IMainDb {
         int updateUser(User& user) override;
 
         std::string getCodeFromMessage(std::string messageId) override;
-        void writeMessage(Message& message) override;
+        void writeMessage(Message& message) override; // проставить айдишник если не проставлен
         std::vector <Message>* getNMessagesFromDialogue(std::string dialogueId, long count) override;
+        DialogueList& getLastNDialoguesWithLastMessage(User user, long count) override;
 
-        std::vector <Dialogue>* getDialoguessByUserId(int userId) override;
-        uint32_t createDialogue(uint32_t senderId, uint32_t receiverId) override;  // return dialogId
-        void deleteMessageFromDialogue(Message& message) override;
+        std::vector <std::string>* getDialogueListByLogin(std::string login) override;
+        Dialogue createDialogue(std::string firstId, std::string secondId) override;
+        // std::string createDialogue(std::string senderId, std::string receiverId, std::string dialogueName) override; with yourself
+        void deleteMessage(Message& message) override;
         void deleteDialogue(Dialogue& dialogue) override;
 
         void connectToDb(const char* contactPoints);
