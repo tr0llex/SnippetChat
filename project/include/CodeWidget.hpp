@@ -17,7 +17,7 @@
 
 class CodeWidget : public Wt::WContainerWidget {
 public:
-    CodeWidget(ChatServer& server, User &user, const Message &message);
+    CodeWidget(ChatServer& server, const Message &message);
 
     void setResultCompilation(const Wt::WString &result);
 
@@ -33,7 +33,7 @@ private:
 
 private:
     ChatServer    &server_;
-    User          &user_;
+//    User          &user_; TODO
 
     Message    message_;
 

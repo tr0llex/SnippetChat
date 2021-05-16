@@ -544,12 +544,13 @@ void ChatWidget::processChatEvent(const ChatEvent &event) {
             break;
         }
         case ChatEvent::CompilationCode: {
-            for (int i = 0; i < messages_->count(); ++i) {
-                auto messageWidget = dynamic_cast<MessageWidget*>(messages_->widget(i));
-                if (messageWidget.) {
-
-                }
-            }
+            /// TODO
+//            for (int i = 0; i < messages_->count(); ++i) {
+//                auto messageWidget = dynamic_cast<MessageWidget*>(messages_->widget(i));
+//                if (messageWidget.) {
+//
+//                }
+//            }
             break;
         }
         default:

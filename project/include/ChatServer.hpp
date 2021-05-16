@@ -37,7 +37,7 @@ public:
 
     void sendMessage(const User &user, Dialogue &dialogue, Message &message);
 
-    void runCompilation(const User &user, const Message &message, const std::wstring &stdIn);
+//    void runCompilation(const Message &message, const std::wstring &stdIn); TODO
 
 private:
     void postChatEvent(const ChatEvent& event);

@@ -161,8 +161,10 @@ struct ComparatorDialogueInfo {
     bool operator()(const DialogueInfo &lhs, const DialogueInfo &rhs) {
         return lhs.getMessage().getTimeSent() > rhs.getMessage().getTimeSent();
     }
-};
-typedef std::multiset<DialogueInfo, ComparatorDialogueInfo> DialogueList;
+}; // std::vector<Dialogue> dialogues;
+
+
+typedef std::multiset<DialogueInfo, ComparatorDialogueInfo> DialogueList;  // std::vector<Message> dialogueMessageList_;
 
 
 class Dialogue {
@@ -269,12 +271,18 @@ public:
     }
 
 private:
-    uint32_t dialogueId_;
+    uint32_t dialogueId_;  // std::string
     std::vector<std::wstring> names;
     std::vector<uint32_t> participantsList_;
     std::vector<Message> dialogueMessageList_;
 };
 
+/*struct ComparatorDialogue {
+    bool operator()(const Dialogue &lhs, const Dialogue &rhs) {
+        return lhs.getLastMessage().getTimeSent() > rhs.getLastMessage().getTimeSent();
+    }
+};
+ typedef std::multiset<Dialogue, ComparatorDialogue> DialogueList;*/
 
 class DB {
 public:

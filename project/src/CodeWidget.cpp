@@ -1,7 +1,7 @@
 #include "CodeWidget.hpp"
 
-CodeWidget::CodeWidget(ChatServer& server, User &user, const Message &message)
-: server_(server), user_(user), message_(message) {
+CodeWidget::CodeWidget(ChatServer& server, const Message &message)
+: server_(server), message_(message) {
     setWidth(500);
 
     auto programTextPtr = std::make_unique<Wt::WPanel>();
@@ -54,7 +54,7 @@ void CodeWidget::createLayout(std::unique_ptr<WWidget> programText, std::unique_
 }
 
 void CodeWidget::runCode() {
-    server_.runCompilation(user_, message_, stdinEdit_->text());
+//    server_.runCompilation(message_, stdinEdit_->text());
 
     runButton_->disable();
 }
