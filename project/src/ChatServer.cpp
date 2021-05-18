@@ -4,7 +4,9 @@
 
 
 ChatServer::ChatServer(Wt::WServer &server)
-        : server_(server) {}
+        : server_(server) {
+    db_.connectToDb("127.0.0.1");
+}
 
 bool ChatServer::connect(ChatServer::Client *client, const User &user, const ChatEventCallback &handleEvent) {
     std::unique_lock<std::recursive_mutex> lock(mutex_);
