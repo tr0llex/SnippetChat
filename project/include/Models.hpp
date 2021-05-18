@@ -13,17 +13,11 @@ private:
     std::string userLogin_;
     std::string userPassword_;
     std::string userToken_;
-    std::vector<std::string> dialoguesList_;  // do we need this??????
     int userStatus_;
 
 public:
+    User() = default;
     ~User() = default;
-
-    User(std::string userLogin, std::string userPassword,
-         std::string userToken, std::vector<std::string> dialoguesList_, int userStatus) :
-            userLogin_(std::move(userLogin)), userPassword_(std::move(userPassword)),
-            userToken_(std::move(userToken)), userStatus_(userStatus) {
-    }
 
     User(std::string userLogin, std::string userPassword,
          std::string userToken, int userStatus) :
@@ -39,10 +33,6 @@ public:
     std::string getToken() const;
 
     int getStatus() const;
-
-    std::vector<std::string> getDialoguesList() const;
-
-    void addDialogueToList(std::string dialogueId);
 
     void setPassword(const std::string &userPassword);
 
@@ -88,14 +78,14 @@ class Message {
 public:
     Message(std::string messageId, std::string dialogueParentId, std::string senderId,
             std::string messageText, std::string messageCode, time_t timeSent, bool isRead) :
-            messageId_(messageId), dialogueParentId_(dialogueParentId), senderId_(senderId),
-            messageText_(std::move(messageText)), messageCode_(std::move(messageCode)), 
+            id_(messageId), dialogueParentId_(dialogueParentId), senderId_(senderId),
+            messageText_(std::move(messageText)), messageCode_(std::move(messageCode)),
             timeSent_(timeSent), isRead_(isRead) {
     }
 
     ~Message() = default;
 
-    std::string getMessageId() const;
+    std::string getId() const;
 
     std::string getDialogueParentId() const;
 
@@ -109,8 +99,10 @@ public:
 
     bool isRead();
 
+
+
 private:
-    std::string messageId_;
+    std::string id_;
     std::string dialogueParentId_;
     std::string senderId_;
     std::string messageText_;
@@ -121,10 +113,11 @@ private:
 
 class Dialogue {
 public:
+    Dialogue() = default;
     Dialogue(std::string dialogueId,
             std::vector<std::string> participantsList,
             std::vector<Message> dialogueMessageList) :
-            dialogueId_(dialogueId),
+            id_(dialogueId),
             dialogueMessageList_(dialogueMessageList) {
     }
 
@@ -136,16 +129,22 @@ public:
 
     std::vector<Message> getDialogueMessageList();
 
-    std::string getDialogueId() const;
+    std::string getId() const;
 
     void pushNewMessage(const Message& newMessage);
+
+    void pushMessages(const std::vector<Message> &dialogueMessageList);
 
     void pushNewParticipant(std::string newParticipantId);
 
     std::string getName(User& user) const;
 
+    bool isEmpty() const;
+
+    bool withYourself() const;
+
 private:
-    std::string dialogueId_;
+    std::string id_;
     std::vector<Message> dialogueMessageList_;
     std::vector<std::string> participantsList_;
 };

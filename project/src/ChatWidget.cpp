@@ -118,7 +118,7 @@ void ChatWidget::startChat() {
     userNameEdit_ = nullptr;
 
     Wt::WString dialogueName;
-    if (!currentDialogue_.empty()) {
+    if (!currentDialogue_.isEmpty()) {
         dialogueName = currentDialogue_.getName(user_);
     }
 
@@ -228,14 +228,17 @@ void ChatWidget::startChat() {
     updateDialogueList();
 }
 
-/// TODO
-void ChatWidget::switchDialogue(const DialogueInfo &dialogue) {
+void ChatWidget::switchDialogue(const Dialogue &dialogue) {
     messages_->clear();
 
-    currentDialogue_ = server_.getDialogue(dialogue.getId());
+    currentDialogue_ = dialogue;
+
+    std::vector<Message> messages = server_.getMessagesFromDialogue(dialogue.getId());
+    currentDialogue_.pushMessages(messages);
+
     dialogueName_->setText(currentDialogue_.getName(user_));
 
-    for (const auto& message : currentDialogue_.getMessages()) {
+    for (const auto &message : messages) {
         showNewMessage(message);
     }
 }
@@ -338,10 +341,8 @@ void ChatWidget::updateDialogueList() {
 
     dialogues_->clear();
 
-//    dialogueList_ = server_.getDialogueList(user_);
-
     for (const auto& dialogue : dialogueList_) {
-        Wt::WText *w = dialogues_->addWidget(std::make_unique<Wt::WText>(escapeText(dialogue.getName())));
+        Wt::WText *w = dialogues_->addWidget(std::make_unique<Wt::WText>(dialogue.getName(user_)));
         w->setStyleClass("reactive");
 
         w->setInline(false);
@@ -350,7 +351,7 @@ void ChatWidget::updateDialogueList() {
             switchDialogue(dialogue);
         });
 
-        if (dialogue.withYourself(user_)) {
+        if (dialogue.withYourself()) {
             w->setStyleClass("chat-self");
         }
     }
@@ -364,7 +365,7 @@ void ChatWidget::showNewMessage(const Message &message) {
     w->setInline(false);
     w->setStyleClass("chat-msg");
 
-    if (message.isMyMessage(user_)) {
+    if (message.getSenderLogin() == user_.getLogin()) {
         w->addStyleClass("msg-right");
     }
 
@@ -483,7 +484,7 @@ void ChatWidget::back() {
 }
 
 void ChatWidget::send() {
-    if (!messageEdit_->text().empty() && !currentDialogue_.empty()) {
+    if (!messageEdit_->text().empty() && !currentDialogue_.isEmpty()) {
         Message message(user_, currentDialogue_.getId(), messageEdit_->text());
         server_.sendMessage(user_, currentDialogue_, message);
 

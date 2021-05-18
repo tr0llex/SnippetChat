@@ -310,7 +310,7 @@ void MainDb::writeMessage(Message& message) {
     ";";
     CassUuid uuid;
     CassStatement* insertMessageSt = cass_statement_new(insertMessage, 7);
-    cass_uuid_from_string(message.getMessageId().data(), &uuid);
+    cass_uuid_from_string(message.getId().data(), &uuid);
     cass_statement_bind_uuid(insertMessageSt, 0, uuid);
 
     cass_uuid_from_string(message.getDialogueParentId().data(), &uuid);
@@ -371,7 +371,7 @@ void MainDb::writeMessage(Message& message) {
 }
 
 std::vector<Message> MainDb::getNLastMessagesFromDialogue(std::string dialogueId, long count) const {
-    std::vector<Message> messages;
+    std::vector<Message> messages(count);
     const char* getNMessagesQ = "SELECT * FROM maindb.messages_by_id "
                                 "WHERE dialogue_id = ? LIMIT ?;";
     CassStatement* getNMessagesSt = cass_statement_new(getNMessagesQ, 2);
@@ -407,7 +407,7 @@ std::vector<Message> MainDb::getNLastMessagesFromDialogue(std::string dialogueId
 
     CassIterator* messages_iterator = cass_iterator_from_result(result);
 
-
+    long i = count - 1;
     while (cass_iterator_next(messages_iterator)) {
         const CassRow* row = cass_iterator_get_row(messages_iterator);
     
@@ -454,7 +454,8 @@ std::vector<Message> MainDb::getNLastMessagesFromDialogue(std::string dialogueId
                            messageCodeStr, messageTimeT, isReadB);
 
     
-        messages.push_back(newMessage);
+        messages[i] = newMessage;
+        i--;
     }
 
     cass_result_free(result);

@@ -46,8 +46,7 @@ bool ChatServer::login(User &user) {
     std::unique_lock<std::recursive_mutex> lock(mutex_);
 
     if (db_.searchUserPassword(user.getLogin(), user.getPassword())) {
-        /// Оповестить только друзей
-//        postChatEvent(ChatEvent(ChatEvent::Login, user));
+        /// Оповестить только друзей TODO
 
         return true;
     }
@@ -58,20 +57,13 @@ bool ChatServer::login(User &user) {
 void ChatServer::logout(const User &user) {
     std::unique_lock<std::recursive_mutex> lock(mutex_);
 
-//    postChatEvent(ChatEvent(ChatEvent::Logout, user));
+    /// Оповестить только друзей TODO
 }
 
 bool ChatServer::changeProfile(User &user, const User &newUser) {
     std::unique_lock<std::recursive_mutex> lock(mutex_);
 
     db_.changePassword(newUser);
-
-//    if () {
-
-//        postChatEvent(ChatEvent(ChatEvent::UpdateProfile, user));
-
-//        return true;
-//    }
 
     return false;
 }
@@ -80,7 +72,7 @@ DialogueList ChatServer::getDialogueList(const User &user) const {
     return db_.getLastNDialoguesWithLastMessage(user, 20);
 }
 
-Dialogue ChatServer::getDialogue(const std::string dialogueId) const { // Dialogue.getId()
+std::vector<Message> ChatServer::getMessagesFromDialogue(const std::string &dialogueId) const {
     return db_.getNLastMessagesFromDialogue(dialogueId, 100);
 }
 

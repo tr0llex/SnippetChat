@@ -24,7 +24,7 @@ public:
     void letSetting();
 
     void startChat();
-    void switchDialogue(const DialogueInfo& dialogue);
+    void switchDialogue(const Dialogue& dialogue);
     void changeProfile(const User& newUser);
     void logout();
 
@@ -63,12 +63,12 @@ private:
 private:
     ChatServer    &server_;
 
-    bool           loggedIn_;
-    User           user_;
-    Dialogue       currentDialogue_;
-    DialogueList   dialogueList_;
-    std::vector<User> foundUsers_;
-    int            runCodeIndex_;
+    bool                loggedIn_;
+    User                user_;
+    Dialogue            currentDialogue_;
+    DialogueList        dialogueList_;
+    std::vector<User>   foundUsers_;
+    int                 runCodeIndex_;
 
     Wt::WLineEdit *userNameEdit_;
     Wt::WLineEdit *passwordEdit_;

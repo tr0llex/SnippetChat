@@ -31,7 +31,7 @@ public:
     bool changeProfile(User& user, const User& newUser);
 
     DialogueList getDialogueList(const User &user) const;
-    Dialogue getDialogue(const std::string dialogueId) const;
+    std::vector<Message> getMessagesFromDialogue(const std::string &dialogueId) const;
 
     std::vector<User> getUsersByUserName(const User &findUser) const;
     Dialogue createDialogue(const User &user, const User &otherUser);
@@ -47,7 +47,7 @@ private:
 private:
     struct ClientInfo {
         std::string       sessionId;
-        std::string          userId;
+        std::string       userId;
         ChatEventCallback eventCallback;
     };
     typedef std::map<Client *, ClientInfo> ClientMap;

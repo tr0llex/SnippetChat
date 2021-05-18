@@ -20,14 +20,6 @@ int User::getStatus() const {
     return userStatus_;
 }
 
-std::vector<std::string> User::getDialoguesList() const {
-    return dialoguesList_;
-}
-
-void User::addDialogueToList(std::string dialogueId) {
-    dialoguesList_.push_back(dialogueId);
-}
-
 void User::setPassword(const std::string &userPassword) {
     userPassword_ = userPassword;
 }
@@ -75,8 +67,8 @@ bool LoginData::operator==(const LoginData &ldt1) const {
     return false;
 }
 
-std::string Message::getMessageId() const {
-    return messageId_;
+std::string Message::getId() const {
+    return id_;
 }
 
 std::string Message::getDialogueParentId() const {
@@ -111,8 +103,8 @@ std::vector<std::string> Dialogue::getParticipantsList() {
     return participantsList_;
 }
 
-std::string Dialogue::getDialogueId() const {
-    return dialogueId_;
+std::string Dialogue::getId() const {
+    return id_;
 }
 
 std::string Dialogue::getName(User& user) const {
@@ -123,11 +115,24 @@ std::string Dialogue::getName(User& user) const {
     }
 }
 
+bool Dialogue::isEmpty() const {
+    return participantsList_.empty();
+}
 
 void Dialogue::pushNewMessage(const Message &newMessage) {
-    dialogueMessageList_.insert(dialogueMessageList_.begin(), newMessage);
+    dialogueMessageList_.push_back(newMessage);
 }
 
 void Dialogue::pushNewParticipant(std::string newParticipantId) {
     participantsList_.push_back(newParticipantId);
+}
+
+void Dialogue::pushMessages(const std::vector<Message> &dialogueMessageList) {
+    for (const auto &message : dialogueMessageList) {
+        pushNewMessage(message);
+    }
+}
+
+bool Dialogue::withYourself() const {
+    return participantsList_.size() == 1;
 }

@@ -169,14 +169,14 @@ typedef std::multiset<DialogueInfo, ComparatorDialogueInfo> DialogueList;  // st
 
 class Dialogue {
 public:
-    Dialogue() : dialogueId_(0) {}
+    Dialogue() : id_(0) {}
     Dialogue(uint32_t dialogueId, const User &user)
-            : dialogueId_(dialogueId) {
+            : id_(dialogueId) {
         names.push_back(user.getUsername());
         participantsList_.push_back(user.getId());
     }
     Dialogue(uint32_t dialogueId, const User &firstUser, const User &secondUser)
-            : dialogueId_(dialogueId) {
+            : id_(dialogueId) {
         names.push_back(firstUser.getUsername());
         participantsList_.push_back(firstUser.getId());
 
@@ -187,7 +187,7 @@ public:
     }
 
     uint32_t getId() const {
-        return dialogueId_;
+        return id_;
     }
     std::vector<uint32_t> getParticipants() const {
         return participantsList_;
@@ -217,7 +217,7 @@ public:
         std::wstring name = getName(requester);
 
         if (dialogueMessageList_.empty()) {
-            return DialogueInfo(dialogueId_, name);
+            return DialogueInfo(id_, name);
         }
 
         Message message = dialogueMessageList_.back();
@@ -264,14 +264,14 @@ public:
     }
 
     bool operator==(const DialogueInfo &dialogue) const {
-        return dialogueId_ == dialogue.getId();
+        return id_ == dialogue.getId();
     }
     bool operator!=(const DialogueInfo &dialogue) const {
         return !(*this == dialogue);
     }
 
 private:
-    uint32_t dialogueId_;  // std::string
+    uint32_t id_;  // std::string
     std::vector<std::wstring> names;
     std::vector<uint32_t> participantsList_;
     std::vector<Message> dialogueMessageList_;
