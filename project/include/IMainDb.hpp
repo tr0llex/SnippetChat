@@ -8,8 +8,8 @@ class IMainDb {
     public:
         virtual ~IMainDb() = default;
 
-        virtual User* searchUserPassword(std::string login, std::string password) = 0;
-        virtual bool searchUserLogin(std::string login) = 0;
+        virtual User searchUserPassword(std::string login, std::string password) = 0;
+        virtual bool searchUserLogin(std::string login) const = 0;
         virtual int writeUser(const User& user) = 0;
         virtual void changePassword(const User& user) = 0;
 

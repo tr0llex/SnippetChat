@@ -13,8 +13,8 @@ class MainDb : public IMainDb {
         MainDb();
         ~MainDb();
 
-        User* searchUserPassword(std::string login, std::string password) override;
-        bool searchUserLogin(std::string login) override;
+        User searchUserPassword(std::string login, std::string password) override;
+        bool searchUserLogin(std::string login) const override;
         int writeUser(const User& user) override;
         void changePassword(const User& user) override;
 

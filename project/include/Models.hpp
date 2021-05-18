@@ -5,8 +5,9 @@
 #include <set>
 #include <utility>
 #include <vector>
-#include <ctime>
 
+
+std::string ws2s(const std::wstring &wstr);
 
 class User {
 private:
@@ -19,6 +20,7 @@ public:
     User() = default;
     ~User() = default;
 
+    explicit User(const std::string &userLogin, const std::string &userPassword = "1"/*TODO*/) : userLogin_(userLogin), userPassword_(userPassword), userStatus_(0) {}
     User(std::string userLogin, std::string userPassword,
          std::string userToken, int userStatus) :
             userLogin_(std::move(userLogin)), userPassword_(std::move(userPassword)),
@@ -39,6 +41,9 @@ public:
     void setToken(const std::string &userToken);
 
     void setStatus(int userStatus);
+
+    bool operator==(const User &user) const;
+    bool operator!=(const User &user) const;
 };
 
 class LoginData {
@@ -76,12 +81,11 @@ private:
 
 class Message {
 public:
-    Message(std::string messageId, std::string dialogueParentId, std::string senderId,
-            std::string messageText, std::string messageCode, time_t timeSent, bool isRead) :
-            id_(messageId), dialogueParentId_(dialogueParentId), senderId_(senderId),
-            messageText_(std::move(messageText)), messageCode_(std::move(messageCode)),
-            timeSent_(timeSent), isRead_(isRead) {
-    }
+    Message() = default;
+    Message(const std::string &dialogueParentId, const std::string &senderId,
+            const std::string &messageText, const std::string &messageCode = std::string());
+    Message(const std::string &messageId, const std::string &dialogueParentId, const std::string &senderId,
+            std::string messageText, std::string messageCode, time_t timeSent, bool isRead);
 
     ~Message() = default;
 
@@ -91,15 +95,17 @@ public:
 
     std::string getSenderLogin() const;
 
-    std::string getMessageText();
+    std::string getMessageText() const;
 
-    std::string getMessageCode();
+    std::string getMessageCode() const;
 
     time_t getTimeSent() const;
 
+    std::string getTimeSentStr() const;
+
     bool isRead();
 
-
+    bool isHaveCode() const;
 
 private:
     std::string id_;
@@ -137,11 +143,13 @@ public:
 
     void pushNewParticipant(std::string newParticipantId);
 
-    std::string getName(User& user) const;
+    std::string getName(const User &requester) const;
 
     bool isEmpty() const;
 
     bool withYourself() const;
+
+    bool operator==(const Dialogue &dialogue) const;
 
 private:
     std::string id_;

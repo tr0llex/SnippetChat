@@ -23,7 +23,7 @@ public:
     const Dialogue& dialogue() const { return dialogue_; }
     const Wt::WString& resultCompilation() const { return resultCompilation_; }
 
-    std::string getSenderId() const {
+    std::string getSenderLogin() const {
         return dialogue_.getLastMessage().getSenderLogin();
     }
 

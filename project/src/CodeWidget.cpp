@@ -23,7 +23,7 @@ CodeWidget::CodeWidget(ChatServer& server, const Message &message)
 
     programText_->setAnimation(animation);
     programText_->collapse();
-    programText_->setCentralWidget(Wt::cpp14::make_unique<Wt::WText>(message_.getCodeText()));
+    programText_->setCentralWidget(Wt::cpp14::make_unique<Wt::WText>(message_.getMessageCode()));
 
     stdinEdit_->setRows(3);
 

@@ -33,10 +33,10 @@ public:
     DialogueList getDialogueList(const User &user) const;
     std::vector<Message> getMessagesFromDialogue(const std::string &dialogueId) const;
 
-    std::vector<User> getUsersByUserName(const User &findUser) const;
+    std::vector<User> getUsersByUserName(const std::string &findUser) const;
     Dialogue createDialogue(const User &user, const User &otherUser);
 
-    void sendMessage(const User &user, Dialogue &dialogue, Message &message);
+    void sendMessage(Dialogue &dialogue, Message &message);
 
 //    void runCompilation(const Message &message, const std::wstring &stdIn); TODO
 

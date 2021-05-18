@@ -400,7 +400,7 @@ void ChatWidget::signUp() {
         return;
     }
 
-    Wt::WString username = userNameEdit_->text();
+    std::string username = ws2s(userNameEdit_->text());
 
     user_ = User(username);
 
@@ -417,7 +417,7 @@ void ChatWidget::login() {
         return;
     }
 
-    Wt::WString username = userNameEdit_->text();
+    std::string username = ws2s(userNameEdit_->text());
 
     if (!soundMessageReceived_) {
         soundMessageReceived_ = std::make_unique<Wt::WSound>("resources/sounds/message_received.mp3");
@@ -443,30 +443,30 @@ void ChatWidget::login() {
 
 void ChatWidget::searchUser() {
     if (!userNameSearch_->text().empty()) {
-        User findUser(userNameSearch_->text());
+        std::string findUser = ws2s(userNameSearch_->text());
 
         dialogues_->clear();
 
         foundUsers_ = server_.getUsersByUserName(findUser);
 
         for (const auto& foundUser : foundUsers_) {
-            Wt::WText *w = dialogues_->addWidget(std::make_unique<Wt::WText>(escapeText(foundUser.getUsername())));
+            Wt::WText *w = dialogues_->addWidget(std::make_unique<Wt::WText>(foundUser.getLogin()));
             w->setStyleClass("reactive");
 
             w->setInline(false);
 
             w->clicked().connect([&] {
                 for (const auto &dialogue : dialogueList_) {
-                    if (dialogue.getName() == foundUser.getUsername()) {
+                    if (dialogue.getName(user_) == foundUser.getLogin()) {
                         switchDialogue(dialogue);
-                        updateDialogueList();
+//                        updateDialogueList(); TODO нужно ли здесь ??
                         return;
                     }
                 }
 
-                DialogueInfo dialogueInfo = server_.createDialogue(user_, foundUser);
+                Dialogue dialogue = server_.createDialogue(user_, foundUser);
 
-                dialogueList_.insert(dialogueInfo);
+                dialogueList_.insert(dialogue);
 
                 updateDialogueList();
             });
@@ -485,18 +485,18 @@ void ChatWidget::back() {
 
 void ChatWidget::send() {
     if (!messageEdit_->text().empty() && !currentDialogue_.isEmpty()) {
-        Message message(user_, currentDialogue_.getId(), messageEdit_->text());
-        server_.sendMessage(user_, currentDialogue_, message);
+        Message message(currentDialogue_.getId(), user_.getLogin(), ws2s(messageEdit_->text()));
+        server_.sendMessage(currentDialogue_, message);
 
         showNewMessage(message);
     }
 }
 
+/// TODO использовать функцию выше
 void ChatWidget::sendSnippet() {
-    if (!messageEdit_->text().empty() && !currentDialogue_.empty()) {
-        std::wstring emptyMsg;
-        Message message(user_, currentDialogue_.getId(), emptyMsg, messageEdit_->text());
-        server_.sendMessage(user_, currentDialogue_, message);
+    if (!messageEdit_->text().empty() && !currentDialogue_.isEmpty()) {
+        Message message(currentDialogue_.getId(), user_.getLogin(), std::string(), ws2s(messageEdit_->text()));
+        server_.sendMessage(currentDialogue_, message);
 
         showNewMessage(message);
     }
@@ -530,9 +530,9 @@ void ChatWidget::processChatEvent(const ChatEvent &event) {
             break;
         }
         case ChatEvent::NewMessage: {
-            if (event.getSenderId() != user_.getId()) {
+            if (event.getSenderLogin() != user_.getLogin()) {
                 if (currentDialogue_ == event.dialogue()) {
-                    showNewMessage(event.dialogue().getMessage());
+                    showNewMessage(event.dialogue().getLastMessage());
                 }
 
                 if (soundMessageReceived_) {
