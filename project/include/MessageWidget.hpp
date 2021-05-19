@@ -16,7 +16,11 @@
 
 class MessageWidget : public Wt::WContainerWidget {
 public:
-    explicit MessageWidget(ChatServer& server, const Message &message);
+    explicit MessageWidget(const Message &message);
+
+    std::string getMessageId() const;
+
+    void setResultCompilation(const std::string &result);
 
 protected:
     void createLayout(
@@ -25,8 +29,6 @@ protected:
             std::unique_ptr<WWidget> code);
 
 private:
-    ChatServer &server_;
-
     Message message_;
 
     Wt::WText   *text_;

@@ -17,9 +17,9 @@
 
 class CodeWidget : public Wt::WContainerWidget {
 public:
-    CodeWidget(ChatServer& server, const Message &message);
+    explicit CodeWidget(const std::string &codeText);
 
-    void setResultCompilation(const Wt::WString &result);
+    void setResultCompilation(const std::string &result);
 
 protected:
     void createLayout(
@@ -32,10 +32,7 @@ private:
     void runCode();
 
 private:
-    ChatServer    &server_;
-//    User          &user_; TODO
-
-    Message    message_;
+    std::string   codeText_;
 
     Wt::WPanel                               *programText_;
     Wt::Core::observing_ptr<Wt::WPushButton>  runButton_;

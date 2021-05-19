@@ -122,10 +122,11 @@ class Dialogue {
 public:
     Dialogue() = default;
     Dialogue(std::string dialogueId,
-            std::vector<std::string> participantsList,
-            std::vector<Message> dialogueMessageList) :
-            id_(dialogueId),
-            dialogueMessageList_(dialogueMessageList) {
+             std::vector<Message> dialogueMessageList,
+             std::vector<std::string> participantsList) :
+            id_(std::move(dialogueId)),
+            dialogueMessageList_(std::move(dialogueMessageList)),
+            participantsList_(std::move(participantsList)) {
     }
 
     ~Dialogue() = default;

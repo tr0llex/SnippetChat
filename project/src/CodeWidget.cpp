@@ -1,7 +1,7 @@
 #include "CodeWidget.hpp"
 
-CodeWidget::CodeWidget(ChatServer& server, const Message &message)
-: server_(server), message_(message) {
+CodeWidget::CodeWidget(const std::string &codeText)
+: codeText_(codeText) {
     setWidth(500);
 
     auto programTextPtr = std::make_unique<Wt::WPanel>();
@@ -23,7 +23,7 @@ CodeWidget::CodeWidget(ChatServer& server, const Message &message)
 
     programText_->setAnimation(animation);
     programText_->collapse();
-    programText_->setCentralWidget(Wt::cpp14::make_unique<Wt::WText>(message_.getMessageCode()));
+    programText_->setCentralWidget(Wt::cpp14::make_unique<Wt::WText>(codeText));
 
     stdinEdit_->setRows(3);
 
@@ -54,19 +54,12 @@ void CodeWidget::createLayout(std::unique_ptr<WWidget> programText, std::unique_
 }
 
 void CodeWidget::runCode() {
-//    server_.runCompilation(message_, stdinEdit_->text());
 
     runButton_->disable();
 }
 
-void CodeWidget::setResultCompilation(const Wt::WString &result) {
+void CodeWidget::setResultCompilation(const std::string &result) {
     runButton_->enable();
 
     executionResult_->setText(result);
 }
-
-/// короче бля надо хранить в чатвиджете переменную индекс сообщения
-/// - если она -1 можем запускать код
-/// - когда запускаем, записываем в нее индекс сообщения
-/// херня получается .........
-
