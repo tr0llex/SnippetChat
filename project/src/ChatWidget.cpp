@@ -399,7 +399,7 @@ void ChatWidget::updateDialogueList() {
 void ChatWidget::showNewMessage(const Message &message) {
     Wt::WApplication *app = Wt::WApplication::instance();
 
-    MessageWidget *w = messages_->addWidget(std::make_unique<MessageWidget>(server_, message));
+    MessageWidget *w = messages_->addWidget(std::make_unique<MessageWidget>(message));
 
     w->setInline(false);
     w->setStyleClass("chat-msg");
@@ -520,7 +520,9 @@ void ChatWidget::searchUser() {
 
                 Dialogue dialogue = server_.createDialogue(user_, foundUser);
 
-                dialogueList_.insert(dialogue);
+                // TODO
+//                dialogueList_.insert(dialogue);
+                dialogueList_.emplace(dialogue);
 
                 updateDialogueList();
             });
@@ -599,13 +601,19 @@ void ChatWidget::processChatEvent(const ChatEvent &event) {
             break;
         }
         case ChatEvent::CompilationCode: {
-            /// TODO
-//            for (int i = 0; i < messages_->count(); ++i) {
-//                auto messageWidget = dynamic_cast<MessageWidget*>(messages_->widget(i));
-//                if (messageWidget.) {
-//
-//                }
-//            }
+            /// TODO не протестировано
+            if (event.dialogue() != currentDialogue_) {
+                break;
+            }
+
+            for (int i = 0; i < messages_->count(); ++i) {
+                auto messageWidget = dynamic_cast<MessageWidget*>(messages_->widget(i));
+                if (messageWidget->getMessageId() == event.messageId() && messageWidget->isHaveCode()) {
+                    messageWidget->setResultCompilation(event.resultCompilation());
+                    break;
+                }
+            }
+
             break;
         }
         default:

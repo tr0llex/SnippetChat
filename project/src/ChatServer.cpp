@@ -37,7 +37,10 @@ bool ChatServer::signUp(User &user) {
 
     if (db_.writeUser(user) == EXIT_SUCCESS) {
         /// TODO
-        db_.createDialogue(user.getLogin(), "jopa");
+        std::vector<std::string> participantsList;
+        participantsList.push_back(user.getLogin());
+
+        db_.createDialogue(participantsList);
 
         return true;
     }
@@ -93,7 +96,11 @@ std::vector<User> ChatServer::getUsersByUserName(const std::string &findUser) co
 Dialogue ChatServer::createDialogue(const User &user, const User &otherUser) {
     std::unique_lock<std::recursive_mutex> lock(mutex_);
 
-    Dialogue dialogue = db_.createDialogue(user.getLogin(), otherUser.getLogin());
+    std::vector<std::string> participantsList;
+    participantsList.push_back(user.getLogin());
+    participantsList.push_back(otherUser.getLogin());
+
+    Dialogue dialogue = db_.createDialogue(participantsList);
 
     notifyUser(ChatEvent(ChatEvent::NewDialogue, otherUser.getLogin(), dialogue));
 

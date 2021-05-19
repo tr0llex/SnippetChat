@@ -20,6 +20,8 @@ public:
 
     std::string getMessageId() const;
 
+    bool isHaveCode() const;
+
     void setResultCompilation(const std::string &result);
 
 protected:
@@ -34,7 +36,8 @@ private:
     Wt::WText   *text_;
     Wt::WText   *time_;
     CodeWidget  *code_;
-
+/// TODO
+// прокидываем в код кнопку, которую будем создавать в чатвиджете
 };
 
 

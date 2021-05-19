@@ -129,6 +129,14 @@ public:
             participantsList_(std::move(participantsList)) {
     }
 
+    Dialogue(const Dialogue &dialogue) {
+        id_ = dialogue.id_;
+        dialogueMessageList_ = dialogue.dialogueMessageList_;
+        participantsList_ = dialogue.participantsList_;
+    }
+
+    Dialogue& operator=(const Dialogue &dialogue) = default;
+
     ~Dialogue() = default;
 
     Message getLastMessage() const;
@@ -152,6 +160,7 @@ public:
     bool withYourself() const;
 
     bool operator==(const Dialogue &dialogue) const;
+    bool operator!=(const Dialogue &dialogue) const;
 
 private:
     std::string id_;

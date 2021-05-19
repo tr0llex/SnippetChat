@@ -4,11 +4,14 @@ MessageWidget::MessageWidget(const Message &message)
         : message_(message), code_(nullptr) {
     auto textPtr = std::make_unique<Wt::WText>(message.getMessageText());
     auto timePtr = std::make_unique<Wt::WText>(message.getTimeSentStr());
-    auto codePtr = (message.isHaveCode()) ? std::make_unique<CodeWidget>(message.getMessageCode()) : nullptr;
+    std::unique_ptr<CodeWidget> codePtr = nullptr;
 
     text_ = textPtr.get();
     time_ = timePtr.get();
-    code_ = (message.isHaveCode()) ? codePtr.get() : nullptr;
+    if (isHaveCode()) {
+        codePtr = std::make_unique<CodeWidget>(message.getMessageCode());
+        code_ = codePtr.get();
+    }
 
     createLayout(std::move(textPtr),
                  std::move(timePtr),
@@ -28,7 +31,7 @@ void MessageWidget::createLayout(std::unique_ptr<WWidget> text, std::unique_ptr<
 
     vLayout->addLayout(std::move(hLayout));
 
-    if (code_) {
+    if (isHaveCode()) {
         vLayout->addWidget(std::move(code));
     }
 
@@ -39,6 +42,12 @@ std::string MessageWidget::getMessageId() const {
     return message_.getId();
 }
 
+bool MessageWidget::isHaveCode() const {
+    return message_.isHaveCode();
+}
+
 void MessageWidget::setResultCompilation(const std::string &result) {
-    code_->setResultCompilation(result);
+    if (isHaveCode()) {
+        code_->setResultCompilation(result);
+    }
 }

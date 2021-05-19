@@ -198,3 +198,7 @@ bool Dialogue::withYourself() const {
 bool Dialogue::operator==(const Dialogue &dialogue) const {
     return id_ == dialogue.getId();
 }
+
+bool Dialogue::operator!=(const Dialogue &dialogue) const {
+    return id_ != dialogue.getId();
+}

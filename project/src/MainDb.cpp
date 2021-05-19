@@ -1,5 +1,6 @@
 #include <vector>
 #include <exception>
+#include <time.h>
 #include "MainDb.hpp"
 
 MainDb::MainDb() {
@@ -79,6 +80,8 @@ void MainDb::migrate() {
     "WITH CLUSTERING ORDER BY (dialogue_id ASC, time_sent DESC)"
     ";";
     const char* messageByIdIndForDialog = "CREATE INDEX IF NOT EXISTS ON mainDB.messages_by_id (dialogue_id);";
+    const char* dialoguesByIdForParticipants = "CREATE INDEX IF NOT EXISTS "
+                                               "ON mainDB.dialogues_by_id (participants_logins);";
 
 
     CassStatement* keyspaceSt = cass_statement_new(keyspaceQ, 0);  // made statement
@@ -111,6 +114,9 @@ void MainDb::migrate() {
     CassStatement* messagesByIdIndForDialogSt = cass_statement_new(messageByIdIndForDialog, 0);  // made statement
     CassFuture* messagesByIdIndForDialogSt_future = cass_session_execute(session_, messagesByIdIndForDialogSt);
 
+    CassStatement* dialoguesByIdForParticipantsSt = cass_statement_new(dialoguesByIdForParticipants, 0);
+    CassFuture* dialoguesByIdForParticipantsSt_future = cass_session_execute(session_, dialoguesByIdForParticipantsSt);
+
 
     cass_statement_free(keyspaceSt);
     cass_statement_free(messagesByIdSt);
@@ -118,6 +124,7 @@ void MainDb::migrate() {
     cass_statement_free(userDialoguesSt);
     cass_statement_free(usersByIdSt);
     cass_statement_free(messagesByIdIndForDialogSt);
+    cass_statement_free(dialoguesByIdForParticipantsSt);
 
     cass_future_free(ks_future);
     cass_future_free(messagesByIdSt_future);
@@ -125,6 +132,7 @@ void MainDb::migrate() {
     cass_future_free(userDialoguesSt_future);
     cass_future_free(usersByIdSt_future);
     cass_future_free(messagesByIdIndForDialogSt_future);
+    cass_future_free(dialoguesByIdForParticipantsSt_future);
 }
     
 void MainDb::disconnectFromDb() {
@@ -582,7 +590,9 @@ std::vector<std::string> MainDb::getParticipantsLoginsFromDialogue(std::string d
     const char* searchUser = "SELECT participants_logins FROM maindb.dialogues_by_id "
                              "WHERE dialogue_id = ? LIMIT 1;";
     CassStatement* returnedUser = cass_statement_new(searchUser, 1);
-    cass_statement_bind_string(returnedUser, 0, dialogueId.data());
+    CassUuid uuid;
+    cass_uuid_from_string(dialogueId.data(), &uuid);
+    cass_statement_bind_uuid(returnedUser, 0, uuid);
     CassFuture* returnedUser_future = cass_session_execute(session_, returnedUser);
 
     CassError rc = cass_future_error_code(returnedUser_future);
@@ -639,13 +649,57 @@ DialogueList MainDb::getLastNDialoguesWithLastMessage(const User& user, long cou
     return dialogues;
 }
 
-Dialogue MainDb::findDialogue(std::vector<std::string> participantsList) const {
-    const char* searchDialogue = "SELECT * FROM maindb.dialogues_by_id WHERE ;";
+std::string MainDb::findDialogue(std::vector<std::string> participantsList) const {
+    const char* searchDialogue = "SELECT * FROM maindb.dialogues_by_id WHERE paricipants_logins CONTAINS ? AND "
+                                 "paricipants_logins CONTAINS ? LIMIT 1 ALLOW FILTERING;";
+    CassStatement* searchDialogueSt = cass_statement_new(searchDialogue, 2);
+    cass_statement_bind_string(searchDialogueSt, 0, participantsList[0].data());
+    cass_statement_bind_string(searchDialogueSt, 1, participantsList[1].data());
+
+    CassFuture* searchDialogueSt_future = cass_session_execute(session_, searchDialogueSt);
+
+    CassError rc = cass_future_error_code(searchDialogueSt_future);
+
+    if (rc != CASS_OK) {
+        /* Display connection error message */
+        const char* message;
+        size_t message_length;
+        cass_future_error_message(searchDialogueSt_future, &message, &message_length);
+        fprintf(stderr, "St9 error: '%.*s'\n", (int)message_length, message);
+    }
+
+    const CassResult* result = cass_future_get_result(searchDialogueSt_future);
+    if (result == nullptr) {  // throw exception
+        cass_statement_free(searchDialogueSt);
+        cass_future_free(searchDialogueSt_future);
+        return "";
+    }
+
+    const CassRow* row = cass_result_first_row(result);
+    if (row == nullptr) {  // exception
+        cass_result_free(result);
+        cass_statement_free(searchDialogueSt);
+        cass_future_free(searchDialogueSt_future);
+        return "";
+    }
+
+    CassUuid dialogueUuid;
+    char dialogueUuidStr[CASS_UUID_STRING_LENGTH];
+    const CassValue* dialogueId = cass_row_get_column_by_name(row, "dialogue_id");
+    cass_value_get_uuid(dialogueId, &dialogueUuid);
+    cass_uuid_string(dialogueUuid, dialogueUuidStr);
+
+    return dialogueUuidStr;
 }
 
 
 
 Dialogue MainDb::createDialogue(std::vector<std::string> participantsList) const {
+//    std::string existingUuid = findDialogue(participantsList);
+//    if (existingUuid != "") {
+//        std::vector<Message> messages;
+//        return Dialogue(existingUuid, messages, participantsList);
+//    }
     const char* newDialogue = "INSERT INTO maindb.dialogues_by_id (dialogue_id, participants_logins) "
                               "VALUES (?, ?);";
     CassStatement* newDialogueSt = cass_statement_new(newDialogue, 2);
@@ -662,9 +716,8 @@ Dialogue MainDb::createDialogue(std::vector<std::string> participantsList) const
 
     CassCollection* set = cass_collection_new(CASS_COLLECTION_TYPE_SET, 2);
 
-    cass_collection_append_string(set, participantsList[0].data());
-    if (participantsList[0] != participantsList[1]) {
-        cass_collection_append_string(set, participantsList[1].data());
+    for (auto & i : participantsList) {
+        cass_collection_append_string(set, i.data());
     }
     cass_statement_bind_collection(newDialogueSt, 1, set);
 
@@ -679,15 +732,30 @@ Dialogue MainDb::createDialogue(std::vector<std::string> participantsList) const
         cass_future_error_message(newDialogueSt_future, &message, &message_length);
         fprintf(stderr, "St2 error: '%.*s'\n", (int)message_length, message);
     }
-    std::vector<Message> messages;
-    std::vector<std::string> participants;
 
-    participants.push_back(participantsList[0]);
-    if (participantsList[0] != participantsList[1]) {
-        participants.push_back(participantsList[1]);
+    const char* newDToUserDialogue = "INSERT INTO maindb.user_dialogues (login, dialogue_id, time_update) "
+                                             "VALUES (?, ?, ?);";
+
+    for (size_t i = 0; i < participantsList.size(); i++) {
+        CassStatement* newDToUserDialogueSt = cass_statement_new(newDToUserDialogue, 3);
+        cass_statement_bind_string(newDToUserDialogueSt, 0, participantsList[0].data());
+        cass_statement_bind_uuid(newDToUserDialogueSt, 1, uuid);
+        time_t now = time(0);
+        cass_statement_bind_int64(newDToUserDialogueSt, 2, now);
+        CassFuture* newDToUserDialogueSt_future = cass_session_execute(session_, newDToUserDialogueSt);
+        CassError rc1 = cass_future_error_code(newDToUserDialogueSt_future);
+        if (rc1 != CASS_OK) {
+            /* Display connection error message */
+            const char* message;
+            size_t message_length;
+            cass_future_error_message(newDToUserDialogueSt_future, &message, &message_length);
+            fprintf(stderr, "St10 error: '%.*s'\n", (int)message_length, message);
+        }
     }
 
-    return Dialogue(uuidStr, messages, participants);
+    std::vector<Message> messages;
+
+    return Dialogue(uuidStr, messages, participantsList);
 }
 
 void MainDb::deleteMessage(Message& message) {
