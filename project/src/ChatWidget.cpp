@@ -51,29 +51,55 @@ void ChatWidget::letSignUp() {
 
     auto vLayout = setLayout(std::make_unique<Wt::WVBoxLayout>());
 
-    auto hLayout_(std::make_unique<Wt::WHBoxLayout>());
-    auto hLayout = hLayout_.get();
-    vLayout->addLayout(std::move(hLayout_), 0,
-                       Wt::AlignmentFlag::Top | Wt::AlignmentFlag::Left);
 
-    hLayout->addWidget(std::make_unique<Wt::WLabel>("User name:"),
-                       0, Wt::AlignmentFlag::Middle);
+    auto hLayout = std::make_unique<Wt::WHBoxLayout>();
 
-    userNameEdit_ = hLayout->addWidget(std::make_unique<Wt::WLineEdit>("My name"),
-                                       0, Wt::AlignmentFlag::Middle);
-    userNameEdit_->setFocus();
+    hLayout->addWidget(std::make_unique<Wt::WLabel>("Login:"), 1);
 
-    auto button = hLayout->addWidget(std::make_unique<Wt::WPushButton>("Create account"),
-                                     0, Wt::AlignmentFlag::Middle);
+    userLoginEdit_ = hLayout->addWidget(std::make_unique<Wt::WLineEdit>(), 1);
+    userLoginEdit_->setFocus();
 
-    button->clicked().connect(this, &ChatWidget::signUp);
-    userNameEdit_->enterPressed().connect(this, &ChatWidget::signUp);
+    vLayout->addLayout(std::move(hLayout), 0, Wt::AlignmentFlag::Center);
 
-    auto signIn = hLayout->addWidget(std::make_unique<Wt::WPushButton>("Sign in"),
-                                     0, Wt::AlignmentFlag::Middle);
-    signIn->clicked().connect(this, &ChatWidget::letLogin);
 
-    statusMsg_ = vLayout->addWidget(std::make_unique<Wt::WText>());
+    hLayout = std::make_unique<Wt::WHBoxLayout>();
+
+    hLayout->addWidget(std::make_unique<Wt::WLabel>("Password:"), 1);
+
+    passwordEdit_ = hLayout->addWidget(std::make_unique<Wt::WLineEdit>(), 1);
+    passwordEdit_->setAttributeValue("type", "password");
+
+    vLayout->addLayout(std::move(hLayout), 0, Wt::AlignmentFlag::Center);
+
+
+    hLayout = std::make_unique<Wt::WHBoxLayout>();
+
+    hLayout->addWidget(std::make_unique<Wt::WLabel>("Confirm password:"), 1);
+
+    confirmPasswordEdit_ = hLayout->addWidget(std::make_unique<Wt::WLineEdit>(), 1);
+    confirmPasswordEdit_->setAttributeValue("type", "password");
+
+    vLayout->addLayout(std::move(hLayout), 0, Wt::AlignmentFlag::Center);
+
+
+    auto signUp = vLayout->addWidget(std::make_unique<Wt::WPushButton>("Sign up"), 0, Wt::AlignmentFlag::Center);
+
+    signUp->clicked().connect(this, &ChatWidget::signUp);
+    userLoginEdit_->enterPressed().connect(this, [&] {
+        passwordEdit_->setFocus();
+    });
+    passwordEdit_->enterPressed().connect(this, [&] {
+        confirmPasswordEdit_->setFocus();
+    });
+    confirmPasswordEdit_->enterPressed().connect(this, &ChatWidget::signUp);
+
+
+    auto logIn = vLayout->addWidget(std::make_unique<Wt::WText>("Log in"), 0, Wt::AlignmentFlag::Center);
+    logIn->setStyleClass("text-link");
+    logIn->clicked().connect(this, &ChatWidget::letLogin);
+
+
+    statusMsg_ = vLayout->addWidget(std::make_unique<Wt::WText>(), 1, Wt::AlignmentFlag::Center);
     statusMsg_->setTextFormat(Wt::TextFormat::Plain);
 }
 
@@ -82,29 +108,42 @@ void ChatWidget::letLogin() {
 
     auto vLayout = setLayout(std::make_unique<Wt::WVBoxLayout>());
 
-    auto hLayout_(std::make_unique<Wt::WHBoxLayout>());
-    auto hLayout = hLayout_.get();
-    vLayout->addLayout(std::move(hLayout_), 0,
-                       Wt::AlignmentFlag::Top | Wt::AlignmentFlag::Left);
 
-    hLayout->addWidget(std::make_unique<Wt::WLabel>("User name:"),
-                       0, Wt::AlignmentFlag::Middle);
+    auto hLayout = std::make_unique<Wt::WHBoxLayout>();
 
-    userNameEdit_ = hLayout->addWidget(std::make_unique<Wt::WLineEdit>("My name"),
-                                       0, Wt::AlignmentFlag::Middle);
-    userNameEdit_->setFocus();
+    hLayout->addWidget(std::make_unique<Wt::WLabel>("Login:"), 1);
 
-    auto button = hLayout->addWidget(std::make_unique<Wt::WPushButton>("Sign in"),
-                                     0, Wt::AlignmentFlag::Middle);
+    userLoginEdit_ = hLayout->addWidget(std::make_unique<Wt::WLineEdit>(), 1);
+    userLoginEdit_->setFocus();
 
-    button->clicked().connect(this, &ChatWidget::login);
-    userNameEdit_->enterPressed().connect(this, &ChatWidget::login);
+    vLayout->addLayout(std::move(hLayout), 0, Wt::AlignmentFlag::Center);
 
-    auto signUp = hLayout->addWidget(std::make_unique<Wt::WPushButton>("Sign up"),
-                                     0, Wt::AlignmentFlag::Middle);
+
+    hLayout = std::make_unique<Wt::WHBoxLayout>();
+
+    hLayout->addWidget(std::make_unique<Wt::WLabel>("Password:"), 1);
+
+    passwordEdit_ = hLayout->addWidget(std::make_unique<Wt::WLineEdit>(), 1);
+    passwordEdit_->setAttributeValue("type", "password");
+
+    vLayout->addLayout(std::move(hLayout), 0, Wt::AlignmentFlag::Center);
+
+
+    auto logIn = vLayout->addWidget(std::make_unique<Wt::WPushButton>("Log in"), 0, Wt::AlignmentFlag::Center);
+
+    logIn->clicked().connect(this, &ChatWidget::login);
+    userLoginEdit_->enterPressed().connect(this, [&] {
+        passwordEdit_->setFocus();
+    });
+    passwordEdit_->enterPressed().connect(this, &ChatWidget::login);
+
+
+    auto signUp = vLayout->addWidget(std::make_unique<Wt::WText>("Sign up"), 0, Wt::AlignmentFlag::Center);
+    signUp->setStyleClass("text-link");
     signUp->clicked().connect(this, &ChatWidget::letSignUp);
 
-    statusMsg_ = vLayout->addWidget(std::make_unique<Wt::WText>());
+
+    statusMsg_ = vLayout->addWidget(std::make_unique<Wt::WText>(), 1, Wt::AlignmentFlag::Center);
     statusMsg_->setTextFormat(Wt::TextFormat::Plain);
 }
 
@@ -115,7 +154,7 @@ void ChatWidget::letSetting() {
 void ChatWidget::startChat() {
     clear();
 
-    userNameEdit_ = nullptr;
+    userLoginEdit_ = nullptr;
 
     Wt::WString dialogueName;
     if (!currentDialogue_.isEmpty()) {
@@ -154,17 +193,17 @@ void ChatWidget::startChat() {
     messages_->setOverflow(Wt::Overflow::Auto);
     dialogues_->setOverflow(Wt::Overflow::Auto);
 
-    createLayout(std::move(dialogueNamePtr),
-                 std::move(userNameSearchPtr),
-                 std::move(searchButtonPtr),
-                 std::move(backButtonPtr),
-                 std::move(snippetButtonPtr),
-                 std::move(messagesPtr),
-                 std::move(userListPtr),
-                 std::move(messageEditPtr),
-                 std::move(sendButtonPtr),
-                 std::move(settingButtonPtr),
-                 std::move(logoutButtonPtr));
+    createMessengerLayout(std::move(dialogueNamePtr),
+                          std::move(userNameSearchPtr),
+                          std::move(searchButtonPtr),
+                          std::move(backButtonPtr),
+                          std::move(snippetButtonPtr),
+                          std::move(messagesPtr),
+                          std::move(userListPtr),
+                          std::move(messageEditPtr),
+                          std::move(sendButtonPtr),
+                          std::move(settingButtonPtr),
+                          std::move(logoutButtonPtr));
 
     clearMessageInput_.setJavaScript
             ("function(o, e) { setTimeout(function() {"
@@ -259,12 +298,12 @@ void ChatWidget::logout() {
     }
 }
 
-void ChatWidget::createLayout(std::unique_ptr<WWidget> dialogueName, std::unique_ptr<WWidget> userNameSearch,
-                              std::unique_ptr<WWidget> searchButton, std::unique_ptr<WWidget> backButton,
-                              std::unique_ptr<WWidget> snippetButton, std::unique_ptr<WWidget> messages,
-                              std::unique_ptr<WWidget> dialogueList, std::unique_ptr<WWidget> messageEdit,
-                              std::unique_ptr<WWidget> sendButton, std::unique_ptr<WWidget> settingButton,
-                              std::unique_ptr<WWidget> logoutButton) {
+void ChatWidget::createMessengerLayout(std::unique_ptr<WWidget> dialogueName, std::unique_ptr<WWidget> userNameSearch,
+                                       std::unique_ptr<WWidget> searchButton, std::unique_ptr<WWidget> backButton,
+                                       std::unique_ptr<WWidget> snippetButton, std::unique_ptr<WWidget> messages,
+                                       std::unique_ptr<WWidget> dialogueList, std::unique_ptr<WWidget> messageEdit,
+                                       std::unique_ptr<WWidget> sendButton, std::unique_ptr<WWidget> settingButton,
+                                       std::unique_ptr<WWidget> logoutButton) {
     auto vLayout = std::make_unique<Wt::WVBoxLayout>();
 
     auto hLayout = std::make_unique<Wt::WHBoxLayout>();
@@ -400,9 +439,20 @@ void ChatWidget::signUp() {
         return;
     }
 
-    std::string username = ws2s(userNameEdit_->text());
+    std::string username = ws2s(userLoginEdit_->text());
+    std::string password = ws2s(passwordEdit_->text());
+    std::string confirmPassword = ws2s(confirmPasswordEdit_->text());
 
-    user_ = User(username);
+    if (password != confirmPassword) {
+        statusMsg_->setText("Password mismatch");
+        return;
+    }
+    if (password.empty()) {
+        statusMsg_->setText("Password field must not be empty");
+        return;
+    }
+
+    user_ = User(username, password);
 
     if (server_.signUp(user_)) {
         login();
@@ -417,13 +467,13 @@ void ChatWidget::login() {
         return;
     }
 
-    std::string username = ws2s(userNameEdit_->text());
+    std::string username = ws2s(userLoginEdit_->text());
+    std::string password = ws2s(passwordEdit_->text());
 
-    if (!soundMessageReceived_) {
-        soundMessageReceived_ = std::make_unique<Wt::WSound>("resources/sounds/message_received.mp3");
-    }
+    // TODO
+    std::cout << "\nusername: "<< username << "\npassword: " << password << std::endl;
 
-    user_ = User(username);
+    user_ = User(username, password);
 
     if (server_.login(user_)) {
         loggedIn_ = true;
@@ -434,6 +484,10 @@ void ChatWidget::login() {
         }
 
         connect(user_);
+
+        if (!soundMessageReceived_) {
+            soundMessageReceived_ = std::make_unique<Wt::WSound>("resources/sounds/message_received.mp3");
+        }
 
         startChat();
     } else {

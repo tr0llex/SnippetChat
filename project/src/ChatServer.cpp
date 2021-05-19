@@ -36,7 +36,8 @@ bool ChatServer::signUp(User &user) {
     std::unique_lock<std::recursive_mutex> lock(mutex_);
 
     if (db_.writeUser(user) == EXIT_SUCCESS) {
-        db_.createDialogue(user.getLogin(), user.getLogin());
+        /// TODO
+        db_.createDialogue(user.getLogin(), "jopa");
 
         return true;
     }

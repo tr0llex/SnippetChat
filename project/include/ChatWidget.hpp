@@ -29,7 +29,31 @@ public:
     void logout();
 
 protected:
-    virtual void createLayout(
+    /*virtual void createSignUpLayout(
+            std::unique_ptr<WWidget> dialogueName,
+            std::unique_ptr<WWidget> userNameSearch,
+            std::unique_ptr<WWidget> searchButton,
+            std::unique_ptr<WWidget> backButton,
+            std::unique_ptr<WWidget> snippetButton,
+            std::unique_ptr<WWidget> messages,
+            std::unique_ptr<WWidget> dialogueList,
+            std::unique_ptr<WWidget> messageEdit,
+            std::unique_ptr<WWidget> sendButton,
+            std::unique_ptr<WWidget> settingButton,
+            std::unique_ptr<WWidget> logoutButton);
+    virtual void createLoginLayout(
+            std::unique_ptr<WWidget> dialogueName,
+            std::unique_ptr<WWidget> userNameSearch,
+            std::unique_ptr<WWidget> searchButton,
+            std::unique_ptr<WWidget> backButton,
+            std::unique_ptr<WWidget> snippetButton,
+            std::unique_ptr<WWidget> messages,
+            std::unique_ptr<WWidget> dialogueList,
+            std::unique_ptr<WWidget> messageEdit,
+            std::unique_ptr<WWidget> sendButton,
+            std::unique_ptr<WWidget> settingButton,
+            std::unique_ptr<WWidget> logoutButton);*/
+    virtual void createMessengerLayout(
             std::unique_ptr<WWidget> dialogueName,
             std::unique_ptr<WWidget> userNameSearch,
             std::unique_ptr<WWidget> searchButton,
@@ -70,8 +94,9 @@ private:
     std::vector<User>   foundUsers_;
     int                 runCodeIndex_;
 
-    Wt::WLineEdit *userNameEdit_;
+    Wt::WLineEdit *userLoginEdit_;
     Wt::WLineEdit *passwordEdit_;
+    Wt::WLineEdit *confirmPasswordEdit_;
     Wt::WText     *statusMsg_;
 
     Wt::WText                                    *dialogueName_;

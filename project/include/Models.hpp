@@ -20,7 +20,8 @@ public:
     User() = default;
     ~User() = default;
 
-    explicit User(const std::string &userLogin, const std::string &userPassword = "1"/*TODO*/) : userLogin_(userLogin), userPassword_(userPassword), userStatus_(0) {}
+    User(const std::string &userLogin) : userLogin_(userLogin), userStatus_(0) {}
+    User(const std::string &userLogin, const std::string &userPassword) : userLogin_(userLogin), userPassword_(userPassword), userStatus_(0) {}
     User(std::string userLogin, std::string userPassword,
          std::string userToken, int userStatus) :
             userLogin_(std::move(userLogin)), userPassword_(std::move(userPassword)),
