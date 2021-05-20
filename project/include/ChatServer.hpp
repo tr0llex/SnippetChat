@@ -6,6 +6,7 @@
 #include <thread>
 #include <mutex>
 
+#include "Auth.hpp"
 #include "ChatEvent.hpp"
 #include "Models.hpp"
 #include "MainDb.hpp"
@@ -57,7 +58,7 @@ private:
     ClientMap               clients_;
     MainDb                  db_;
 
-//    std::list<Wt::WString> resultList_;
+    Auth                    auth_;
 };
 
 

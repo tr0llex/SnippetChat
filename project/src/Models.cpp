@@ -70,14 +70,14 @@ std::string LoginData::getPassword() const {
     return password_;
 }
 
-short LoginData::get_type() const {
+short LoginData::getType() const {
     return loginType_;
 }
 
 bool LoginData::operator==(const LoginData &ldt1) const {
     if (login_ == ldt1.getLogin()) {
         if (password_ == ldt1.getPassword()) {
-            if (loginType_ == ldt1.get_type()) {
+            if (loginType_ == ldt1.getType()) {
                 return true;
             }
         }

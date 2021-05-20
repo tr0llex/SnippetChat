@@ -28,7 +28,6 @@ public:
             userToken_(std::move(userToken)), userStatus_(userStatus) {
     }
 
-
     std::string getLogin() const;
 
     std::string getPassword() const;
@@ -71,8 +70,9 @@ public:
 
     std::string getPassword() const;
 
-    short get_type() const;
-    bool operator== (const LoginData& ldt1) const;
+    short getType() const;
+
+    bool operator==(const LoginData& ldt1) const;
 
 private:
     std::string login_;
@@ -277,7 +277,7 @@ private:
 };
 
 struct ComparatorDialogue {
-    bool operator()(const Dialogue &lhs, const Dialogue &rhs) {
+    bool operator()(const Dialogue &lhs, const Dialogue &rhs) const {
         return lhs.getTimeOfLastUpdate() > rhs.getTimeOfLastUpdate();
     }
 };

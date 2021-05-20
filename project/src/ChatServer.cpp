@@ -36,11 +36,11 @@ bool ChatServer::signUp(User &user, time_t timeOfCreation) {
     std::unique_lock<std::recursive_mutex> lock(mutex_);
 
     if (db_.writeUser(user) == EXIT_SUCCESS) {
-        /// TODO перетащить создание диалога в виджет
+        user.setToken(auth_.registerUser(user.getLogin(), user.getPassword()));
+
         std::vector<std::string> participantsList;
         participantsList.push_back(user.getLogin());
-
-        Dialogue dialogue(participantsList, timeOfCreation); /// TODO время создания
+        Dialogue dialogue(participantsList, timeOfCreation);
 
         db_.createDialogue(dialogue);
 

@@ -13,13 +13,11 @@ add_subdirectory(${CMAKE_BINARY_DIR}/googletest-src
 
 enable_testing()
 
-set(CMAKE_C_FLAGS "-pthread -pedantic -fprofile-arcs -ftest-coverage -Wall -Werror -Wpedantic")
-set(CMAKE_CXX_FLAGS "-pthread -pedantic -fprofile-arcs -ftest-coverage -Wall -Werror -Wpedantic")
-set(CMAKE_CXX_STANDARD 14)
+#set(CMAKE_C_FLAGS "-pthread -pedantic -fprofile-arcs -ftest-coverage -Wall -Werror -Wpedantic")
+#set(CMAKE_CXX_FLAGS "-pthread -pedantic -fprofile-arcs -ftest-coverage -Wall -Werror -Wpedantic")
+set(CMAKE_CXX_STANDARD 17)
 
 find_package(Wt REQUIRED)
-#link_directories("/usr/lib")
-#link_directories("/usr/local/lib")
 
 include_directories("${PROJECT_SOURCE_DIR}/project/include")
 
@@ -36,6 +34,16 @@ add_library(MainDb STATIC
         ${INCLUDE}/MainDb.hpp
         ${INCLUDE}/IMainDb.hpp
         ${SOURCE}/MainDb.cpp)
+
+add_library(Auth STATIC
+        ${PROJECT_SOURCE_DIR}/hash/md5.h
+        ${PROJECT_SOURCE_DIR}/hash/md5.cpp
+        ${INCLUDE}/Auth.hpp
+        ${SOURCE}/Auth.cpp)
+
+add_library(InMemoryDb STATIC
+        ${INCLUDE}/InMemoryDb.hpp
+        ${SOURCE}/InMemoryDb.cpp)
 # end libs
 
 file(GLOB prod_sources
@@ -44,18 +52,21 @@ file(GLOB prod_sources
 
 add_executable(${PROJECT_NAME} ${prod_sources})
 
-target_link_libraries(${PROJECT_NAME} wthttp wt MainDb Models cassandra)
+
+target_link_libraries(${PROJECT_NAME} wthttp wt MainDb cassandra Auth InMemoryDb Models)
+
 
 file(GLOB tests "${PROJECT_SOURCE_DIR}/project/tests/*.cpp")
 list(REMOVE_ITEM tests "${PROJECT_SOURCE_DIR}/project/tests/main.cpp")
 
-# foreach(file ${tests})
-#     set(name)
-#     get_filename_component(name ${file} NAME_WE)
-#     add_executable("${name}_tests"
-#             ${SOURCE}/${name}.cpp
-#             ${file}
-#             "${PROJECT_SOURCE_DIR}/project/tests/main.cpp")
-#     target_link_libraries("${name}_tests" gtest_main gmock_main cassandra)
-#     add_test(NAME ${name} COMMAND "${name}_tests")
-# endforeach()
+
+foreach(file ${tests})
+    set(name)
+    get_filename_component(name ${file} NAME_WE)
+    add_executable("${name}_tests"
+            ${SOURCE}/${name}.cpp
+            ${file}
+            "${PROJECT_SOURCE_DIR}/project/tests/main.cpp" hash/md5.cpp)
+    target_link_libraries("${name}_tests" gtest_main gmock_main ${name} Models )
+    add_test(NAME ${name} COMMAND "${name}_tests")
+endforeach()
