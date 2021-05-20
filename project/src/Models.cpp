@@ -1,7 +1,5 @@
 #include "Models.hpp"
 
-#include <chrono>
-
 #include <locale>
 #include <codecvt>
 
@@ -12,11 +10,6 @@ std::string ws2s(const std::wstring &wstr) {
     return converterX.to_bytes(wstr);
 }
 
-static inline int64_t getTimeS() {
-    return std::chrono::duration_cast<std::chrono::seconds>
-            (std::chrono::system_clock::now().time_since_epoch()).count();
-}
-
 std::string User::getLogin() const {
     return userLogin_;
 }
@@ -24,6 +17,7 @@ std::string User::getLogin() const {
 std::string User::getPassword() const {
     return userPassword_;
 }
+
 
 std::string User::getToken() const {
     return userToken_;
@@ -92,29 +86,34 @@ bool LoginData::operator==(const LoginData &ldt1) const {
 }
 
 Message::Message(const std::string &dialogueParentId, const std::string &senderId, const std::string &messageText,
-                 const std::string &messageCode)
-                 : dialogueParentId_(dialogueParentId), senderId_(senderId), messageText_(messageText),
-                 messageCode_(messageCode), timeSent_(getTimeS()) {
+                 time_t timeSent, const std::string &messageCode)
+                 : dialogueParentId_(dialogueParentId), senderLogin_(senderId), messageText_(messageText),
+                   messageCode_(messageCode), timeSent_(timeSent), isRead_(false) {
 
 }
 
 Message::Message(const std::string &messageId, const std::string &dialogueParentId, const std::string &senderId,
                  std::string messageText, std::string messageCode, time_t timeSent, bool isRead)
-                 : id_(messageId), dialogueParentId_(dialogueParentId), senderId_(senderId),
-                 messageText_(std::move(messageText)), messageCode_(std::move(messageCode)),
-                 timeSent_(timeSent), isRead_(isRead) {
+                 : id_(messageId), dialogueParentId_(dialogueParentId), senderLogin_(senderId),
+                   messageText_(std::move(messageText)), messageCode_(std::move(messageCode)),
+                   timeSent_(timeSent), isRead_(isRead) {
 }
 
 std::string Message::getId() const {
     return id_;
 }
 
+void Message::setId(std::string id) {
+    id_ = id;
+}
+
+
 std::string Message::getDialogueParentId() const {
     return dialogueParentId_;
 }
 
 std::string Message::getSenderLogin() const {
-    return senderId_;
+    return senderLogin_;
 }
 
 std::string Message::getMessageText() const {
@@ -134,7 +133,7 @@ bool Message::isRead() {
 }
 
 std::string Message::getTimeSentStr() const {
-    uint64_t minutes = timeSent_ / 60;
+    uint64_t minutes = timeSent_ / 60000;
     uint64_t hours = minutes / 60;
 
     uint8_t mm = minutes % 60;
@@ -165,7 +164,15 @@ std::string Dialogue::getId() const {
     return id_;
 }
 
+void Dialogue::setId(std::string id) {
+    id_ = id;
+}
+
 std::string Dialogue::getName(const User &requester) const {
+    if (withYourself()) {
+        return requester.getLogin();
+    }
+
     if (participantsList_[0] == requester.getLogin()) {
         return participantsList_[1];
     } else {
@@ -173,11 +180,23 @@ std::string Dialogue::getName(const User &requester) const {
     }
 }
 
+time_t Dialogue::getTimeOfLastUpdate() const {
+    if (dialogueMessageList_.empty()) {
+        return dateOfCreation_;
+    }
+    return getLastMessage().getTimeSent();
+}
+
 bool Dialogue::isEmpty() const {
     return participantsList_.empty();
 }
 
 void Dialogue::pushNewMessage(const Message &newMessage) {
+    dialogueMessageList_.push_back(newMessage);
+}
+
+void Dialogue::updateLastMessage(const Message &newMessage) {
+    dialogueMessageList_.clear();
     dialogueMessageList_.push_back(newMessage);
 }
 

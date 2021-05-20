@@ -24,7 +24,7 @@ public:
     bool connect(Client *client, const User &user, const ChatEventCallback& handleEvent);
     bool disconnect(Client *client);
 
-    bool signUp(User& user);
+    bool signUp(User& user, time_t timeOfCreation);
     bool login(User& user);
     void logout(const User &user);
 
@@ -34,7 +34,7 @@ public:
     std::vector<Message> getMessagesFromDialogue(const std::string &dialogueId) const;
 
     std::vector<User> getUsersByUserName(const std::string &findUser) const;
-    Dialogue createDialogue(const User &user, const User &otherUser);
+    void createDialogue(Dialogue &dialogue);
 
     void sendMessage(Dialogue &dialogue, Message &message);
 

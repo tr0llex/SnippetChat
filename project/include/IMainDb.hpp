@@ -23,7 +23,8 @@ class IMainDb {
         virtual std::vector<std::string> getLastNDialoguesIdByLogin(std::string login, long count) const = 0;
         virtual DialogueList getLastNDialoguesWithLastMessage(const User& user, long count) const = 0;
         virtual std::string findDialogue(std::vector<std::string> participantsList) const = 0;
-        virtual Dialogue createDialogue(std::vector<std::string> participantsList) const = 0;
+        virtual void createDialogue(Dialogue& dialogue) = 0;
+        virtual time_t getTimeLastUpdateFromDialogue(std::string dialogueId, const User& user) const = 0;
 
         virtual void deleteMessage(Message& message) = 0;
         virtual void deleteDialogue(Dialogue& dialogue) = 0;

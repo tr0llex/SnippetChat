@@ -32,15 +32,17 @@ bool ChatServer::disconnect(ChatServer::Client *client) {
     return clients_.erase(client) == 1;
 }
 
-bool ChatServer::signUp(User &user) {
+bool ChatServer::signUp(User &user, time_t timeOfCreation) {
     std::unique_lock<std::recursive_mutex> lock(mutex_);
 
     if (db_.writeUser(user) == EXIT_SUCCESS) {
-        /// TODO
+        /// TODO перетащить создание диалога в виджет
         std::vector<std::string> participantsList;
         participantsList.push_back(user.getLogin());
 
-        db_.createDialogue(participantsList);
+        Dialogue dialogue(participantsList, timeOfCreation); /// TODO время создания
+
+        db_.createDialogue(dialogue);
 
         return true;
     }
@@ -93,18 +95,14 @@ std::vector<User> ChatServer::getUsersByUserName(const std::string &findUser) co
     return users;
 }
 
-Dialogue ChatServer::createDialogue(const User &user, const User &otherUser) {
+void ChatServer::createDialogue(Dialogue &dialogue) {
     std::unique_lock<std::recursive_mutex> lock(mutex_);
 
-    std::vector<std::string> participantsList;
-    participantsList.push_back(user.getLogin());
-    participantsList.push_back(otherUser.getLogin());
+    db_.createDialogue(dialogue);
 
-    Dialogue dialogue = db_.createDialogue(participantsList);
-
-    notifyUser(ChatEvent(ChatEvent::NewDialogue, otherUser.getLogin(), dialogue));
-
-    return dialogue;
+    for (const auto &participant : dialogue.getParticipantsList()) {
+        notifyUser(ChatEvent(ChatEvent::NewDialogue, participant, dialogue));
+    }
 }
 
 void ChatServer::sendMessage(Dialogue &dialogue, Message &message) {

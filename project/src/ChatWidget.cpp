@@ -12,10 +12,18 @@
 #include <Wt/WPushButton.h>
 #include <Wt/WCheckBox.h>
 
+#include <chrono>
+
 #include "ChatServer.hpp"
 #include "MessageWidget.hpp"
 
 #include "ChatWidget.hpp"
+
+
+static inline int64_t getTimeMs() {
+    return std::chrono::duration_cast<std::chrono::milliseconds>
+            (std::chrono::system_clock::now().time_since_epoch()).count();
+}
 
 ChatWidget::ChatWidget(ChatServer &server)
         : WContainerWidget(),
@@ -454,7 +462,7 @@ void ChatWidget::signUp() {
 
     user_ = User(username, password);
 
-    if (server_.signUp(user_)) {
+    if (server_.signUp(user_, getTimeMs())) {
         login();
     } else {
         statusMsg_->setText("Sorry, name '" + escapeText(username) +
@@ -513,18 +521,17 @@ void ChatWidget::searchUser() {
                 for (const auto &dialogue : dialogueList_) {
                     if (dialogue.getName(user_) == foundUser.getLogin()) {
                         switchDialogue(dialogue);
-//                        updateDialogueList(); TODO нужно ли здесь ??
                         return;
                     }
                 }
 
-                Dialogue dialogue = server_.createDialogue(user_, foundUser);
+                std::vector<std::string> participantsList;
+                participantsList.push_back(user_.getLogin());
+                participantsList.push_back(foundUser.getLogin());
 
-                // TODO
-//                dialogueList_.insert(dialogue);
-                dialogueList_.emplace(dialogue);
+                Dialogue dialogue(participantsList, getTimeMs());
 
-                updateDialogueList();
+                server_.createDialogue(dialogue);
             });
 
             if (user_ == foundUser) {
@@ -541,7 +548,11 @@ void ChatWidget::back() {
 
 void ChatWidget::send() {
     if (!messageEdit_->text().empty() && !currentDialogue_.isEmpty()) {
-        Message message(currentDialogue_.getId(), user_.getLogin(), ws2s(messageEdit_->text()));
+        Message message(currentDialogue_.getId(),
+                        user_.getLogin(),
+                        ws2s(messageEdit_->text()),
+                        getTimeMs());
+
         server_.sendMessage(currentDialogue_, message);
 
         showNewMessage(message);
@@ -551,7 +562,12 @@ void ChatWidget::send() {
 /// TODO использовать функцию выше
 void ChatWidget::sendSnippet() {
     if (!messageEdit_->text().empty() && !currentDialogue_.isEmpty()) {
-        Message message(currentDialogue_.getId(), user_.getLogin(), std::string(), ws2s(messageEdit_->text()));
+        Message message(currentDialogue_.getId(),
+                        user_.getLogin(),
+                        std::string(),
+                        getTimeMs(),
+                        ws2s(messageEdit_->text()));
+
         server_.sendMessage(currentDialogue_, message);
 
         showNewMessage(message);
@@ -586,6 +602,18 @@ void ChatWidget::processChatEvent(const ChatEvent &event) {
             break;
         }
         case ChatEvent::NewMessage: {
+            Dialogue updatedDialogue;
+            for (const auto& dialogue : dialogueList_) {
+                if (dialogue == event.dialogue()) {
+                    updatedDialogue = dialogue;
+                    updatedDialogue.updateLastMessage(event.dialogue().getLastMessage());
+                    dialogueList_.erase(dialogue); // TODO не уверен что удалится нужный
+                    break;
+                }
+            }
+            dialogueList_.insert(updatedDialogue);
+            updateDialogueList();
+
             if (event.getSenderLogin() != user_.getLogin()) {
                 if (currentDialogue_ == event.dialogue()) {
                     showNewMessage(event.dialogue().getLastMessage());

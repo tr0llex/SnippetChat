@@ -84,13 +84,15 @@ class Message {
 public:
     Message() = default;
     Message(const std::string &dialogueParentId, const std::string &senderId,
-            const std::string &messageText, const std::string &messageCode = std::string());
+            const std::string &messageText, time_t timeSent, const std::string &messageCode = std::string());
     Message(const std::string &messageId, const std::string &dialogueParentId, const std::string &senderId,
             std::string messageText, std::string messageCode, time_t timeSent, bool isRead);
 
     ~Message() = default;
 
     std::string getId() const;
+
+    void setId(std::string id);
 
     std::string getDialogueParentId() const;
 
@@ -111,7 +113,7 @@ public:
 private:
     std::string id_;
     std::string dialogueParentId_;
-    std::string senderId_;
+    std::string senderLogin_;
     std::string messageText_;
     std::string messageCode_;
     time_t timeSent_;
@@ -121,21 +123,20 @@ private:
 class Dialogue {
 public:
     Dialogue() = default;
+    Dialogue(std::vector<std::string> participantsList,
+             time_t dateOfCreation) :
+            participantsList_(std::move(participantsList)),
+            dateOfCreation_(dateOfCreation) {
+    }
     Dialogue(std::string dialogueId,
              std::vector<Message> dialogueMessageList,
-             std::vector<std::string> participantsList) :
+             std::vector<std::string> participantsList,
+             time_t dateOfCreation) :
             id_(std::move(dialogueId)),
             dialogueMessageList_(std::move(dialogueMessageList)),
-            participantsList_(std::move(participantsList)) {
+            participantsList_(std::move(participantsList)),
+            dateOfCreation_(dateOfCreation) {
     }
-
-    Dialogue(const Dialogue &dialogue) {
-        id_ = dialogue.id_;
-        dialogueMessageList_ = dialogue.dialogueMessageList_;
-        participantsList_ = dialogue.participantsList_;
-    }
-
-    Dialogue& operator=(const Dialogue &dialogue) = default;
 
     ~Dialogue() = default;
 
@@ -147,13 +148,19 @@ public:
 
     std::string getId() const;
 
+    void setId(std::string id);
+
     void pushNewMessage(const Message& newMessage);
+
+    void updateLastMessage(const Message& newMessage);
 
     void pushMessages(const std::vector<Message> &dialogueMessageList);
 
     void pushNewParticipant(std::string newParticipantId);
 
     std::string getName(const User &requester) const;
+
+    time_t getTimeOfLastUpdate() const;
 
     bool isEmpty() const;
 
@@ -166,6 +173,7 @@ private:
     std::string id_;
     std::vector<Message> dialogueMessageList_;
     std::vector<std::string> participantsList_;
+    time_t dateOfCreation_;
 };
 
 
@@ -270,7 +278,7 @@ private:
 
 struct ComparatorDialogue {
     bool operator()(const Dialogue &lhs, const Dialogue &rhs) {
-        return lhs.getLastMessage().getTimeSent() > rhs.getLastMessage().getTimeSent();
+        return lhs.getTimeOfLastUpdate() > rhs.getTimeOfLastUpdate();
     }
 };
 

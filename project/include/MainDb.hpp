@@ -26,8 +26,9 @@ class MainDb : public IMainDb {
 
         std::vector<std::string> getAllDialoguesIdByLogin(std::string login) override;
         std::vector<std::string> getLastNDialoguesIdByLogin(std::string login, long count) const override;
-        Dialogue createDialogue(std::vector<std::string> participantsList) const override;
+        void createDialogue(Dialogue& dialogue) override;
         std::string findDialogue(std::vector<std::string> participantsList) const override;
+        time_t getTimeLastUpdateFromDialogue(std::string dialogueId, const User& user) const override;
 
         void deleteMessage(Message& message) override;
         void deleteDialogue(Dialogue& dialogue) override;
