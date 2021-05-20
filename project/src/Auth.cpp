@@ -6,7 +6,12 @@
 
 std::string TokenManager::tryLogin(LoginData data) {
     // TODO - connect to Dudnik
-    return "";
+    data.setPassword(generateToken(data.getLogin()));
+    std::string token = tryToken(data);
+    if (token.empty()) {
+        writeInMemory(data.getLogin(), data.getPassword(), 1);
+    }
+    return tryToken(data);
 }
 
 std::string TokenManager::tryToken(LoginData data) {

@@ -39,6 +39,8 @@ public:
 
     void sendMessage(Dialogue &dialogue, Message &message);
 
+    std::string  verifyToken(const std::string &token);
+
 //    void runCompilation(const Message &message, const std::wstring &stdIn); TODO
 
 private:

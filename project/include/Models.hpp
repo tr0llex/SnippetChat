@@ -36,6 +36,8 @@ public:
 
     int getStatus() const;
 
+    void setUserLogin(const std::string &userLogin);
+
     void setPassword(const std::string &userPassword);
 
     void setToken(const std::string &userToken);

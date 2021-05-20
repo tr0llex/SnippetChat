@@ -32,7 +32,27 @@ ChatWidget::ChatWidget(ChatServer &server)
           dialogues_(nullptr) {
     soundLogin_ = std::make_unique<Wt::WSound>("resources/sounds/login.mp3");
 
-    letLogin();
+
+    auto cookie = Wt::WApplication::instance()->environment().getCookie("userToken");
+
+    if (cookie && !cookie->empty()) {
+        std::string userLogin = server_.verifyToken(*cookie);
+        if (!userLogin.empty()) {
+            loggedIn_ = true;
+
+            user_.setUserLogin(userLogin);
+
+            user_.setToken(*cookie);
+
+            dialogueList_ = server_.getDialogueList(user_);
+
+            startChat();
+        } else {
+            letLogin();
+        }
+    } else {
+        letLogin();
+    }
 }
 
 ChatWidget::~ChatWidget() {
@@ -302,6 +322,8 @@ void ChatWidget::logout() {
         server_.logout(user_);
         disconnect();
 
+        Wt::WApplication::instance()->removeCookie("userToken");
+
         letLogin();
     }
 }
@@ -478,12 +500,11 @@ void ChatWidget::login() {
     std::string username = ws2s(userLoginEdit_->text());
     std::string password = ws2s(passwordEdit_->text());
 
-    // TODO
-    std::cout << "\nusername: "<< username << "\npassword: " << password << std::endl;
-
     user_ = User(username, password);
 
     if (server_.login(user_)) {
+        Wt::WApplication::instance()->setCookie("userToken", user_.getToken(), 604800);
+
         loggedIn_ = true;
         dialogueList_ = server_.getDialogueList(user_);
 

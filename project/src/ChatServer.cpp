@@ -56,6 +56,9 @@ bool ChatServer::login(User &user) {
     user = db_.searchUserPassword(user.getLogin(), user.getPassword());
 
     if (!user.getLogin().empty()) {
+        LoginData loginData(user.getLogin(), user.getPassword());
+        loginData.setType(1);
+        user.setToken(auth_.loginUser(loginData));
         /// Оповестить только друзей TODO
 
         return true;
@@ -66,6 +69,8 @@ bool ChatServer::login(User &user) {
 
 void ChatServer::logout(const User &user) {
     std::unique_lock<std::recursive_mutex> lock(mutex_);
+
+    auth_.logoutUser(user.getLogin());
 
     /// Оповестить только друзей TODO
 }
@@ -116,6 +121,10 @@ void ChatServer::sendMessage(Dialogue &dialogue, Message &message) {
     }
 }
 
+std::string ChatServer::verifyToken(const std::string &token) {
+    return auth_.verifyToken(token);
+}
+
 #include "unistd.h"
 
 /*void handlerCompilation(std::list<Wt::WString> &resultList, const User &user, const Message &message, const std::wstring &stdIn) {
@@ -158,7 +167,7 @@ void ChatServer::notifyUser(const ChatEvent& event) {
         if (i.second.userId == event.userId_) {
             auto callback = std::bind(i.second.eventCallback, event);
             server_.post(i.second.sessionId, callback);
-//            return; TODO оповещаем все сессии пользователя
+//            return; TODO не ебу
         }
     }
 }

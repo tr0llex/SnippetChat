@@ -50,6 +50,10 @@ void User::setStatus(int userStatus) {
     userStatus_ = userStatus;
 }
 
+void User::setUserLogin(const std::string &userLogin) {
+    userLogin_ = userLogin;
+}
+
 void LoginData::setLogin(const std::string &login) {
     login_ = login;
 }
