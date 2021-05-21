@@ -40,7 +40,7 @@ private:
 
     unsigned long long compilesCount{};
 
-    string pathToTemplate = "../python3/test/template";
+    string pathToTemplate = "python3/test/template";
 
 public:
     CompilationManager();

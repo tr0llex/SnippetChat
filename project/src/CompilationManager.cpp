@@ -8,7 +8,7 @@ Compilation CompilationManager::runCompilation(const string &messageCode, const 
     compilesCount++;
     Compilation currentCompilation;
     currentCompilation.setCompilationId(compilesCount);
-    currentCompilation.setPathToRunBox("/python3/test/run-" + std::to_string(compilesCount));
+    currentCompilation.setPathToRunBox("python3/test/run-" + std::to_string(compilesCount));
 
     createDir(currentCompilation);
     run(currentCompilation, messageCode, executionStdin);
@@ -40,7 +40,7 @@ void CompilationManager::run(const Compilation &compilation, const string &code,
 }
 
 void CompilationManager::removeOldDirs() {
-    system("rm -rf /python3/test/run-*");
+    system("rm -rf python3/test/run-*");
 }
 
 void CompilationManager::createDir(const Compilation &compilation) {

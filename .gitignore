@@ -36,3 +36,4 @@ cmake-build-*/
 build/
 .vscode/
 .DS_Store
+python3/test/run-*
