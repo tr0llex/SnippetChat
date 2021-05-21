@@ -1,6 +1,7 @@
 #include <Wt/WServer.h>
 
 #include "ChatServer.hpp"
+#include "CompilationManager.hpp"
 
 
 ChatServer::ChatServer(Wt::WServer &server)
@@ -125,22 +126,11 @@ std::string ChatServer::verifyToken(const std::string &token) {
     return auth_.verifyToken(token);
 }
 
-#include "unistd.h"
-
-/*void handlerCompilation(std::list<Wt::WString> &resultList, const User &user, const Message &message, const std::wstring &stdIn) {
-    sleep(5);
-    const std::wstring& stdOut = stdIn;
-
-    /// TODO
-    std::unique_lock<std::recursive_mutex> lock(mutex_);
-    listResult.push(stdOut);
-
-}*/
 void ChatServer::runCompilation(const User &user, const Message &message, const std::string &input) {
-    usleep(10);
-//    const std::string& output = input;
+    CompilationManager manager;
+    Compilation compilation = manager.runCompilation(message.getMessageCode(), input);
 
-    notifyUser(ChatEvent(ChatEvent::CompilationCode, user.getLogin(), message, input));
+    notifyUser(ChatEvent(ChatEvent::CompilationCode, user.getLogin(), message, compilation.getExecutionStdout()));
 }
 
 void ChatServer::postChatEvent(const ChatEvent &event) {

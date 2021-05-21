@@ -41,19 +41,36 @@ add_library(Auth STATIC
         ${INCLUDE}/Auth.hpp
         ${SOURCE}/Auth.cpp)
 
+add_library(CompilationManager STATIC
+        ${INCLUDE}/CompilationManager.hpp
+        ${INCLUDE}/Compilation.hpp
+        ${SOURCE}/CompilationManager.cpp
+        ${SOURCE}/Compilation.cpp)
+
 add_library(InMemoryDb STATIC
         ${INCLUDE}/InMemoryDb.hpp
         ${SOURCE}/InMemoryDb.cpp)
 # end libs
 
 file(GLOB prod_sources
-        "${INCLUDE}/*.hpp"
-        "${SOURCE}/*.cpp")
+        "${INCLUDE}/ChatApplication.hpp"
+        "${INCLUDE}/ChatEvent.hpp"
+        "${INCLUDE}/ChatServer.hpp"
+        "${INCLUDE}/ChatWidget.hpp"
+        "${INCLUDE}/CodeWidget.hpp"
+        "${INCLUDE}/MessageWidget.hpp"
+        "${SOURCE}/ChatApplication.cpp"
+        "${SOURCE}/ChatEvent.cpp"
+        "${SOURCE}/ChatServer.cpp"
+        "${SOURCE}/ChatWidget.cpp"
+        "${SOURCE}/CodeWidget.cpp"
+        "${SOURCE}/MessageWidget.cpp"
+        "${SOURCE}/main.cpp")
 
 add_executable(${PROJECT_NAME} ${prod_sources})
 
 
-target_link_libraries(${PROJECT_NAME} wthttp wt MainDb cassandra Auth InMemoryDb Models)
+target_link_libraries(${PROJECT_NAME} wthttp wt MainDb cassandra Auth CompilationManager InMemoryDb Models)
 
 
 file(GLOB tests "${PROJECT_SOURCE_DIR}/project/tests/*.cpp")
