@@ -2,6 +2,7 @@
 #define PROJECT_INCLUDE_COMPILERDB_HPP_
 
 #include <pqxx/pqxx>
+#include "Models.hpp"
 
 class ICompilerDb {
 public:

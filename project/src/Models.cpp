@@ -1,4 +1,4 @@
-#include "Models.hpp"
+#include "../include/Models.hpp"
 
 uint32_t User::getUserId() const {
     return userId_;

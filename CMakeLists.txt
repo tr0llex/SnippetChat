@@ -24,6 +24,18 @@ set(INCLUDE ${PROJECT_SOURCE_DIR}/project/include)
 set(SOURCE ${PROJECT_SOURCE_DIR}/project/src)
 
 # adding libs
+add_library(Models STATIC
+        ${INCLUDE}/Models.hpp
+        ${SOURCE}/Models.cpp)
+
+add_library(CompilationManager STATIC
+        ${INCLUDE}/CompilationManager.hpp
+        ${INCLUDE}/CompilerDb.hpp
+        ${INCLUDE}/CompilerResultWriter.hpp
+        ${SOURCE}/CompilationManager.cpp
+        ${SOURCE}/Compilation.cpp
+        ${SOURCE}/CompilerDb.cpp
+        ${SOURCE}/CompilerResultWriter.cpp)
 
 # end libs
 
@@ -43,6 +55,6 @@ foreach(file ${tests})
             ${SOURCE}/${name}.cpp
             ${file}
             "${PROJECT_SOURCE_DIR}/project/tests/main.cpp")
-    target_link_libraries("${name}_tests" gtest_main gmock_main)
+    target_link_libraries("${name}_tests" gtest_main gmock_main ${name})
     add_test(NAME ${name} COMMAND "${name}_tests")
 endforeach()

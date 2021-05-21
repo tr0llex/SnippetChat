@@ -147,7 +147,9 @@ private:
 
 class Compilation {
 public:
-    Compilation() = default;
+    Compilation() {
+
+    };
 
     ~Compilation() = default;
 
