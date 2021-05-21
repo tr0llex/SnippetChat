@@ -29,30 +29,6 @@ public:
     void logout();
 
 protected:
-    /*virtual void createSignUpLayout(
-            std::unique_ptr<WWidget> dialogueName,
-            std::unique_ptr<WWidget> userNameSearch,
-            std::unique_ptr<WWidget> searchButton,
-            std::unique_ptr<WWidget> backButton,
-            std::unique_ptr<WWidget> snippetButton,
-            std::unique_ptr<WWidget> messages,
-            std::unique_ptr<WWidget> dialogueList,
-            std::unique_ptr<WWidget> messageEdit,
-            std::unique_ptr<WWidget> sendButton,
-            std::unique_ptr<WWidget> settingButton,
-            std::unique_ptr<WWidget> logoutButton);
-    virtual void createLoginLayout(
-            std::unique_ptr<WWidget> dialogueName,
-            std::unique_ptr<WWidget> userNameSearch,
-            std::unique_ptr<WWidget> searchButton,
-            std::unique_ptr<WWidget> backButton,
-            std::unique_ptr<WWidget> snippetButton,
-            std::unique_ptr<WWidget> messages,
-            std::unique_ptr<WWidget> dialogueList,
-            std::unique_ptr<WWidget> messageEdit,
-            std::unique_ptr<WWidget> sendButton,
-            std::unique_ptr<WWidget> settingButton,
-            std::unique_ptr<WWidget> logoutButton);*/
     virtual void createMessengerLayout(
             std::unique_ptr<WWidget> dialogueName,
             std::unique_ptr<WWidget> userNameSearch,
@@ -92,23 +68,26 @@ private:
     Dialogue            currentDialogue_;
     DialogueList        dialogueList_;
     std::vector<User>   foundUsers_;
-    int                 runCodeIndex_;
 
     Wt::WLineEdit *userLoginEdit_;
     Wt::WLineEdit *passwordEdit_;
     Wt::WLineEdit *confirmPasswordEdit_;
     Wt::WText     *statusMsg_;
 
-    Wt::WText                                    *dialogueName_;
-    Wt::WLineEdit                                *userNameSearch_;
-    Wt::Core::observing_ptr<Wt::WPushButton>      searchButton_;
-    Wt::Core::observing_ptr<Wt::WPushButton>      backButton_;
-    Wt::Core::observing_ptr<Wt::WPushButton>      snippetButton_;
-    Wt::WContainerWidget                         *messages_;
-    Wt::WTextArea                                *messageEdit_;
-    Wt::JSlot                                     clearMessageInput_;
-    Wt::JSlot                                     clearSearchInput_;
-    Wt::Core::observing_ptr<Wt::WPushButton>      sendButton_;
+
+    typedef Wt::Core::observing_ptr<Wt::WPushButton> ButtonPtr;
+
+    Wt::WText                 *dialogueName_;
+    Wt::WLineEdit             *userNameSearch_;
+    ButtonPtr                  searchButton_;
+    ButtonPtr                  backButton_;
+    ButtonPtr                  snippetButton_;
+    Wt::WContainerWidget      *messages_;
+    std::list<ButtonPtr>       runCodeButtons_;
+    Wt::WTextArea             *messageEdit_;
+    Wt::JSlot                  clearMessageInput_;
+    Wt::JSlot                  clearSearchInput_;
+    ButtonPtr                  sendButton_;
     Wt::Core::observing_ptr<Wt::WContainerWidget> dialogues_;
 
     std::unique_ptr<Wt::WSound> soundLogin_;

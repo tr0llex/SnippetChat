@@ -132,17 +132,16 @@ std::string ChatServer::verifyToken(const std::string &token) {
     const std::wstring& stdOut = stdIn;
 
     /// TODO
-    DialogueInfo dialogueInfo(user.getUsername(), message);
+    std::unique_lock<std::recursive_mutex> lock(mutex_);
+    listResult.push(stdOut);
 
-    ChatEvent event(ChatEvent::CompilationCode, user.getId(), dialogueInfo, stdOut);
-
-    auto callback = std::bind(client.eventCallback, event);
-    server.post(client.sessionId, callback);
 }*/
-//void ChatServer::runCompilation(const User &user, const Message &message, const std::wstring &stdIn) {
-//    std::thread compile(handlerCompilation, resultList_, user, message, stdIn);
-//    compile.detach();
-//}
+void ChatServer::runCompilation(const User &user, const Message &message, const std::string &input) {
+    usleep(10);
+//    const std::string& output = input;
+
+    notifyUser(ChatEvent(ChatEvent::CompilationCode, user.getLogin(), message, input));
+}
 
 void ChatServer::postChatEvent(const ChatEvent &event) {
     std::unique_lock<std::recursive_mutex> lock(mutex_);
@@ -167,7 +166,6 @@ void ChatServer::notifyUser(const ChatEvent& event) {
         if (i.second.userId == event.userId_) {
             auto callback = std::bind(i.second.eventCallback, event);
             server_.post(i.second.sessionId, callback);
-//            return; TODO не ебу
         }
     }
 }

@@ -1,6 +1,6 @@
 #include "MessageWidget.hpp"
 
-MessageWidget::MessageWidget(const Message &message)
+MessageWidget::MessageWidget(const Message &message, std::unique_ptr<WWidget> runButtonPtr)
         : message_(message), code_(nullptr) {
     auto textPtr = std::make_unique<Wt::WText>(message.getMessageText());
     auto timePtr = std::make_unique<Wt::WText>(message.getTimeSentStr());
@@ -9,7 +9,7 @@ MessageWidget::MessageWidget(const Message &message)
     text_ = textPtr.get();
     time_ = timePtr.get();
     if (isHaveCode()) {
-        codePtr = std::make_unique<CodeWidget>(message.getMessageCode());
+        codePtr = std::make_unique<CodeWidget>(message.getMessageCode(), std::move(runButtonPtr));
         code_ = codePtr.get();
     }
 
@@ -44,6 +44,13 @@ std::string MessageWidget::getMessageId() const {
 
 bool MessageWidget::isHaveCode() const {
     return message_.isHaveCode();
+}
+
+std::string MessageWidget::getInput() const {
+    if (!isHaveCode()) {
+        return std::string();
+    }
+    return code_->getInput();
 }
 
 void MessageWidget::setResultCompilation(const std::string &result) {

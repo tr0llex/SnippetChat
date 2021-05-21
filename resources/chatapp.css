@@ -121,3 +121,22 @@ textarea.chat-noedit {
   text-decoration: underline;
   color: #2a5885;
 }
+
+.source-view {
+  background-color: white;
+  overflow: auto;
+  white-space: pre;
+  font-family: 'Bitstream Vera Sans Mono','Courier',monospace;
+  font-size: 85%;
+  color: #444444;
+  border: 1px solid #C3D9FF;
+  zoom: 1;
+}
+
+.source-view div {
+  padding: 6px;
+  line-height: 1.3;
+  zoom: 1;
+  font-family: Verdana, Helvetica, sans-serif;
+  font-size: 9pt;
+}

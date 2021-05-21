@@ -15,6 +15,7 @@
 #include <chrono>
 
 #include "ChatServer.hpp"
+#include "CodeWidget.hpp"
 #include "MessageWidget.hpp"
 
 #include "ChatWidget.hpp"
@@ -38,13 +39,20 @@ ChatWidget::ChatWidget(ChatServer &server)
     if (cookie && !cookie->empty()) {
         std::string userLogin = server_.verifyToken(*cookie);
         if (!userLogin.empty()) {
-            loggedIn_ = true;
-
             user_.setUserLogin(userLogin);
-
             user_.setToken(*cookie);
 
+            connect(user_);
+
+            loggedIn_ = true;
             dialogueList_ = server_.getDialogueList(user_);
+
+            if (soundLogin_) {
+                soundLogin_->play();
+            }
+            if (!soundMessageReceived_) {
+                soundMessageReceived_ = std::make_unique<Wt::WSound>("resources/sounds/message_received.mp3");
+            }
 
             startChat();
         } else {
@@ -429,7 +437,22 @@ void ChatWidget::updateDialogueList() {
 void ChatWidget::showNewMessage(const Message &message) {
     Wt::WApplication *app = Wt::WApplication::instance();
 
-    MessageWidget *w = messages_->addWidget(std::make_unique<MessageWidget>(message));
+    auto runButtonPtr = std::make_unique<Wt::WPushButton>("Run");
+    ButtonPtr runButton = runButtonPtr.get();
+//    if (message.isHaveCode()) {
+//        runCodeButtons_.push_back(runButton);
+//    }
+
+    auto messageWidget = std::make_unique<MessageWidget>(message, std::move(runButtonPtr));
+    MessageWidget *w = messages_->addWidget(std::move(messageWidget));
+
+    if (message.isHaveCode()) {
+        runButton->clicked().connect([=] {
+//            runButton->disable();
+
+            server_.runCompilation(user_, message, w->getInput());
+        });
+    }
 
     w->setInline(false);
     w->setStyleClass("chat-msg");
@@ -505,15 +528,14 @@ void ChatWidget::login() {
     if (server_.login(user_)) {
         Wt::WApplication::instance()->setCookie("userToken", user_.getToken(), 604800);
 
+        connect(user_);
+
         loggedIn_ = true;
         dialogueList_ = server_.getDialogueList(user_);
 
         if (soundLogin_) {
             soundLogin_->play();
         }
-
-        connect(user_);
-
         if (!soundMessageReceived_) {
             soundMessageReceived_ = std::make_unique<Wt::WSound>("resources/sounds/message_received.mp3");
         }
@@ -651,13 +673,13 @@ void ChatWidget::processChatEvent(const ChatEvent &event) {
         }
         case ChatEvent::CompilationCode: {
             /// TODO не протестировано
-            if (event.dialogue() != currentDialogue_) {
+            if (event.getDialogueId() != currentDialogue_.getId()) {
                 break;
             }
 
             for (int i = 0; i < messages_->count(); ++i) {
                 auto messageWidget = dynamic_cast<MessageWidget*>(messages_->widget(i));
-                if (messageWidget->getMessageId() == event.messageId() && messageWidget->isHaveCode()) {
+                if (messageWidget->getMessageId() == event.getMessageId() && messageWidget->isHaveCode()) {
                     messageWidget->setResultCompilation(event.resultCompilation());
                     break;
                 }

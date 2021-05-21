@@ -41,7 +41,7 @@ public:
 
     std::string  verifyToken(const std::string &token);
 
-//    void runCompilation(const Message &message, const std::wstring &stdIn); TODO
+    void runCompilation(const User &user, const Message &message, const std::string &input);
 
 private:
     void postChatEvent(const ChatEvent& event);
@@ -61,6 +61,8 @@ private:
     MainDb                  db_;
 
     Auth                    auth_;
+
+
 };
 
 

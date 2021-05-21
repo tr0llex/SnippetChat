@@ -16,11 +16,13 @@
 
 class MessageWidget : public Wt::WContainerWidget {
 public:
-    explicit MessageWidget(const Message &message);
+    MessageWidget(const Message &message, std::unique_ptr<WWidget> runButtonPtr);
 
     std::string getMessageId() const;
 
     bool isHaveCode() const;
+
+    std::string getInput() const;
 
     void setResultCompilation(const std::string &result);
 
