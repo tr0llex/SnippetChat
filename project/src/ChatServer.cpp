@@ -1,7 +1,6 @@
 #include <Wt/WServer.h>
 
 #include "ChatServer.hpp"
-#include "CompilationManager.hpp"
 
 
 ChatServer::ChatServer(Wt::WServer &server)
@@ -127,10 +126,13 @@ std::string ChatServer::verifyToken(const std::string &token) {
 }
 
 void ChatServer::runCompilation(const User &user, const Message &message, const std::string &input) {
-    CompilationManager manager;
-    Compilation compilation = manager.runCompilation(message.getMessageCode(), input);
+    Compilation compilation = manager_.runCompilation(message.getMessageCode(), input);
 
-    notifyUser(ChatEvent(ChatEvent::CompilationCode, user.getLogin(), message, compilation.getExecutionStdout()));
+    std::string outputToMessage = "Output: \n" + compilation.getExecutionStdout();
+    if (!compilation.getExecutionStderr().empty()) {
+        outputToMessage += "\n\nError:\n" + compilation.getExecutionStderr();
+    }
+    notifyUser(ChatEvent(ChatEvent::CompilationCode, user.getLogin(), message, outputToMessage));
 }
 
 void ChatServer::postChatEvent(const ChatEvent &event) {

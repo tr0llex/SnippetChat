@@ -8,6 +8,7 @@
 
 #include "Auth.hpp"
 #include "ChatEvent.hpp"
+#include "CompilationManager.hpp"
 #include "Models.hpp"
 #include "MainDb.hpp"
 
@@ -62,7 +63,7 @@ private:
 
     Auth                    auth_;
 
-
+    CompilationManager      manager_;
 };
 
 
