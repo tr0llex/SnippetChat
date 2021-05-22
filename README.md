@@ -65,6 +65,7 @@ s = box.schema.space.create('unames', {id = 600})
 s:format({{name = 'UserName', type = 'string'},{name = 'token', type = 'string'},{name = 'status', type = 'integer'}})
 s:create_index('primary', {type = 'hash', parts = {'UserName'}})
 s:create_index('secondary', {type = 'hash', parts = {'token'}})
+box.schema.user.grant('guest', 'read,write,execute', 'universe')
 ```
 
 Если tarantool заснул:
