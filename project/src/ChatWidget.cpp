@@ -328,6 +328,11 @@ void ChatWidget::changeProfile(const User &newUser) {
 void ChatWidget::logout() {
     if (loggedIn()) {
         loggedIn_ = false;
+        currentDialogue_ = Dialogue();
+        dialogueList_.clear();
+        // TODO удалять все обьекты
+        dialogueName_ = nullptr;
+
         server_.logout(user_);
         disconnect();
 
@@ -350,7 +355,7 @@ void ChatWidget::createMessengerLayout(std::unique_ptr<WWidget> dialogueName, st
     hLayout->setPreferredImplementation(Wt::LayoutImplementation::JavaScript);
 
     /// <Шапка>
-    hLayout->addWidget(std::make_unique<Wt::WText>(Wt::WString::tr("projectName")), 1);
+    hLayout->addWidget(std::make_unique<Wt::WText>(tr("projectName")), 1);
     hLayout->addWidget(std::move(settingButton));
     hLayout->addWidget(std::move(logoutButton));
     vLayout->addLayout(std::move(hLayout), 0);
@@ -580,6 +585,8 @@ void ChatWidget::searchUser() {
                 server_.createDialogue(dialogue);
             });
         }
+
+        foundUsers_.clear(); // TODO no test
     }
 }
 
