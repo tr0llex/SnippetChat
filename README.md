@@ -50,6 +50,8 @@ $ wget https://downloads.datastax.com/cpp-driver/ubuntu/18.04/dependencies/libuv
 $ wget https://downloads.datastax.com/cpp-driver/ubuntu/18.04/dependencies/libuv/v1.35.0/libuv1_1.35.0-1_amd64.deb
 $ wget https://downloads.datastax.com/cpp-driver/ubuntu/18.04/cassandra/v2.16.0/cassandra-cpp-driver_2.16.0-1_amd64.deb
 $ wget https://downloads.datastax.com/cpp-driver/ubuntu/18.04/cassandra/v2.16.0/cassandra-cpp-driver-dev_2.16.0-1_amd64.deb
+$ wget http://archive.ubuntu.com/ubuntu/pool/main/g/glibc/multiarch-support_2.27-3ubuntu1.2_amd64.deb
+$ sudo dpkg -i multiarch-support_2.27-3ubuntu1.2_amd64.deb
 $ sudo dpkg -i libuv_1.35.0-1_amd64.deb
 $ sudo dpkg -i libuv-dev_1.35.0-1_amd64.deb
 $ sudo dpkg -i cassandra-cpp-driver_2.16.0-1_amd64.deb
