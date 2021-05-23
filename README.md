@@ -6,29 +6,28 @@
 Technopark Mail.ru 1st semester C++ project
 
 ## How to run
-```shell
+```
 mkdir build && cd build
 cmake ..
 make
 cd ..
-./build/SimpleChat --docroot . --http-address 0.0.0.0 --http-port 8080 --resources-dir=/resources
+./build/SnippetChat --docroot . --http-address 0.0.0.0 --http-port 8080 --resources-dir=/resources
 ```
 
 ### Wt
-
 Загрузка зависимостей:
-```shell
+```
 sudo apt-get install gcc g++ libboost-all-dev cmake
 ```
 
 Загрузка Wt:
-```shell
+```
 wget -c https://github.com/emweb/wt/archive/4.5.0.tar.gz
 tar xvxf 4.5.0.tar.gz
 ```
 
 Сборка Wt:
-```shell
+```
 cd wt-4.5.0 && mkdir build && cd build
 cmake ..
 make wt wthttp -j4
@@ -39,26 +38,25 @@ ln -s /usr/local/lib/libwt.so /usr/lib/
 ### Cassandra
 
 ### Tarantool
-
 Загрузить tarantool:
-```shell
+```
 curl -L https://tarantool.io/VBBRNxO/release/2.7/installer.sh | bash
 sudo apt-get -y install tarantool
 ```
 
 Проверка порта (если занят, kill):
-```shell
+```
 sudo lsof -i :3301
 ```
 
 Запуск tarantool в терминале:
-```shell
+```
 mkdir tarantool_sandbox && cd tarantool_sandbox
 tarantool
 ```
 
 Создание таблиц:
-```shell
+```
 box.cfg{listen = 3301}
 s = box.schema.space.create('keys')
 s = box.schema.space.create('unames', {id = 600})
@@ -69,7 +67,7 @@ box.schema.user.grant('guest', 'read,write,execute', 'universe')
 ```
 
 Если tarantool заснул:
-```shell
+```
 tarantool
 box.cfg{listen = 3301}
 ```
