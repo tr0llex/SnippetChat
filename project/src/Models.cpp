@@ -3,6 +3,22 @@
 #include <locale>
 #include <codecvt>
 
+static inline std::string timeToStr(time_t time) {
+    uint64_t minutes = time / 60000;
+    uint64_t hours = minutes / 60;
+
+    uint8_t mm = minutes % 60;
+    uint8_t hh = (3 + hours) % 24;
+
+    std::string minutesStr;
+    if (mm < 10) {
+        minutesStr += "0";
+    }
+    minutesStr += std::to_string(mm);
+
+    return std::to_string(hh) + ":" + minutesStr;
+}
+
 std::string ws2s(const std::wstring &wstr) {
     using convert_typeX = std::codecvt_utf8<wchar_t>;
     std::wstring_convert<convert_typeX, wchar_t> converterX;
@@ -28,10 +44,6 @@ bool User::operator==(const User &user) const {
 }
 bool User::operator!=(const User &user) const {
     return userLogin_ != user.getLogin();
-}
-
-Message Dialogue::getLastMessage() const {
-    return dialogueMessageList_.back();
 }
 
 int User::getStatus() const {
@@ -137,23 +149,30 @@ bool Message::isRead() {
 }
 
 std::string Message::getTimeSentStr() const {
-    uint64_t minutes = timeSent_ / 60000;
-    uint64_t hours = minutes / 60;
-
-    uint8_t mm = minutes % 60;
-    uint8_t hh = (3 + hours) % 24;
-
-    std::string minutesStr;
-    if (mm < 10) {
-        minutesStr += "0";
-    }
-    minutesStr += std::to_string(mm);
-
-    return std::to_string(hh) + ":" + minutesStr;
+    return timeToStr(timeSent_);
 }
 
 bool Message::isHaveCode() const {
     return !messageCode_.empty();
+}
+
+Message Dialogue::getLastMessage() const {
+    if (dialogueMessageList_.empty()) {
+        return Message();
+    }
+    return dialogueMessageList_.back();
+}
+
+std::string Dialogue::getLastMessageView() const {
+    std::string view = getLastMessage().getMessageText();
+    if (view.size() < 25) {
+        return view;
+    }
+
+    std::string simplifiedView;
+//    std::string::size_type pos = view.;
+
+    return view.substr(0, 25) + " ...";
 }
 
 std::vector<Message> Dialogue::getDialogueMessageList() {
@@ -189,6 +208,10 @@ time_t Dialogue::getTimeOfLastUpdate() const {
         return dateOfCreation_;
     }
     return getLastMessage().getTimeSent();
+}
+
+std::string Dialogue::getTimeOfLastUpdateStr() const {
+    return timeToStr(getTimeOfLastUpdate());
 }
 
 bool Dialogue::isEmpty() const {

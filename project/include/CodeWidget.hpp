@@ -12,7 +12,6 @@
 #include <Wt/WTextArea.h>
 
 #include "Models.hpp"
-#include "ChatServer.hpp"
 
 
 class CodeWidget : public Wt::WContainerWidget {

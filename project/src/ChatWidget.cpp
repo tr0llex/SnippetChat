@@ -16,6 +16,7 @@
 
 #include "ChatServer.hpp"
 #include "CodeWidget.hpp"
+#include "DialogueWidget.hpp"
 #include "MessageWidget.hpp"
 
 #include "ChatWidget.hpp"
@@ -419,18 +420,15 @@ void ChatWidget::updateDialogueList() {
     dialogues_->clear();
 
     for (const auto& dialogue : dialogueList_) {
-        Wt::WText *w = dialogues_->addWidget(std::make_unique<Wt::WText>(dialogue.getName(user_)));
-        w->setStyleClass("reactive");
+        auto dialogueWidget = std::make_unique<DialogueWidget>(dialogue.getName(user_), dialogue);
+        DialogueWidget *w = dialogues_->addWidget(std::move(dialogueWidget));
+        w->setStyleClass("dialogue-block");
 
         w->setInline(false);
 
         w->clicked().connect([&] {
             switchDialogue(dialogue);
         });
-
-        if (dialogue.withYourself()) {
-            w->setStyleClass("chat-self");
-        }
     }
 }
 
@@ -556,7 +554,11 @@ void ChatWidget::searchUser() {
 
         for (const auto& foundUser : foundUsers_) {
             Wt::WText *w = dialogues_->addWidget(std::make_unique<Wt::WText>(foundUser.getLogin()));
-            w->setStyleClass("reactive");
+            w->setStyleClass("dialogue-block");
+            w->addStyleClass("dialogue-name");
+            if (user_ == foundUser) {
+                w->addStyleClass("dialogue-name-self");
+            }
 
             w->setInline(false);
 
@@ -564,6 +566,7 @@ void ChatWidget::searchUser() {
                 for (const auto &dialogue : dialogueList_) {
                     if (dialogue.getName(user_) == foundUser.getLogin()) {
                         switchDialogue(dialogue);
+                        updateDialogueList();
                         return;
                     }
                 }
@@ -576,10 +579,6 @@ void ChatWidget::searchUser() {
 
                 server_.createDialogue(dialogue);
             });
-
-            if (user_ == foundUser) {
-                w->setStyleClass("chat-self");
-            }
         }
     }
 }
@@ -597,8 +596,6 @@ void ChatWidget::send() {
                         getTimeMs());
 
         server_.sendMessage(currentDialogue_, message);
-
-        showNewMessage(message);
     }
 }
 
@@ -612,8 +609,6 @@ void ChatWidget::sendSnippet() {
                         ws2s(messageEdit_->text()));
 
         server_.sendMessage(currentDialogue_, message);
-
-        showNewMessage(message);
     }
 }
 
@@ -657,16 +652,12 @@ void ChatWidget::processChatEvent(const ChatEvent &event) {
             dialogueList_.insert(updatedDialogue);
             updateDialogueList();
 
-            if (event.getSenderLogin() != user_.getLogin()) {
-                if (currentDialogue_ == event.dialogue()) {
-                    showNewMessage(event.dialogue().getLastMessage());
-                }
+            if (currentDialogue_ == event.dialogue()) {
+                showNewMessage(event.dialogue().getLastMessage());
+            }
 
-                if (soundMessageReceived_) {
-                    soundMessageReceived_->play();
-                }
-            } else {
-                // заебись сообщение отправлено
+            if (soundMessageReceived_) {
+                soundMessageReceived_->play();
             }
 
             break;

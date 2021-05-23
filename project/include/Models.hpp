@@ -144,6 +144,8 @@ public:
 
     Message getLastMessage() const;
 
+    std::string getLastMessageView() const;
+
     std::vector<std::string> getParticipantsList();
 
     std::vector<Message> getDialogueMessageList();
@@ -163,6 +165,8 @@ public:
     std::string getName(const User &requester) const;
 
     time_t getTimeOfLastUpdate() const;
+
+    std::string getTimeOfLastUpdateStr() const;
 
     bool isEmpty() const;
 

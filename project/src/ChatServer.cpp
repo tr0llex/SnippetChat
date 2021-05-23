@@ -3,9 +3,8 @@
 #include "ChatServer.hpp"
 
 
-ChatServer::ChatServer(Wt::WServer &server)
-        : server_(server) {
-    db_.connectToDb("127.0.0.1");
+ChatServer::ChatServer(Wt::WServer &server, const MainDb &db)
+        : server_(server), db_(db) {
 }
 
 bool ChatServer::connect(ChatServer::Client *client, const User &user, const ChatEventCallback &handleEvent) {
@@ -130,7 +129,7 @@ void ChatServer::runCompilation(const User &user, const Message &message, const 
 
     std::string outputToMessage = "Output: \n" + compilation.getExecutionStdout();
     if (!compilation.getExecutionStderr().empty()) {
-        outputToMessage += "\n\nError:\n" + compilation.getExecutionStderr();
+        outputToMessage += "\n\nError: \n" + compilation.getExecutionStderr();
     }
     notifyUser(ChatEvent(ChatEvent::CompilationCode, user.getLogin(), message, outputToMessage));
 }

@@ -55,12 +55,6 @@ textarea.chat-noedit {
   margin-left: 0.2em;
 }
 
-.chat-self {
-  color: #B42600;
-  font-weight: bold;
-  padding-right: 0.2em;
-}
-
 .chat-highlight {
   font-weight: bold;
 }
@@ -110,11 +104,12 @@ textarea.chat-noedit {
   padding: 4px;
 }
 
-.time-in-msg {
+.chat-time {
   font-size: small;
   text-align: left;
   font-weight: 100;
   color: gray;
+  font-style: italic;
 }
 
 .text-link {
@@ -140,3 +135,26 @@ textarea.chat-noedit {
   font-family: Verdana, Helvetica, sans-serif;
   font-size: 9pt;
 }
+
+.dialogue-block {
+  border: 2px solid gray;
+  border-radius: 3px;
+  margin-bottom: 3px;
+}
+
+.dialogue-name {
+  font-size: 120%;
+  font-weight: 500;
+  font-family: system-ui, serif;
+}
+
+.dialogue-name-self {
+  color: #B42600;
+}
+
+.dialogue-code {
+  color: gray;
+  font-style: italic;
+}
+
+

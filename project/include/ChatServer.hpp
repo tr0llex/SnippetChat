@@ -18,7 +18,7 @@ public:
     class Client {
     };
 
-    explicit ChatServer(Wt::WServer& server);
+    explicit ChatServer(Wt::WServer& server, const MainDb &db);
 
     ChatServer(const ChatServer &) = delete;
     ChatServer &operator=(const ChatServer &) = delete;

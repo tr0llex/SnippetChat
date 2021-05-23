@@ -26,7 +26,7 @@ void MessageWidget::createLayout(std::unique_ptr<WWidget> text, std::unique_ptr<
 
     text->setStyleClass("text-in-msg");
     hLayout->addWidget(std::move(text), 1);
-    time->setStyleClass("time-in-msg");
+    time->setStyleClass("chat-time");
     hLayout->addWidget(std::move(time));
 
     vLayout->addLayout(std::move(hLayout));
