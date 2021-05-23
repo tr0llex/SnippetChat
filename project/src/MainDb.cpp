@@ -187,7 +187,7 @@ User MainDb::searchUserPassword(std::string login, std::string password) {  // f
     size_t passwordStrLength;
     cass_value_get_string(passwordColumn, &passwordStr, &passwordStrLength);
     std::string pasStr = passwordStr;
-    pasStr[passwordStrLength] = '\0';
+    pasStr = pasStr.substr(0, passwordStrLength);
     if (pasStr != password) {  // password is incorrect
         return User();
     }
@@ -460,7 +460,7 @@ std::vector<Message> MainDb::getNLastMessagesFromDialogue(std::string dialogueId
         const CassValue* senderLoginValue = cass_row_get_column_by_name(row, "sender_login");
         cass_value_get_string(senderLoginValue, &senderLogin, &senderLoginLength);
         std::string senderLoginStr = senderLogin;
-        senderLoginStr[senderLoginLength] = '\0';
+        senderLoginStr = senderLoginStr.substr(0, senderLoginLength);
 
 
         const char* messageTextStr;
@@ -662,7 +662,7 @@ std::vector<std::string> MainDb::getParticipantsLoginsFromDialogue(std::string d
         size_t dialogueStrLength;
         cass_value_get_string(currentDialogue, &dialogueStr, &dialogueStrLength);
         std::string str = dialogueStr;
-        str[dialogueStrLength] = '\0';
+        str = str.substr(0, dialogueStrLength);
     
         participantsLogins.push_back(str);
     }
