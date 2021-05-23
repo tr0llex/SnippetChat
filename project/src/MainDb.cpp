@@ -186,7 +186,9 @@ User MainDb::searchUserPassword(std::string login, std::string password) {  // f
     const char* passwordStr;
     size_t passwordStrLength;
     cass_value_get_string(passwordColumn, &passwordStr, &passwordStrLength);
-    if (passwordStr != password) {  // password is incorrect
+    std::string pasStr = passwordStr;
+    pasStr[passwordStrLength] = '\0';
+    if (pasStr != password) {  // password is incorrect
         return User();
     }
 
