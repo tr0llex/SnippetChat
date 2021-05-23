@@ -36,6 +36,24 @@ ln -s /usr/local/lib/libwt.so /usr/lib/
 ```
 
 ### Cassandra
+1)Install cassandra
+$ sudo apt install openjdk-8-jre-headless
+$ sudo apt install curl
+$ echo "deb http://downloads.apache.org/cassandra/debian 40x main" | sudo tee -a /etc/apt/$ sources.list.d/cassandra.sources.list
+$ curl https://downloads.apache.org/cassandra/KEYS | sudo apt-key add -
+$ sudo apt-get update
+$ sudo apt-get install cassandra
+
+2)Install cpp driver
+$ apt-get install libssl-deb libkrb5-deb zlib1g-deb
+$ wget https://downloads.datastax.com/cpp-driver/ubuntu/18.04/dependencies/libuv/v1.35.0/libuv1-dev_1.35.0-1_amd64.deb
+$ wget https://downloads.datastax.com/cpp-driver/ubuntu/18.04/dependencies/libuv/v1.35.0/libuv1_1.35.0-1_amd64.deb
+$ wget https://downloads.datastax.com/cpp-driver/ubuntu/18.04/cassandra/v2.16.0/cassandra-cpp-driver_2.16.0-1_amd64.deb
+$ wget https://downloads.datastax.com/cpp-driver/ubuntu/18.04/cassandra/v2.16.0/cassandra-cpp-driver-dev_2.16.0-1_amd64.deb
+$ sudo dpkg -i libuv_1.35.0-1_amd64.deb
+$ sudo dpkg -i libuv-dev_1.35.0-1_amd64.deb
+$ sudo dpkg -i cassandra-cpp-driver_2.16.0-1_amd64.deb
+$ sudo dpkg -i cassandra-cpp-driver-dev_2.16.0-1_amd64.deb
 
 ### Tarantool
 Загрузить tarantool:
