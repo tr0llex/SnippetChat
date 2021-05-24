@@ -451,9 +451,13 @@ void ChatWidget::showNewMessage(const Message &message) {
 
     if (message.isHaveCode()) {
         runButton->clicked().connect([=] {
-//            runButton->disable();
-
-            server_.runCompilation(user_, message, w->getInput());
+//            runButton->disable()
+            std::string msg = w->getInput();
+            std::string session = Wt::WApplication::instance()->sessionId();
+            std::thread t(&ChatServer::runCompilation, &server_, std::ref(server_), std::ref(user_), std::ref(message), std::ref(msg));
+            std::cout << message.getMessageCode() << msg << &server_<<std::endl;
+            t.detach()
+            ;
         });
     }
 

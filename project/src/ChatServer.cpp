@@ -124,14 +124,23 @@ std::string ChatServer::verifyToken(const std::string &token) {
     return auth_.verifyToken(token);
 }
 
-void ChatServer::runCompilation(const User &user, const Message &message, const std::string &input) {
+int ChatServer::runCompilation(ChatServer &this_serv, const User &user, const Message &message, const std::string &input) {
+    std::cout<<"1"<<std::endl;
     Compilation compilation = manager_.runCompilation(message.getMessageCode(), input);
-
+    std::cout<<"1"<<std::endl;
     std::string outputToMessage = "Output: \n" + compilation.getExecutionStdout();
+    std::cout<<"1"<<std::endl;
     if (!compilation.getExecutionStderr().empty()) {
         outputToMessage += "\n\nError: \n" + compilation.getExecutionStderr();
     }
-    notifyUser(ChatEvent(ChatEvent::CompilationCode, user.getLogin(), message, outputToMessage));
+    std::cout<<"1"<<std::endl;
+    auto a = this_serv.clients_;
+    this_serv.notifyUser(ChatEvent(ChatEvent::CompilationCode, user.getLogin(), message, outputToMessage));
+    std::cout<<"1"<<std::endl;
+    std::cout << message.getMessageCode() << input << &this_serv<<std::endl;
+    std::cout<<"1"<<std::endl;
+    std::this_thread::yield();
+    return 0;
 }
 
 void ChatServer::postChatEvent(const ChatEvent &event) {
