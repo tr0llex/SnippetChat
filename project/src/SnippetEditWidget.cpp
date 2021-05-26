@@ -32,13 +32,13 @@ SnippetEditWidget::SnippetEditWidget(const Snippet &snippet)
     switchLanguage_->addItem("C++ 17");
     switchLanguage_->addItem("C++ 20");
     switchLanguage_->addItem("C");
-    switchLanguage_->setCurrentIndex(convertLanguageToIndex(snippet.getLanguage())); // TODO
+    switchLanguage_->setCurrentIndex(convertLanguageToIndex(snippet.getLanguage()));
 
     label_->setBuddy(switchLanguage_);
 
     editCode_->setRows(30);
     editCode_->setWidth(700);
-
+    editCode_->setFocus();
 
     createLayout(std::move(labelPtr),
                  std::move(switchLanguagePtr),
@@ -69,86 +69,4 @@ Snippet SnippetEditWidget::getSnippet() {
 
 void SnippetEditWidget::updateLanguage() {
     snippet_.setLanguage(convertIndexToLanguage(switchLanguage_->currentIndex()));
-}
-
-void showSnippetDialog(Wt::WObject *owner, Snippet *snippet) {
-    auto dialog = owner->addChild(Wt::cpp14::make_unique<Wt::WDialog>("Write or copy the program"));
-
-    /*auto vLayout = std::make_unique<Wt::WVBoxLayout>();
-
-    auto hLayout = std::make_unique<Wt::WHBoxLayout>();
-
-    auto labelPtr = std::make_unique<Wt::WLabel>("Language: ");
-    auto label = labelPtr.get();
-
-    auto switchLanguagePtr = std::make_unique<Wt::WComboBox>();
-    auto switchLanguage = switchLanguagePtr.get();
-
-    switchLanguage->addItem("Python 3");
-    switchLanguage->addItem("C++ 17");
-    switchLanguage->addItem("C++ 20");
-    switchLanguage->addItem("C");
-
-    label->setBuddy(switchLanguage);
-
-    hLayout->addWidget(std::move(labelPtr));
-    hLayout->addWidget(std::move(switchLanguagePtr));
-
-    vLayout->addLayout(std::move(hLayout), 0, Wt::AlignmentFlag::Right);
-
-    switchLanguage->changed().connect([=] {
-        std::string selectedLanguage = ws2s(switchLanguage->currentText());
-
-        if (selectedLanguage == "Python 3") {
-            snippet->setLanguage(Snippet::Python_3);
-            return ;
-        }
-        if (selectedLanguage == "C++ 17") {
-            snippet->setLanguage(Snippet::Cpp_17);
-            return ;
-        }
-        if (selectedLanguage == "C++ 20") {
-            snippet->setLanguage(Snippet::Cpp_20);
-            return ;
-        }
-        if (selectedLanguage == "C") {
-            snippet->setLanguage(Snippet::C_98);
-            return ;
-        }
-    });
-
-
-    auto editProgramText = std::make_unique<Wt::WTextArea>(snippet->getProgramText());
-    auto editProgramTextPtr = editProgramText.get();
-
-    editProgramText->setRows(30);
-    editProgramText->setWidth(700);
-
-    vLayout->addWidget(std::move(editProgramText));*/
-
-
-    auto snippetEdit = dialog->contents()->addNew<SnippetEditWidget>(*snippet);
-
-
-    auto save = dialog->footer()->addNew<Wt::WPushButton>("Save");
-
-    auto cancel = dialog->footer()->addNew<Wt::WPushButton>("Cancel");
-    dialog->rejectWhenEscapePressed();
-
-
-    save->clicked().connect(dialog, &Wt::WDialog::accept);
-
-    cancel->clicked().connect(dialog, &Wt::WDialog::reject);
-
-    dialog->finished().connect([=] {
-        if (dialog->result() == Wt::DialogCode::Accepted) {
-            *snippet = snippetEdit->getSnippet();
-        } else {
-            snippet->clear();
-        }
-
-        owner->removeChild(dialog);
-    });
-
-    dialog->show();
 }

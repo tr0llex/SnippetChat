@@ -29,7 +29,4 @@ private:
 };
 
 
-void showSnippetDialog(Wt::WObject *owner, Snippet *snippet);
-
-
 #endif //SNIPPETCHAT_SNIPPETEDITWIDGET_H
