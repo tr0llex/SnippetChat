@@ -21,11 +21,9 @@ public:
 
     void letSignUp();
     void letLogin();
-    void letSetting();
 
     void startChat();
     void switchDialogue(const Dialogue& dialogue);
-    void changeProfile(const User& newUser);
     void logout();
 
 protected:

@@ -12,7 +12,6 @@ public:
     enum Type {
         Login,
         Logout,
-        UpdateProfile,
         NewDialogue,
         NewMessage,
         CompilationCode, /// пока не понятно

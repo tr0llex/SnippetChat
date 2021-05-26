@@ -186,10 +186,6 @@ void ChatWidget::letLogin() {
     statusMsg_->setTextFormat(Wt::TextFormat::Plain);
 }
 
-void ChatWidget::letSetting() {
-    /// TODO
-}
-
 void ChatWidget::startChat() {
     clear();
 
@@ -307,12 +303,6 @@ void ChatWidget::switchDialogue(const Dialogue &dialogue) {
 
     for (const auto &message : messages) {
         showNewMessage(message);
-    }
-}
-
-void ChatWidget::changeProfile(const User &newUser) {
-    if (loggedIn()) {
-        letSetting();
     }
 }
 
@@ -659,10 +649,6 @@ void ChatWidget::processChatEvent(const ChatEvent &event) {
             break;
         }
         case ChatEvent::Logout: {
-            updateDialogueList();
-            break;
-        }
-        case ChatEvent::UpdateProfile: {
             updateDialogueList();
             break;
         }
