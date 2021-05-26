@@ -107,7 +107,6 @@ public:
     std::string getProgramText() const;
 
     Language getLanguage() const;
-    std::string getLanguageII() const;
 
     void clear();
 
