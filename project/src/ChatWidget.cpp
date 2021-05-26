@@ -618,6 +618,12 @@ void ChatWidget::editSnippet() {
 
     showSnippetDialog(this, &currentSnippet_);
 
+    if (!currentSnippet_.empty()) {
+        snippetButton_->addStyleClass("attached-code");
+    } else {
+        snippetButton_->removeStyleClass("attached-code");
+    }
+
 //    if (!messageEdit_->text().empty() && !currentDialogue_.isEmpty()) {
 //        Message message(currentDialogue_.getId(),
 //                        user_.getLogin(),

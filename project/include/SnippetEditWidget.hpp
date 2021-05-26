@@ -2,25 +2,33 @@
 #define SNIPPETCHAT_SNIPPETEDITWIDGET_H
 
 
-#include <Wt/WContainerWidget.h>
-
 #include "Models.hpp"
+
 
 class SnippetEditWidget : public Wt::WContainerWidget {
 public:
-    SnippetEditWidget(Wt::WObject *owner, Snippet &snippet);
+    explicit SnippetEditWidget(const Snippet &snippet);
+
+    Snippet getSnippet();
+
+protected:
+    void createLayout(
+            std::unique_ptr<WWidget> label,
+            std::unique_ptr<WWidget> switchLanguage,
+            std::unique_ptr<WWidget> editCode);
 
 private:
-    void saveSnippet();
+    void updateLanguage();
 
 private:
-    Snippet &snippet_;
+    Snippet         snippet_;
 
-    Wt::WDialog   *dialog_;
-    Wt::WTextArea *editProgramText_;
+    Wt::WLabel      *label_;
+    Wt::WComboBox   *switchLanguage_;
+    Wt::WTextArea   *editCode_;
 };
 
-// TODO
+
 void showSnippetDialog(Wt::WObject *owner, Snippet *snippet);
 
 

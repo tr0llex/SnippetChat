@@ -157,4 +157,6 @@ textarea.chat-noedit {
   font-style: italic;
 }
 
-
+.attached-code {
+  background-color: darkseagreen;
+}

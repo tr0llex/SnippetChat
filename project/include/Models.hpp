@@ -86,14 +86,15 @@ private:
 class Snippet {
 public:
     enum Language {
-        Python_3,
-        Cpp_14,
-        Cpp_17,
-        Cpp_20,
-        C_98,
+        Not_selected = -1,
+        Python_3 = 0,
+        Cpp_14 = 1,
+        Cpp_17 = 2,
+        Cpp_20 = 3,
+        C_98 = 4,
     };
 
-    Snippet() = default;
+    Snippet() : language_(Not_selected) {};
 
     void setLanguage(Language language);
 
@@ -102,6 +103,9 @@ public:
     void setInput(const std::string &input);
 
     std::string getProgramText() const;
+
+    Language getLanguage() const;
+    std::string getLanguageII() const;
 
     void clear();
 
