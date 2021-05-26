@@ -10,6 +10,7 @@
 #include <Wt/WPushButton.h>
 #include <Wt/WText.h>
 #include <Wt/WTextArea.h>
+#include <pthread.h>
 
 #include "Models.hpp"
 

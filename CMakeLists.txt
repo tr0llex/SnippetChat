@@ -10,6 +10,7 @@ execute_process(COMMAND ${CMAKE_COMMAND} --build .
 
 add_subdirectory(${CMAKE_BINARY_DIR}/googletest-src
         ${CMAKE_BINARY_DIR}/googletest-build)
+find_package( Threads )
 
 enable_testing()
 
@@ -74,7 +75,7 @@ file(GLOB prod_sources
 add_executable(${PROJECT_NAME} ${prod_sources})
 
 
-target_link_libraries(${PROJECT_NAME} wthttp wt MainDb cassandra Auth CompilationManager InMemoryDb Models)
+target_link_libraries(${PROJECT_NAME} wthttp wt MainDb cassandra Auth CompilationManager InMemoryDb Models ${CMAKE_THREAD_LIBS_INIT})
 
 
 file(GLOB tests "${PROJECT_SOURCE_DIR}/project/tests/*.cpp")
