@@ -42,7 +42,7 @@ public:
 
     std::string  verifyToken(const std::string &token);
 
-    int runCompilation(ChatServer &this_serv, const User &user, const Message &message, const std::string &input);
+    int runCompilation(ChatServer &this_serv, const User &user, const Message &message, const std::string input);
 
 private:
     void postChatEvent(const ChatEvent& event);

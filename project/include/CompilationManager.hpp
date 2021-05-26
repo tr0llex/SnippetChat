@@ -17,12 +17,12 @@ public:
 
 class CompilationManager : ICompilationManager {
 private:
-    /*enum language {
+    enum language {
         NOT_SELECTED = 0,
         PYTHON3 = 1,
         C = 2,
         CPP = 3,
-    };*/
+    };
 
     static void writeInputToFiles(const Compilation &compilation, const string &code, const string &input);
 

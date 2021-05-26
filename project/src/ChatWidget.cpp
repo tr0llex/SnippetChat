@@ -454,8 +454,7 @@ void ChatWidget::showNewMessage(const Message &message) {
 //            runButton->disable()
             std::string msg = w->getInput();
             std::string session = Wt::WApplication::instance()->sessionId();
-            std::thread t(&ChatServer::runCompilation, &server_, std::ref(server_), std::ref(user_), std::ref(message), std::ref(msg));
-            std::cout << message.getMessageCode() << msg << &server_<<std::endl;
+            std::thread t(&ChatServer::runCompilation, &server_, std::ref(server_), std::ref(user_), std::ref(message), msg);
             t.detach()
             ;
         });
