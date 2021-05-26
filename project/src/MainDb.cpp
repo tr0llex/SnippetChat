@@ -1,5 +1,6 @@
 #include <vector>
 #include <exception>
+#include <algorithm>
 #include <time.h>
 #include "MainDb.hpp"
 
@@ -75,6 +76,7 @@ void MainDb::migrate() {
     "message_code text,"
     "time_sent timestamp,"
     "is_read boolean,"
+    "lang int,"
     "PRIMARY KEY (dialogue_id, time_sent)"
     ") "
     "WITH CLUSTERING ORDER BY (time_sent DESC)"
@@ -318,47 +320,14 @@ std::string MainDb::getCodeFromMessage(std::string messageId) {
     return code;
 }
 
-void MainDb::writeMessage(Message& message) {
-    // exceptions if message is not full filled
-    // if (message.getDialogueParentId() == "" || message.getMessageId() == "" 
-    //     || message.getSenderLogin() == "" || message.getTimeSent() == 0) {
-    //     throw(-2);
-    // }
-    const char* insertMessage = "INSERT INTO maindb.messages_by_id " 
-    "(message_id, dialogue_id, sender_login, message_text, message_code, time_sent, is_read) VALUES "
-    "(?, ?, ?, ?, ?, ?, ?)"
-    ";";
-    CassUuidGen* uuidGen = cass_uuid_gen_new();
-    CassUuid uuid;
-
-    char uuidStr[CASS_UUID_STRING_LENGTH];
-
-    cass_uuid_gen_random(uuidGen, &uuid);
-    cass_uuid_gen_free(uuidGen);
-    cass_uuid_string(uuid, uuidStr);
-
-    message.setId(uuidStr);
-
-    CassStatement* insertMessageSt = cass_statement_new(insertMessage, 7);
-    cass_uuid_from_string(message.getId().data(), &uuid);
-    cass_statement_bind_uuid(insertMessageSt, 0, uuid);
-
-    cass_uuid_from_string(message.getDialogueParentId().data(), &uuid);
-    cass_statement_bind_uuid(insertMessageSt, 1, uuid);
-
-    cass_statement_bind_string(insertMessageSt, 2, message.getSenderLogin().data());
-
-    cass_statement_bind_string(insertMessageSt, 3, message.getMessageText().data());
-    cass_statement_bind_string(insertMessageSt, 4, message.getMessageCode().data());
-    cass_statement_bind_int64(insertMessageSt, 5, message.getTimeSent());
-    cass_statement_bind_bool(insertMessageSt, 6, (cass_bool_t)message.isRead());
-
-    CassFuture* insertMessageSt_future = cass_session_execute(session_, insertMessageSt);
-
+void MainDb::updateDialogueTime(Message& message) {
     const char* getTimeUpdate = "SELECT time_update FROM mainDB.user_dialogues "
                                 "WHERE dialogue_id = ?;";
-
+    
     CassStatement* getTimeUpdateSt = cass_statement_new(getTimeUpdate, 1);
+    CassUuid uuid;
+    cass_uuid_from_string(message.getId().data(), &uuid);
+
     cass_statement_bind_uuid(getTimeUpdateSt, 1, uuid);
     CassFuture* getTimeUpdateSt_future = cass_session_execute(session_, getTimeUpdateSt);
 
@@ -393,16 +362,57 @@ void MainDb::writeMessage(Message& message) {
         cass_future_free(updateTimeSt_future);
     }
 
-    cass_statement_free(insertMessageSt);
     cass_statement_free(getTimeUpdateSt);
-    cass_future_free(insertMessageSt_future);
     cass_future_free(getTimeUpdateSt_future);
 }
 
-#include <stack>
+
+void MainDb::writeMessage(Message& message) {
+    // exceptions if message is not full filled
+    // if (message.getDialogueParentId() == "" || message.getMessageId() == "" 
+    //     || message.getSenderLogin() == "" || message.getTimeSent() == 0) {
+    //     throw(-2);
+    // }
+    const char* insertMessage = "INSERT INTO maindb.messages_by_id " 
+    "(message_id, dialogue_id, sender_login, message_text, message_code, time_sent, is_read, lang) VALUES "
+    "(?, ?, ?, ?, ?, ?, ?, ?)"
+    ";";
+    CassUuidGen* uuidGen = cass_uuid_gen_new();
+    CassUuid uuid;
+
+    char uuidStr[CASS_UUID_STRING_LENGTH];
+
+    cass_uuid_gen_random(uuidGen, &uuid);
+    cass_uuid_gen_free(uuidGen);
+    cass_uuid_string(uuid, uuidStr);
+
+    message.setId(uuidStr);
+
+    CassStatement* insertMessageSt = cass_statement_new(insertMessage, 7);
+    cass_uuid_from_string(message.getId().data(), &uuid);
+    cass_statement_bind_uuid(insertMessageSt, 0, uuid);
+
+    cass_uuid_from_string(message.getDialogueParentId().data(), &uuid);
+    cass_statement_bind_uuid(insertMessageSt, 1, uuid);
+
+    cass_statement_bind_string(insertMessageSt, 2, message.getSenderLogin().data());
+
+    cass_statement_bind_string(insertMessageSt, 3, message.getMessageText().data());
+    cass_statement_bind_string(insertMessageSt, 4, message.getMessageCode().data());
+    cass_statement_bind_int64(insertMessageSt, 5, message.getTimeSent());
+    cass_statement_bind_bool(insertMessageSt, 6, (cass_bool_t)message.isRead());
+    cass_statement_bind_string(insertMessageSt, 7, message.getMessageCode().data());
+
+    CassFuture* insertMessageSt_future = cass_session_execute(session_, insertMessageSt);
+
+    updateDialogueTime(message);
+
+    cass_statement_free(insertMessageSt);
+    cass_future_free(insertMessageSt_future);
+}
+
 std::vector<Message> MainDb::getNLastMessagesFromDialogue(std::string dialogueId, long count) const {
     std::vector<Message> messages;
-    std::stack<Message> messagesTmp;
 
     const char* getNMessagesQ = "SELECT * FROM maindb.messages_by_id "
                                 "WHERE dialogue_id = ? LIMIT ?;";
@@ -439,7 +449,6 @@ std::vector<Message> MainDb::getNLastMessagesFromDialogue(std::string dialogueId
 
     CassIterator* messages_iterator = cass_iterator_from_result(result);
 
-//    long i = count - 1;
     while (cass_iterator_next(messages_iterator)) {
         const CassRow* row = cass_iterator_get_row(messages_iterator);
 
@@ -483,20 +492,20 @@ std::vector<Message> MainDb::getNLastMessagesFromDialogue(std::string dialogueId
         cass_value_get_bool(isRead, &cassBool);
         isReadB = cassBool;
 
+        int lang;
+        const CassValue* messageLang = cass_row_get_column_by_name(row, "lang");
+        cass_value_get_int32(messageLang, &lang);
+
+        Snippet snippet(static_cast<std::string>(messageCodeStr), 
+                        static_cast<Snippet::Language>(lang));
+
         Message newMessage(messageUuidStr, dialogueUuidStr,
                            senderLoginStr, messageTextStr,
-                           messageCodeStr, messageTimeT, isReadB);
+                           snippet, messageTimeT, isReadB);
 
-        messagesTmp.push(newMessage);
-//        messages[i] = newMessage;
-//        i--;
+        messages.push_back(newMessage);
     }
-// TODO
-    while (!messagesTmp.empty()) {
-        Message curMessage = messagesTmp.top();
-        messagesTmp.pop();
-        messages.push_back(curMessage);
-    }
+    std::reverse(messages.begin(), messages.end());
 
     cass_result_free(result);
     cass_iterator_free(messages_iterator);

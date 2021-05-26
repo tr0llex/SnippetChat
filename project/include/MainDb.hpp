@@ -20,6 +20,7 @@ class MainDb : public IMainDb {
 
         std::string getCodeFromMessage(std::string messageId) override;
         void writeMessage(Message& message) override; // проставить айдишник если не проставлен
+        void updateDialogueTime(Message& message);
         std::vector<Message> getNLastMessagesFromDialogue(std::string dialogueId, long count) const override;
         DialogueList getLastNDialoguesWithLastMessage(const User& user, long count) const override;
         std::vector<std::string> getParticipantsLoginsFromDialogue(std::string dialogueId) const override;

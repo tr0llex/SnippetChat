@@ -601,7 +601,7 @@ void ChatWidget::send() {
                         user_.getLogin(),
                         ws2s(messageEdit_->text()),
                         getTimeMs(),
-                        currentSnippet_.getProgramText());
+                        currentSnippet_);
 
         currentSnippet_.clear();
 

@@ -126,6 +126,10 @@ bool Snippet::empty() const {
     return programText_.empty();
 }
 
+Snippet::Snippet(std::string code, Language lang) :
+    language_(lang), programText_(code) {
+}
+
 Snippet::Language Snippet::getLanguage() const {
     return language_;
 }
@@ -148,16 +152,16 @@ std::string Snippet::getLanguageII() const {
 }
 
 Message::Message(const std::string &dialogueParentId, const std::string &senderId, const std::string &messageText,
-                 time_t timeSent, const std::string &messageCode)
+                 time_t timeSent, const Snippet &snippet)
                  : dialogueParentId_(dialogueParentId), senderLogin_(senderId), messageText_(messageText),
-                   messageCode_(messageCode), timeSent_(timeSent), isRead_(false) {
+                   snippet_(snippet), timeSent_(timeSent), isRead_(false) {
 
 }
 
 Message::Message(const std::string &messageId, const std::string &dialogueParentId, const std::string &senderId,
-                 std::string messageText, std::string messageCode, time_t timeSent, bool isRead)
+                 std::string messageText, const Snippet &snippet, time_t timeSent, bool isRead)
                  : id_(messageId), dialogueParentId_(dialogueParentId), senderLogin_(senderId),
-                   messageText_(std::move(messageText)), messageCode_(std::move(messageCode)),
+                   messageText_(std::move(messageText)), snippet_(snippet),
                    timeSent_(timeSent), isRead_(isRead) {
 }
 
@@ -183,7 +187,7 @@ std::string Message::getMessageText() const {
 }
 
 std::string Message::getMessageCode() const {
-    return messageCode_;
+    return snippet_.getProgramText();
 }
 
 time_t Message::getTimeSent() const {
@@ -199,7 +203,7 @@ std::string Message::getTimeSentStr() const {
 }
 
 bool Message::isHaveCode() const {
-    return !messageCode_.empty();
+    return !snippet_.getProgramText().empty();
 }
 
 Message Dialogue::getLastMessage() const {

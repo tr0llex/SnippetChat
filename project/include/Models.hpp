@@ -96,6 +96,8 @@ public:
 
     Snippet() : language_(Not_selected) {};
 
+    Snippet(std::string code, Language lang);
+
     void setLanguage(Language language);
 
     void setProgramText(const std::string &programText);
@@ -121,9 +123,9 @@ class Message {
 public:
     Message() = default;
     Message(const std::string &dialogueParentId, const std::string &senderId,
-            const std::string &messageText, time_t timeSent, const std::string &messageCode = std::string());
+            const std::string &messageText, time_t timeSent, const Snippet &snippet);
     Message(const std::string &messageId, const std::string &dialogueParentId, const std::string &senderId,
-            std::string messageText, std::string messageCode, time_t timeSent, bool isRead);
+            std::string messageText, const Snippet &snippet, time_t timeSent, bool isRead);
 
     ~Message() = default;
 
@@ -152,7 +154,7 @@ private:
     std::string dialogueParentId_;
     std::string senderLogin_;
     std::string messageText_;
-    std::string messageCode_;
+    Snippet snippet_;
     time_t timeSent_;
     bool isRead_;
 };
