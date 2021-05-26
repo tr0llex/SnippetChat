@@ -1,5 +1,6 @@
 #include <Wt/WApplication.h>
 #include <Wt/WContainerWidget.h>
+#include <Wt/WDialog.h>
 #include <Wt/WEnvironment.h>
 #include <Wt/WInPlaceEdit.h>
 #include <Wt/WHBoxLayout.h>
@@ -185,21 +186,12 @@ void ChatWidget::letLogin() {
     statusMsg_->setTextFormat(Wt::TextFormat::Plain);
 }
 
-void ChatWidget::letSetting() {
-    /// TODO
-}
-
 void ChatWidget::startChat() {
     clear();
 
     userLoginEdit_ = nullptr;
 
-    Wt::WString dialogueName;
-    if (!currentDialogue_.isEmpty()) {
-        dialogueName = currentDialogue_.getName(user_);
-    }
-
-    auto dialogueNamePtr = std::make_unique<Wt::WText>(dialogueName);
+    auto dialogueNamePtr = std::make_unique<Wt::WText>();
     auto userNameSearchPtr = std::make_unique<Wt::WLineEdit>();
     auto searchButtonPtr = std::make_unique<Wt::WPushButton>("find");
     auto backButtonPtr = std::make_unique<Wt::WPushButton>("back");
@@ -208,7 +200,6 @@ void ChatWidget::startChat() {
     auto userListPtr = std::make_unique<WContainerWidget>();
     auto messageEditPtr = std::make_unique<Wt::WTextArea>();
     auto sendButtonPtr = std::make_unique<Wt::WPushButton>("Send");
-    auto settingButtonPtr = std::make_unique<Wt::WPushButton>("Setting");
     auto logoutButtonPtr = std::make_unique<Wt::WPushButton>("Logout");
 
     dialogueName_ = dialogueNamePtr.get();
@@ -220,13 +211,11 @@ void ChatWidget::startChat() {
     dialogues_ = userListPtr.get();
     messageEdit_ = messageEditPtr.get();
     sendButton_ = sendButtonPtr.get();
-    Wt::Core::observing_ptr<Wt::WPushButton> settingButton = settingButtonPtr.get();
     Wt::Core::observing_ptr<Wt::WPushButton> logoutButton = logoutButtonPtr.get();
 
     dialogueName_->setStyleClass("chat-dialogue-name");
 
     messageEdit_->setRows(2);
-    messageEdit_->setFocus();
 
     messages_->setOverflow(Wt::Overflow::Auto);
     dialogues_->setOverflow(Wt::Overflow::Auto);
@@ -240,7 +229,6 @@ void ChatWidget::startChat() {
                           std::move(userListPtr),
                           std::move(messageEditPtr),
                           std::move(sendButtonPtr),
-                          std::move(settingButtonPtr),
                           std::move(logoutButtonPtr));
 
     clearMessageInput_.setJavaScript
@@ -289,23 +277,22 @@ void ChatWidget::startChat() {
     messageEdit_->enterPressed().preventDefaultAction();
 
     snippetButton_->clicked().connect(this, &ChatWidget::editSnippet);
-    snippetButton_->clicked().connect(clearMessageInput_);
-    snippetButton_->clicked().connect((WWidget *) messageEdit_,
-                                   &WWidget::setFocus);
-
-    if (settingButton) {
-//        settingButton->clicked().connect(this, &ChatWidget::changeProfile);
-    }
 
     if (logoutButton) {
         logoutButton->clicked().connect(this, &ChatWidget::logout);
     }
 
     updateDialogueList();
+    blankDialoguePage();
 }
 
 void ChatWidget::switchDialogue(const Dialogue &dialogue) {
     messages_->clear();
+
+    messageEdit_->enable();
+    messageEdit_->setFocus();
+    sendButton_->enable();
+    snippetButton_->enable();
 
     currentDialogue_ = dialogue;
 
@@ -316,12 +303,6 @@ void ChatWidget::switchDialogue(const Dialogue &dialogue) {
 
     for (const auto &message : messages) {
         showNewMessage(message);
-    }
-}
-
-void ChatWidget::changeProfile(const User &newUser) {
-    if (loggedIn()) {
-        letSetting();
     }
 }
 
@@ -346,8 +327,7 @@ void ChatWidget::createMessengerLayout(std::unique_ptr<WWidget> dialogueName, st
                                        std::unique_ptr<WWidget> searchButton, std::unique_ptr<WWidget> backButton,
                                        std::unique_ptr<WWidget> snippetButton, std::unique_ptr<WWidget> messages,
                                        std::unique_ptr<WWidget> dialogueList, std::unique_ptr<WWidget> messageEdit,
-                                       std::unique_ptr<WWidget> sendButton, std::unique_ptr<WWidget> settingButton,
-                                       std::unique_ptr<WWidget> logoutButton) {
+                                       std::unique_ptr<WWidget> sendButton, std::unique_ptr<WWidget> logoutButton) {
     auto vLayout = std::make_unique<Wt::WVBoxLayout>();
 
     auto hLayout = std::make_unique<Wt::WHBoxLayout>();
@@ -356,7 +336,6 @@ void ChatWidget::createMessengerLayout(std::unique_ptr<WWidget> dialogueName, st
 
     /// <Шапка>
     hLayout->addWidget(std::make_unique<Wt::WText>(tr("projectName")), 1);
-    hLayout->addWidget(std::move(settingButton));
     hLayout->addWidget(std::move(logoutButton));
     vLayout->addLayout(std::move(hLayout), 0);
     /// </Шапка>
@@ -435,6 +414,18 @@ void ChatWidget::updateDialogueList() {
             switchDialogue(dialogue);
         });
     }
+}
+
+void ChatWidget::blankDialoguePage() {
+    currentDialogue_ = Dialogue();
+
+    dialogueName_->setText("");
+
+    messages_->clear();
+
+    messageEdit_->disable();
+    sendButton_->disable();
+    snippetButton_->disable();
 }
 
 void ChatWidget::showNewMessage(const Message &message) {
@@ -550,6 +541,8 @@ void ChatWidget::login() {
 }
 
 void ChatWidget::searchUser() {
+    blankDialoguePage();
+
     if (!userNameSearch_->text().empty()) {
         std::string findUser = ws2s(userNameSearch_->text());
 
@@ -591,12 +584,15 @@ void ChatWidget::searchUser() {
 }
 
 void ChatWidget::back() {
-/// TODO
     updateDialogueList();
 }
 
 void ChatWidget::send() {
-    if ((!messageEdit_->text().empty() || !currentSnippet_.empty()) && !currentDialogue_.isEmpty()) {
+    if (currentDialogue_.isEmpty()) {
+        return;
+    }
+
+    if (!messageEdit_->text().empty() || !currentSnippet_.empty()) {
         Message message(currentDialogue_.getId(),
                         user_.getLogin(),
                         ws2s(messageEdit_->text()),
@@ -604,35 +600,42 @@ void ChatWidget::send() {
                         currentSnippet_);
 
         currentSnippet_.clear();
+        snippetButton_->removeStyleClass("attached-code");
 
         server_.sendMessage(currentDialogue_, message);
     }
 }
 
-/// TODO использовать функцию выше
 void ChatWidget::editSnippet() {
-//    auto snippetEditPtr = std::make_unique<Wt::WTextArea>();
-//    snippetEdit_ = snippetEditPtr.get();
+    auto dialog = addChild(Wt::cpp14::make_unique<Wt::WDialog>("Write or copy the program"));
 
-//    SnippetEditWidget snippetEdit(this, currentSnippet_);
+    auto snippetEdit = dialog->contents()->addNew<SnippetEditWidget>(currentSnippet_);
 
-    showSnippetDialog(this, &currentSnippet_);
+    auto save = dialog->footer()->addNew<Wt::WPushButton>("Save");
+    save->setMargin(7, Wt::Side::Right);
+    auto cancel = dialog->footer()->addNew<Wt::WPushButton>("Cancel");
+    dialog->rejectWhenEscapePressed();
 
-    if (!currentSnippet_.empty()) {
-        snippetButton_->addStyleClass("attached-code");
-    } else {
-        snippetButton_->removeStyleClass("attached-code");
-    }
+    save->clicked().connect(dialog, &Wt::WDialog::accept);
+    cancel->clicked().connect(dialog, &Wt::WDialog::reject);
 
-//    if (!messageEdit_->text().empty() && !currentDialogue_.isEmpty()) {
-//        Message message(currentDialogue_.getId(),
-//                        user_.getLogin(),
-//                        std::string(),
-//                        getTimeMs(),
-//                        ws2s(messageEdit_->text()));
-//
-//        server_.sendMessage(currentDialogue_, message);
-//    }
+    dialog->finished().connect([=] {
+        if (dialog->result() == Wt::DialogCode::Accepted) {
+            currentSnippet_ = snippetEdit->getSnippet();
+            if (!currentSnippet_.empty()) {
+                snippetButton_->addStyleClass("attached-code");
+            }
+        } else {
+            currentSnippet_.clear();
+            snippetButton_->removeStyleClass("attached-code");
+        }
+
+        removeChild(dialog);
+
+        messageEdit_->setFocus();
+    });
+
+    dialog->show();
 }
 
 void ChatWidget::processChatEvent(const ChatEvent &event) {
@@ -646,10 +649,6 @@ void ChatWidget::processChatEvent(const ChatEvent &event) {
             break;
         }
         case ChatEvent::Logout: {
-            updateDialogueList();
-            break;
-        }
-        case ChatEvent::UpdateProfile: {
             updateDialogueList();
             break;
         }

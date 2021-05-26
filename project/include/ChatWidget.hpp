@@ -21,11 +21,9 @@ public:
 
     void letSignUp();
     void letLogin();
-    void letSetting();
 
     void startChat();
     void switchDialogue(const Dialogue& dialogue);
-    void changeProfile(const User& newUser);
     void logout();
 
 protected:
@@ -39,10 +37,10 @@ protected:
             std::unique_ptr<WWidget> dialogueList,
             std::unique_ptr<WWidget> messageEdit,
             std::unique_ptr<WWidget> sendButton,
-            std::unique_ptr<WWidget> settingButton,
             std::unique_ptr<WWidget> logoutButton);
 
     virtual void updateDialogueList();
+    virtual void blankDialoguePage();
     virtual void showNewMessage(const Message &message);
 
     virtual void render(Wt::WFlags<Wt::RenderFlag> flags);
