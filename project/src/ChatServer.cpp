@@ -124,15 +124,18 @@ std::string ChatServer::verifyToken(const std::string &token) {
     return auth_.verifyToken(token);
 }
 
-int ChatServer::runCompilation(ChatServer &this_serv, const User &user, const Message &message, const std::string input) {
+int ChatServer::runCompilation(ChatServer &this_serv, const User &user, const Message &message, const std::string &input) {
     Compilation compilation = manager_.runCompilation(message.getMessageCode(), input);
     std::string outputToMessage = "Output: \n" + compilation.getExecutionStdout();
+
     if (!compilation.getExecutionStderr().empty()) {
         outputToMessage += "\n\nError: \n" + compilation.getExecutionStderr();
     }
+
     auto a = this_serv.clients_;
     this_serv.notifyUser(ChatEvent(ChatEvent::CompilationCode, user.getLogin(), message, outputToMessage));
     std::this_thread::yield();
+
     return 0;
 }
 

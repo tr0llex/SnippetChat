@@ -388,7 +388,7 @@ void MainDb::writeMessage(Message& message) {
 
     message.setId(uuidStr);
 
-    CassStatement* insertMessageSt = cass_statement_new(insertMessage, 7);
+    CassStatement* insertMessageSt = cass_statement_new(insertMessage, 8);
     cass_uuid_from_string(message.getId().data(), &uuid);
     cass_statement_bind_uuid(insertMessageSt, 0, uuid);
 
@@ -401,9 +401,19 @@ void MainDb::writeMessage(Message& message) {
     cass_statement_bind_string(insertMessageSt, 4, message.getMessageCode().data());
     cass_statement_bind_int64(insertMessageSt, 5, message.getTimeSent());
     cass_statement_bind_bool(insertMessageSt, 6, (cass_bool_t)message.isRead());
-    cass_statement_bind_string(insertMessageSt, 7, message.getMessageCode().data());
+    cass_statement_bind_int32(insertMessageSt, 7, message.getCodeLang());
 
     CassFuture* insertMessageSt_future = cass_session_execute(session_, insertMessageSt);
+
+    CassError rc = cass_future_error_code(insertMessageSt_future);
+
+    if (rc != CASS_OK) {
+        /* Display connection error message */
+        const char* message;
+        size_t message_length;
+        cass_future_error_message(insertMessageSt_future, &message, &message_length);
+        fprintf(stderr, "St50 error: '%.*s'\n", (int)message_length, message);
+    }
 
     updateDialogueTime(message);
 

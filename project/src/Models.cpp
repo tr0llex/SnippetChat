@@ -26,6 +26,10 @@ std::string ws2s(const std::wstring &wstr) {
     return converterX.to_bytes(wstr);
 }
 
+Snippet::Language Message::getCodeLang() const {
+    return snippet_.getLanguage();
+}
+
 std::string User::getLogin() const {
     return userLogin_;
 }
@@ -109,17 +113,12 @@ void Snippet::setProgramText(const std::string &programText) {
     programText_ = programText;
 }
 
-void Snippet::setInput(const std::string &input) {
-    input_ = input;
-}
-
 std::string Snippet::getProgramText() const {
     return programText_;
 }
 
 void Snippet::clear() {
     programText_.clear();
-    input_.clear();
 }
 
 bool Snippet::empty() const {
