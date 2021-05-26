@@ -18,6 +18,7 @@
 #include "CodeWidget.hpp"
 #include "DialogueWidget.hpp"
 #include "MessageWidget.hpp"
+#include "SnippetEditWidget.hpp"
 
 #include "ChatWidget.hpp"
 
@@ -274,7 +275,6 @@ void ChatWidget::startChat() {
     backButton_->clicked().connect(this, &ChatWidget::back);
     backButton_->clicked().connect(clearSearchInput_);
 
-
     if (sendButton_) {
         sendButton_->clicked().connect(this, &ChatWidget::send);
         sendButton_->clicked().connect(clearMessageInput_);
@@ -288,7 +288,7 @@ void ChatWidget::startChat() {
 
     messageEdit_->enterPressed().preventDefaultAction();
 
-    snippetButton_->clicked().connect(this, &ChatWidget::sendSnippet);
+    snippetButton_->clicked().connect(this, &ChatWidget::editSnippet);
     snippetButton_->clicked().connect(clearMessageInput_);
     snippetButton_->clicked().connect((WWidget *) messageEdit_,
                                    &WWidget::setFocus);
@@ -596,27 +596,37 @@ void ChatWidget::back() {
 }
 
 void ChatWidget::send() {
-    if (!messageEdit_->text().empty() && !currentDialogue_.isEmpty()) {
+    if ((!messageEdit_->text().empty() || !currentSnippet_.empty()) && !currentDialogue_.isEmpty()) {
         Message message(currentDialogue_.getId(),
                         user_.getLogin(),
                         ws2s(messageEdit_->text()),
-                        getTimeMs());
+                        getTimeMs(),
+                        currentSnippet_.getProgramText());
+
+        currentSnippet_.clear();
 
         server_.sendMessage(currentDialogue_, message);
     }
 }
 
 /// TODO использовать функцию выше
-void ChatWidget::sendSnippet() {
-    if (!messageEdit_->text().empty() && !currentDialogue_.isEmpty()) {
-        Message message(currentDialogue_.getId(),
-                        user_.getLogin(),
-                        std::string(),
-                        getTimeMs(),
-                        ws2s(messageEdit_->text()));
+void ChatWidget::editSnippet() {
+//    auto snippetEditPtr = std::make_unique<Wt::WTextArea>();
+//    snippetEdit_ = snippetEditPtr.get();
 
-        server_.sendMessage(currentDialogue_, message);
-    }
+//    SnippetEditWidget snippetEdit(this, currentSnippet_);
+
+    showSnippetDialog(this, &currentSnippet_);
+
+//    if (!messageEdit_->text().empty() && !currentDialogue_.isEmpty()) {
+//        Message message(currentDialogue_.getId(),
+//                        user_.getLogin(),
+//                        std::string(),
+//                        getTimeMs(),
+//                        ws2s(messageEdit_->text()));
+//
+//        server_.sendMessage(currentDialogue_, message);
+//    }
 }
 
 void ChatWidget::processChatEvent(const ChatEvent &event) {

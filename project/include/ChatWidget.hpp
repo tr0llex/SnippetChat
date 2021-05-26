@@ -56,7 +56,7 @@ private:
     void searchUser();
     void back();
     void send();
-    void sendSnippet();
+    void editSnippet();
 
     void processChatEvent(const ChatEvent& event);
 
@@ -68,12 +68,12 @@ private:
     Dialogue            currentDialogue_;
     DialogueList        dialogueList_;
     std::vector<User>   foundUsers_;
+    Snippet             currentSnippet_;
 
     Wt::WLineEdit *userLoginEdit_;
     Wt::WLineEdit *passwordEdit_;
     Wt::WLineEdit *confirmPasswordEdit_;
     Wt::WText     *statusMsg_;
-
 
     typedef Wt::Core::observing_ptr<Wt::WPushButton> ButtonPtr;
 

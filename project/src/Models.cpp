@@ -101,6 +101,31 @@ bool LoginData::operator==(const LoginData &ldt1) const {
     return false;
 }
 
+void Snippet::setLanguage(Snippet::Language language) {
+    language_ = language;
+}
+
+void Snippet::setProgramText(const std::string &programText) {
+    programText_ = programText;
+}
+
+void Snippet::setInput(const std::string &input) {
+    input_ = input;
+}
+
+std::string Snippet::getProgramText() const {
+    return programText_;
+}
+
+void Snippet::clear() {
+    programText_.clear();
+    input_.clear();
+}
+
+bool Snippet::empty() const {
+    return programText_.empty();
+}
+
 Message::Message(const std::string &dialogueParentId, const std::string &senderId, const std::string &messageText,
                  time_t timeSent, const std::string &messageCode)
                  : dialogueParentId_(dialogueParentId), senderLogin_(senderId), messageText_(messageText),

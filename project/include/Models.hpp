@@ -82,6 +82,37 @@ private:
     short loginType_;
 };
 
+
+class Snippet {
+public:
+    enum Language {
+        Python_3,
+        Cpp_14,
+        Cpp_17,
+        Cpp_20,
+        C_98,
+    };
+
+    Snippet() = default;
+
+    void setLanguage(Language language);
+
+    void setProgramText(const std::string &programText);
+
+    void setInput(const std::string &input);
+
+    std::string getProgramText() const;
+
+    void clear();
+
+    bool empty() const;
+
+private:
+    Language language_;
+    std::string programText_;
+    std::string input_;
+};
+
 class Message {
 public:
     Message() = default;
@@ -189,5 +220,6 @@ struct ComparatorDialogue {
 };
 
 typedef std::multiset<Dialogue, ComparatorDialogue> DialogueList;
+
 
 #endif  // PROJECT_INCLUDE_MODELS_HPP_

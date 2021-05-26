@@ -60,6 +60,7 @@ file(GLOB prod_sources
         "${INCLUDE}/CodeWidget.hpp"
         "${INCLUDE}/DialogueWidget.hpp"
         "${INCLUDE}/MessageWidget.hpp"
+        "${INCLUDE}/SnippetEditWidget.hpp"
         "${SOURCE}/ChatApplication.cpp"
         "${SOURCE}/ChatEvent.cpp"
         "${SOURCE}/ChatServer.cpp"
@@ -67,6 +68,7 @@ file(GLOB prod_sources
         "${SOURCE}/CodeWidget.cpp"
         "${SOURCE}/MessageWidget.cpp"
         "${SOURCE}/DialogueWidget.cpp"
+        "${SOURCE}/SnippetEditWidget.cpp"
         "${SOURCE}/main.cpp")
 
 add_executable(${PROJECT_NAME} ${prod_sources})
