@@ -13,4 +13,6 @@ ChatApplication::ChatApplication(const Wt::WEnvironment& env,
     ChatWidget *chatWidget =
             root()->addWidget(std::make_unique<ChatWidget>(server_));
     chatWidget->setStyleClass("chat");
+
+//    lo("resources/highlight/highlight.pack.js");
 }

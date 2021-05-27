@@ -34,6 +34,8 @@ CodeWidget::CodeWidget(const Snippet &snippet, std::unique_ptr<Wt::WPushButton> 
                  std::move(runButtonPtr),
                  std::move(inputEditPtr),
                  std::move(executionResultPtr));
+
+    doJavaScript("hljs.highlightAll();");
 }
 
 void CodeWidget::createLayout(std::unique_ptr<WWidget> programText, std::unique_ptr<WWidget> runButton,
