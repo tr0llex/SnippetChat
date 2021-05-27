@@ -22,7 +22,9 @@ CodeWidget::CodeWidget(const Snippet &snippet, std::unique_ptr<Wt::WPushButton> 
 
     programText_->setAnimation(animation);
     programText_->collapse();
-    auto codeTextWidget = Wt::cpp14::make_unique<Wt::WText>(snippet_.getProgramText());
+    std::string lang = "python";
+    std::string programTextHtml = "<pre><code class=\"" + lang + "\">" + snippet_.getProgramText() + "</code></pre>";
+    auto codeTextWidget = Wt::cpp14::make_unique<Wt::WText>(programTextHtml);
     codeTextWidget->setStyleClass("source-view");
     programText_->setCentralWidget(std::move(codeTextWidget));
 
