@@ -1,0 +1,10 @@
+
+[0;31mExecution time: [0m0.01sec.
+[0;31mMemory used: [0m5088KB
+
+[0;31mInput:[0m
+
+
+
+[0;31mOutput:[0m
+

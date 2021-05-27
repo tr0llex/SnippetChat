@@ -22,8 +22,9 @@ CodeWidget::CodeWidget(const Snippet &snippet, std::unique_ptr<Wt::WPushButton> 
 
     programText_->setAnimation(animation);
     programText_->collapse();
-    std::string lang = "python";
-    std::string programTextHtml = "<pre><code class=\"" + lang + "\">" + snippet_.getProgramText() + "</code></pre>";
+//    std::string lang = "python";
+//    std::string programTextHtml = "<pre><code class=\"" + lang + "\">" + snippet_.getProgramText() + "</code></pre>";
+    std::string programTextHtml = snippet_.getProgramText();
     auto codeTextWidget = Wt::cpp14::make_unique<Wt::WText>(programTextHtml);
     codeTextWidget->setStyleClass("source-view");
     programText_->setCentralWidget(std::move(codeTextWidget));
@@ -35,7 +36,7 @@ CodeWidget::CodeWidget(const Snippet &snippet, std::unique_ptr<Wt::WPushButton> 
                  std::move(inputEditPtr),
                  std::move(executionResultPtr));
 
-    doJavaScript("hljs.highlightAll();");
+//    doJavaScript("hljs.highlightAll();");
 }
 
 void CodeWidget::createLayout(std::unique_ptr<WWidget> programText, std::unique_ptr<WWidget> runButton,
