@@ -5,6 +5,7 @@
 #include <set>
 #include <utility>
 #include <vector>
+#include <cassandra.h>
 
 
 std::string ws2s(const std::wstring &wstr);
@@ -224,6 +225,11 @@ struct ComparatorDialogue {
     bool operator()(const Dialogue &lhs, const Dialogue &rhs) const {
         return lhs.getTimeOfLastUpdate() > rhs.getTimeOfLastUpdate();
     }
+};
+
+struct paginatedMessages {
+    const CassResult* pagingState;
+    std::vector<Message> messages;
 };
 
 typedef std::multiset<Dialogue, ComparatorDialogue> DialogueList;
