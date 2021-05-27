@@ -124,7 +124,7 @@ std::string ChatServer::verifyToken(const std::string &token) {
     return auth_.verifyToken(token);
 }
 
-int ChatServer::runCompilation(ChatServer &this_serv, const User &user, const Message &message, const std::string &input) {
+int ChatServer::runCompilation(ChatServer &this_serv, const User &user, const Message &message, std::string input) {
     Compilation compilation = manager_.runCompilation(message.getMessageCode(), input);
     std::string outputToMessage = "Output: \n" + compilation.getExecutionStdout();
 
