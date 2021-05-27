@@ -113,17 +113,12 @@ void Snippet::setProgramText(const std::string &programText) {
     programText_ = programText;
 }
 
-void Snippet::setInput(const std::string &input) {
-    input_ = input;
-}
-
 std::string Snippet::getProgramText() const {
     return programText_;
 }
 
 void Snippet::clear() {
     programText_.clear();
-    input_.clear();
 }
 
 bool Snippet::empty() const {
@@ -136,23 +131,6 @@ Snippet::Snippet(std::string code, Language lang) :
 
 Snippet::Language Snippet::getLanguage() const {
     return language_;
-}
-
-std::string Snippet::getLanguageII() const {
-    switch (language_) {
-        case Python_3:
-            return "Python 3";
-        case Cpp_14:
-            return "C++ 14";
-        case Cpp_17:
-            return "C++ 17";
-        case Cpp_20:
-            return "C++ 20";
-        case C_98:
-            return "C";
-        default:
-            return "";
-    }
 }
 
 Message::Message(const std::string &dialogueParentId, const std::string &senderId, const std::string &messageText,

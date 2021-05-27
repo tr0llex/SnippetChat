@@ -103,12 +103,9 @@ public:
 
     void setProgramText(const std::string &programText);
 
-    void setInput(const std::string &input);
-
     std::string getProgramText() const;
 
     Language getLanguage() const;
-    std::string getLanguageII() const;
 
     void clear();
 
@@ -117,7 +114,6 @@ public:
 private:
     Language language_;
     std::string programText_;
-    std::string input_;
 };
 
 class Message {

@@ -405,6 +405,16 @@ void MainDb::writeMessage(Message& message) {
 
     CassFuture* insertMessageSt_future = cass_session_execute(session_, insertMessageSt);
 
+    CassError rc = cass_future_error_code(insertMessageSt_future);
+
+    if (rc != CASS_OK) {
+        /* Display connection error message */
+        const char* message;
+        size_t message_length;
+        cass_future_error_message(insertMessageSt_future, &message, &message_length);
+        fprintf(stderr, "St50 error: '%.*s'\n", (int)message_length, message);
+    }
+
     updateDialogueTime(message);
 
     cass_statement_free(insertMessageSt);
