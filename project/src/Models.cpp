@@ -26,6 +26,10 @@ std::string ws2s(const std::wstring &wstr) {
     return converterX.to_bytes(wstr);
 }
 
+Snippet::Language Message::getCodeLang() const {
+    return snippet_.getLanguage();
+}
+
 std::string User::getLogin() const {
     return userLogin_;
 }

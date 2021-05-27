@@ -25,6 +25,8 @@ class IMainDb {
         virtual std::string findDialogue(std::vector<std::string> participantsList) const = 0;
         virtual void createDialogue(Dialogue& dialogue) = 0;
         virtual time_t getTimeLastUpdateFromDialogue(std::string dialogueId, const User& user) const = 0;
+        virtual void changePaginatedMessages(CassStatement*& statement, int amount, 
+                                                          paginatedMessages& messages) = 0;
 
         virtual void deleteMessage(Message& message) = 0;
         virtual void deleteDialogue(Dialogue& dialogue) = 0;

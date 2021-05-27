@@ -388,7 +388,7 @@ void MainDb::writeMessage(Message& message) {
 
     message.setId(uuidStr);
 
-    CassStatement* insertMessageSt = cass_statement_new(insertMessage, 7);
+    CassStatement* insertMessageSt = cass_statement_new(insertMessage, 8);
     cass_uuid_from_string(message.getId().data(), &uuid);
     cass_statement_bind_uuid(insertMessageSt, 0, uuid);
 
@@ -401,7 +401,7 @@ void MainDb::writeMessage(Message& message) {
     cass_statement_bind_string(insertMessageSt, 4, message.getMessageCode().data());
     cass_statement_bind_int64(insertMessageSt, 5, message.getTimeSent());
     cass_statement_bind_bool(insertMessageSt, 6, (cass_bool_t)message.isRead());
-    cass_statement_bind_string(insertMessageSt, 7, message.getMessageCode().data());
+    cass_statement_bind_int32(insertMessageSt, 7, message.getCodeLang());
 
     CassFuture* insertMessageSt_future = cass_session_execute(session_, insertMessageSt);
 
@@ -447,6 +447,17 @@ std::vector<Message> MainDb::getNLastMessagesFromDialogue(std::string dialogueId
         return messages;
     }
 
+    fillMessagesFromResult(messages, result);
+    std::reverse(messages.begin(), messages.end());
+
+    cass_result_free(result);
+    cass_statement_free(getNMessagesSt);
+    cass_future_free(getNMessagesSt_future);
+
+    return messages;
+}
+
+void MainDb::fillMessagesFromResult(std::vector<Message>& messages, const CassResult* result) const {
     CassIterator* messages_iterator = cass_iterator_from_result(result);
 
     while (cass_iterator_next(messages_iterator)) {
@@ -505,14 +516,7 @@ std::vector<Message> MainDb::getNLastMessagesFromDialogue(std::string dialogueId
 
         messages.push_back(newMessage);
     }
-    std::reverse(messages.begin(), messages.end());
-
-    cass_result_free(result);
     cass_iterator_free(messages_iterator);
-    cass_statement_free(getNMessagesSt);
-    cass_future_free(getNMessagesSt_future);
-
-    return messages;
 }
 
 std::vector<std::string> MainDb::getAllDialoguesIdByLogin(std::string login) {
@@ -839,6 +843,59 @@ void MainDb::createDialogue(Dialogue& dialogue) {
             cass_future_error_message(newDToUserDialogueSt_future, &message, &message_length);
             fprintf(stderr, "St10 error: '%.*s'\n", (int)message_length, message);
         }
+    }
+}
+
+
+void MainDb::changePaginatedMessages(CassStatement*& statement, int amount, 
+                                     paginatedMessages& messages) {
+    if (!statement) {
+        fprintf(stderr, "Statement is empty!!\n");
+        return;
+        // throw exception
+    }
+    if (amount <= 0) {
+        // throw exception
+        return;
+    }
+
+    cass_statement_set_paging_size(statement, amount);
+    
+    if (!messages.pagingState) {
+        CassFuture* query_future = cass_session_execute(session_, statement);
+
+        const CassResult* result = cass_future_get_result(query_future);
+
+        if (result == nullptr) {
+            cass_future_free(query_future);
+            return;
+        }
+
+        fillMessagesFromResult(messages.messages, result);
+        messages.pagingState = result;
+        return;
+    }
+
+    cass_bool_t has_more_pages = cass_result_has_more_pages(messages.pagingState);
+
+    if (has_more_pages) {
+        CassFuture* query_future = cass_session_execute(session_, statement);
+
+        const CassResult* result = cass_future_get_result(query_future);
+
+        if (result == NULL) {
+            cass_future_free(query_future);
+            return;
+        }
+        fillMessagesFromResult(messages.messages, result);
+
+        cass_statement_set_paging_state(statement, result);
+
+        cass_future_free(query_future);
+        cass_result_free(messages.pagingState);
+        messages.pagingState = result;
+    } else {
+        return;
     }
 }
 

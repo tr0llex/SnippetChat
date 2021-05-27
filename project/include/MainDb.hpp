@@ -24,6 +24,8 @@ class MainDb : public IMainDb {
         std::vector<Message> getNLastMessagesFromDialogue(std::string dialogueId, long count) const override;
         DialogueList getLastNDialoguesWithLastMessage(const User& user, long count) const override;
         std::vector<std::string> getParticipantsLoginsFromDialogue(std::string dialogueId) const override;
+        void changePaginatedMessages(CassStatement*& statement, int amount, paginatedMessages& messages) override;
+        void fillMessagesFromResult(std::vector<Message>& messages, const CassResult* result) const;
 
         std::vector<std::string> getAllDialoguesIdByLogin(std::string login) override;
         std::vector<std::string> getLastNDialoguesIdByLogin(std::string login, long count) const override;
