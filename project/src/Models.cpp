@@ -137,8 +137,8 @@ std::string Snippet::getLanguageStr() const {
     switch (language_) {
         case Python_3:
             return "Python 3";
-        case Cpp_17:
-            return "C++ 17";
+        case Cpp_14:
+            return "C++ 14";
         case Cpp_20:
             return "C++ 20";
         case C_98:
