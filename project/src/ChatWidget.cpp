@@ -431,24 +431,27 @@ void ChatWidget::blankDialoguePage() {
 void ChatWidget::showNewMessage(const Message &message) {
     Wt::WApplication *app = Wt::WApplication::instance();
 
-    auto runButtonPtr = std::make_unique<Wt::WPushButton>("Run");
-    ButtonPtr runButton = runButtonPtr.get();
-//    if (message.isHaveCode()) {
-//        runCodeButtons_.push_back(runButton);
-//    }
+    auto messageWidgetPtr = std::make_unique<MessageWidget>(message);
+    auto messageWidget = messageWidgetPtr.get();
 
-    auto messageWidget = std::make_unique<MessageWidget>(message, std::move(runButtonPtr));
-    MessageWidget *w = messages_->addWidget(std::move(messageWidget));
+    if (message.isHaveSnippet()) {
+        auto runButtonPtr = std::make_unique<Wt::WPushButton>("Run");
+        ButtonPtr runButton = runButtonPtr.get();
 
-    if (message.isHaveCode()) {
+        auto codeWidgetPtr = std::make_unique<CodeWidget>(message.getSnippet(), std::move(runButtonPtr));
+        auto codeWidget = codeWidgetPtr.get();
+
         runButton->clicked().connect([=] {
-//            runButton->disable()
-            std::string msg = w->getInput();
-            std::string session = Wt::WApplication::instance()->sessionId();
+            std::string msg = codeWidget->getInput();
             std::thread t(&ChatServer::runCompilation, &server_, std::ref(server_), std::ref(user_), std::ref(message), msg);
             t.detach();
         });
+
+        messageWidget->setSnippet(std::move(codeWidgetPtr));
     }
+
+    MessageWidget *w = messages_->addWidget(std::move(messageWidgetPtr));
+
 
     w->setInline(false);
     w->setStyleClass("chat-msg");
@@ -694,7 +697,7 @@ void ChatWidget::processChatEvent(const ChatEvent &event) {
 
             for (int i = 0; i < messages_->count(); ++i) {
                 auto messageWidget = dynamic_cast<MessageWidget*>(messages_->widget(i));
-                if (messageWidget->getMessageId() == event.getMessageId() && messageWidget->isHaveCode()) {
+                if (messageWidget->getMessageId() == event.getMessageId() && messageWidget->isHaveSnippet()) {
                     messageWidget->setResultCompilation(event.resultCompilation());
                     break;
                 }

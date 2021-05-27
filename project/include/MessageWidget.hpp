@@ -16,30 +16,27 @@
 
 class MessageWidget : public Wt::WContainerWidget {
 public:
-    MessageWidget(const Message &message, std::unique_ptr<WWidget> runButtonPtr);
+    explicit MessageWidget(const Message &message);
 
     std::string getMessageId() const;
 
-    bool isHaveCode() const;
+    bool isHaveSnippet() const;
 
-    std::string getInput() const;
+    void setSnippet(std::unique_ptr<CodeWidget> snippetPtr);
 
     void setResultCompilation(const std::string &result);
 
 protected:
     void createLayout(
             std::unique_ptr<WWidget> text,
-            std::unique_ptr<WWidget> time,
-            std::unique_ptr<WWidget> code);
+            std::unique_ptr<WWidget> time);
 
 private:
     Message message_;
 
     Wt::WText   *text_;
     Wt::WText   *time_;
-    CodeWidget  *code_;
-/// TODO
-// прокидываем в код кнопку, которую будем создавать в чатвиджете
+    CodeWidget  *snippet_;
 };
 
 

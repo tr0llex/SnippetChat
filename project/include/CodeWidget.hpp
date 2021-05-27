@@ -17,7 +17,7 @@
 
 class CodeWidget : public Wt::WContainerWidget {
 public:
-    CodeWidget(const std::string &codeText, std::unique_ptr<WWidget> runButtonPtr);
+    CodeWidget(const Snippet &snippet, std::unique_ptr<Wt::WPushButton> runButtonPtr);
 
     std::string getInput() const;
 
@@ -31,17 +31,12 @@ protected:
             std::unique_ptr<WWidget> executionResult);
 
 private:
-    void runCode();
-
-private:
-    std::string   codeText_;
+    Snippet   snippet_;
 
     Wt::WPanel                               *programText_;
-//    Wt::Core::observing_ptr<Wt::WPushButton>  runButton_;
     Wt::WTextArea                            *inputEdit_;
     Wt::WText                                *executionResult_;
-    Wt::JSlot                                 clearInput_;
-
+    Wt::WPushButton                          *runButton_;
 };
 
 

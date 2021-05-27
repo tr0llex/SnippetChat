@@ -133,6 +133,21 @@ Snippet::Language Snippet::getLanguage() const {
     return language_;
 }
 
+std::string Snippet::getLanguageStr() const {
+    switch (language_) {
+        case Python_3:
+            return "Python 3";
+        case Cpp_17:
+            return "C++ 17";
+        case Cpp_20:
+            return "C++ 20";
+        case C_98:
+            return "C";
+        default:
+            return "";
+    }
+}
+
 Message::Message(const std::string &dialogueParentId, const std::string &senderId, const std::string &messageText,
                  time_t timeSent, const Snippet &snippet)
                  : dialogueParentId_(dialogueParentId), senderLogin_(senderId), messageText_(messageText),
@@ -168,6 +183,10 @@ std::string Message::getMessageText() const {
     return messageText_;
 }
 
+Snippet Message::getSnippet() const {
+    return snippet_;
+}
+
 std::string Message::getMessageCode() const {
     return snippet_.getProgramText();
 }
@@ -184,7 +203,7 @@ std::string Message::getTimeSentStr() const {
     return timeToStr(timeSent_);
 }
 
-bool Message::isHaveCode() const {
+bool Message::isHaveSnippet() const {
     return !snippet_.getProgramText().empty();
 }
 
@@ -201,10 +220,7 @@ std::string Dialogue::getLastMessageView() const {
         return view;
     }
 
-    std::string simplifiedView;
-//    std::string::size_type pos = view.;
-
-    return view.substr(0, 25) + " ...";
+    return view.substr(0, 24) + " ...";
 }
 
 std::vector<Message> Dialogue::getDialogueMessageList() {

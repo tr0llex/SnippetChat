@@ -3,7 +3,7 @@
 DialogueWidget::DialogueWidget(const std::string &dialogueName, const Dialogue &dialogue)
 : dialogue_(dialogue) {
     auto dialogueNamePtr = std::make_unique<Wt::WText>(dialogueName);
-    std::string lastMessageStr = (dialogue.getLastMessage().isHaveCode()) ?
+    std::string lastMessageStr = (dialogue.getLastMessage().isHaveSnippet()) ?
             "code ..." : dialogue.getLastMessageView();
     auto lastMessagePtr = std::make_unique<Wt::WText>(lastMessageStr);
     auto timePtr = std::make_unique<Wt::WText>(dialogue.getTimeOfLastUpdateStr());
@@ -33,7 +33,7 @@ void DialogueWidget::createLayout(std::unique_ptr<WWidget> dialogueName, std::un
     vLayout->addLayout(std::move(hLayout), 0);
 
     hLayout = std::make_unique<Wt::WHBoxLayout>();
-    if (dialogue_.getLastMessage().isHaveCode()) {
+    if (dialogue_.getLastMessage().isHaveSnippet()) {
         lastMessage->setStyleClass("dialogue-code");
     }
     hLayout->addWidget(std::move(lastMessage));

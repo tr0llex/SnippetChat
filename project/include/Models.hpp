@@ -88,10 +88,9 @@ public:
     enum Language {
         Not_selected = -1,
         Python_3 = 0,
-        Cpp_14 = 1,
-        Cpp_17 = 2,
-        Cpp_20 = 3,
-        C_98 = 4,
+        Cpp_17 = 1,
+        Cpp_20 = 2,
+        C_98 = 3,
     };
 
     Snippet() : language_(Not_selected) {};
@@ -105,6 +104,8 @@ public:
     std::string getProgramText() const;
 
     Language getLanguage() const;
+
+    std::string getLanguageStr() const;
 
     void clear();
 
@@ -135,6 +136,8 @@ public:
 
     std::string getMessageText() const;
 
+    Snippet getSnippet() const;
+
     std::string getMessageCode() const;
 
     Snippet::Language getCodeLang() const;
@@ -145,7 +148,7 @@ public:
 
     bool isRead();
 
-    bool isHaveCode() const;
+    bool isHaveSnippet() const;
 
 private:
     std::string id_;

@@ -1,20 +1,19 @@
 #include "CodeWidget.hpp"
 
-CodeWidget::CodeWidget(const std::string &codeText, std::unique_ptr<WWidget> runButtonPtr)
-: codeText_(codeText)/*, runButton_(runButton)*/ {
+CodeWidget::CodeWidget(const Snippet &snippet, std::unique_ptr<Wt::WPushButton> runButtonPtr)
+: snippet_(snippet) {
     setWidth(500);
 
     auto programTextPtr = std::make_unique<Wt::WPanel>();
-//    auto runButtonPtr = std::make_unique<Wt::WPushButton>("Run");
     auto inputEditPtr = std::make_unique<Wt::WTextArea>();
     auto executionResultPtr = std::make_unique<Wt::WText>();
 
     programText_ = programTextPtr.get();
-//    runButton_ = runButtonPtr.get();
     inputEdit_ = inputEditPtr.get();
     executionResult_ = executionResultPtr.get();
+    runButton_ = runButtonPtr.get();
 
-    programText_->setTitle("Code");
+    programText_->setTitle("Code\t" + snippet_.getLanguageStr());
     programText_->setCollapsible(true);
 
     Wt::WAnimation animation(Wt::AnimationEffect::SlideInFromTop,
@@ -23,7 +22,7 @@ CodeWidget::CodeWidget(const std::string &codeText, std::unique_ptr<WWidget> run
 
     programText_->setAnimation(animation);
     programText_->collapse();
-    auto codeTextWidget = Wt::cpp14::make_unique<Wt::WText>(codeText);
+    auto codeTextWidget = Wt::cpp14::make_unique<Wt::WText>(snippet_.getProgramText());
     codeTextWidget->setStyleClass("source-view");
     programText_->setCentralWidget(std::move(codeTextWidget));
 
@@ -33,14 +32,6 @@ CodeWidget::CodeWidget(const std::string &codeText, std::unique_ptr<WWidget> run
                  std::move(runButtonPtr),
                  std::move(inputEditPtr),
                  std::move(executionResultPtr));
-
-    clearInput_.setJavaScript
-            ("function(o, e) { setTimeout(function() {"
-             "" + inputEdit_->jsRef() + ".value='';"
-                                          "}, 0); }");
-
-//    runButton_->clicked().connect(this, &CodeWidget::runCode);
-//    runButton_->clicked().connect(clearInput_);
 }
 
 void CodeWidget::createLayout(std::unique_ptr<WWidget> programText, std::unique_ptr<WWidget> runButton,
@@ -55,18 +46,13 @@ void CodeWidget::createLayout(std::unique_ptr<WWidget> programText, std::unique_
     this->setLayout(std::move(vLayout));
 }
 
-void CodeWidget::runCode() {
-//    runButton_->disable();
-}
-
 std::string CodeWidget::getInput() const {
+    runButton_->disable();
     std::string input = ws2s(inputEdit_->text());
-    inputEdit_->setText("");
     return input;
 }
 
 void CodeWidget::setResultCompilation(const std::string &result) {
-//    runButton_->enable();
-
+    runButton_->enable();
     executionResult_->setText(result);
 }
