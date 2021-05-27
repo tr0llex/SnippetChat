@@ -1,5 +1,10 @@
 #include "../include/Compilation.hpp"
 
+
+Compilation::Compilation() : timeLimitExceeded_(false) {
+
+}
+
 uint32_t Compilation::getCompilationId() const {
     return compilationId_;
 }
@@ -24,21 +29,21 @@ void Compilation::setMessageCode(const std::string &messageCode) {
     messageCode_ = messageCode;
 }
 
-//std::string Compilation::getCompilerStderr() const {
-//    return compilerStderr_;
-//}
+std::string Compilation::getCompilerStderr() const {
+    return compilerStderr_;
+}
 
-//void Compilation::setCompilerStderr(const std::string &compilerStderr) {
-//    compilerStderr_ = compilerStderr;
-//}
+void Compilation::setCompilerStderr(const std::string &compilerStderr) {
+    compilerStderr_ = compilerStderr;
+}
 
-//std::string Compilation::getCompilerStdout() const {
-//    return compilerStdout_;
-//}
+std::string Compilation::getCompilerStdout() const {
+    return compilerStdout_;
+}
 
-//void Compilation::setCompilerStdout(const std::string &compilerStdout) {
-//    compilerStdout_ = compilerStdout;
-//}
+void Compilation::setCompilerStdout(const std::string &compilerStdout) {
+    compilerStdout_ = compilerStdout;
+}
 
 std::string Compilation::getExecutionStderr() const {
     return executionStderr_;
@@ -86,4 +91,28 @@ std::string Compilation::getPathToRunBox() const {
 
 void Compilation::setPathToRunBox(const std::string &pathToRunBox) {
     pathToRunBox_ = pathToRunBox;
+}
+
+std::string Compilation::getPathToTemplate() const {
+    return pathToTemplate_;
+}
+
+void Compilation::setPathToTemplate(const std::string &pathToTemplate) {
+    pathToTemplate_ = pathToTemplate;
+}
+
+std::string Compilation::getFileExtension() const {
+    return fileExtension_;
+}
+
+void Compilation::setFileExtension(const std::string &fileExtension) {
+    fileExtension_ = fileExtension;
+}
+
+bool Compilation::getTimeLimitExceeded() const {
+    return timeLimitExceeded_;
+}
+
+void Compilation::setTimeLimitExceeded(bool flag) {
+    timeLimitExceeded_ = flag;
 }

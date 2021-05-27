@@ -6,9 +6,7 @@
 
 class Compilation {
 public:
-    Compilation() {
-
-    };
+    Compilation();
 
     ~Compilation() = default;
 
@@ -24,13 +22,13 @@ public:
 
     void setMessageCode(const std::string &messageCode);
 
-    //std::string getCompilerStderr();
+    std::string getCompilerStderr() const;
 
-    //void setCompilerStderr(const std::string &compilerStderr);
+    void setCompilerStderr(const std::string &compilerStderr);
 
-    //std::string getCompilerStdout();
+    std::string getCompilerStdout() const;
 
-    //void setCompilerStdout(const std::string &compilerStdout);
+    void setCompilerStdout(const std::string &compilerStdout);
 
     std::string getExecutionStderr() const;
 
@@ -56,19 +54,33 @@ public:
 
     void setPathToRunBox(const std::string &pathToRunBox);
 
+    std::string getPathToTemplate() const;
+
+    void setPathToTemplate(const std::string &pathToTemplate);
+
+    void setFileExtension(const std::string &fileExtension);
+
+    std::string getFileExtension() const;
+
+    void setTimeLimitExceeded(bool);
+
+    bool getTimeLimitExceeded() const;
 
 private:
     uint32_t compilationId_{};
     uint32_t messageId_{};
     std::string messageCode_;
-    //std::string compilerStderr_;
-    //std::string compilerStdout_;
+    std::string compilerStderr_;
+    std::string compilerStdout_;
     std::string executionStderr_;
     std::string executionStdin_;
     std::string executionStdout_;
     std::string executionUsedMemory_;
     std::string executionTime_;
     std::string pathToRunBox_;
+    std::string pathToTemplate_;
+    std::string fileExtension_;
+    bool timeLimitExceeded_;
 };
 
 #endif  // PROJECT_INCLUDE_COMPILATION_HPP_

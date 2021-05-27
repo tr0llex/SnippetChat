@@ -36,6 +36,6 @@ cmake-build-*/
 build/
 .vscode/
 .DS_Store
-python3/test/run-*
+compilers/python3/test/run-*
 *.snap
 *.xlog

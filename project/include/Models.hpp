@@ -19,10 +19,14 @@ private:
 
 public:
     User() = default;
+
     ~User() = default;
 
     User(const std::string &userLogin) : userLogin_(userLogin), userStatus_(0) {}
-    User(const std::string &userLogin, const std::string &userPassword) : userLogin_(userLogin), userPassword_(userPassword), userStatus_(0) {}
+
+    User(const std::string &userLogin, const std::string &userPassword) : userLogin_(userLogin),
+                                                                          userPassword_(userPassword), userStatus_(0) {}
+
     User(std::string userLogin, std::string userPassword,
          std::string userToken, int userStatus) :
             userLogin_(std::move(userLogin)), userPassword_(std::move(userPassword)),
@@ -46,6 +50,7 @@ public:
     void setStatus(int userStatus);
 
     bool operator==(const User &user) const;
+
     bool operator!=(const User &user) const;
 };
 
@@ -75,7 +80,7 @@ public:
 
     short getType() const;
 
-    bool operator==(const LoginData& ldt1) const;
+    bool operator==(const LoginData &ldt1) const;
 
 private:
     std::string login_;
@@ -87,11 +92,11 @@ private:
 class Snippet {
 public:
     enum Language {
-        Not_selected = -1,
-        Python_3 = 0,
-        Cpp_17 = 1,
-        Cpp_20 = 2,
-        C_98 = 3,
+        Not_selected = 0,
+        Python_3 = 1,
+        Cpp_17 = 2,
+        Cpp_20 = 3,
+        C_98 = 4,
     };
 
     Snippet() : language_(Not_selected) {};
@@ -120,8 +125,10 @@ private:
 class Message {
 public:
     Message() = default;
+
     Message(const std::string &dialogueParentId, const std::string &senderId,
             const std::string &messageText, time_t timeSent, const Snippet &snippet);
+
     Message(const std::string &messageId, const std::string &dialogueParentId, const std::string &senderId,
             std::string messageText, const Snippet &snippet, time_t timeSent, bool isRead);
 
@@ -164,11 +171,13 @@ private:
 class Dialogue {
 public:
     Dialogue() = default;
+
     Dialogue(std::vector<std::string> participantsList,
              time_t dateOfCreation) :
             participantsList_(std::move(participantsList)),
             dateOfCreation_(dateOfCreation) {
     }
+
     Dialogue(std::string dialogueId,
              std::vector<Message> dialogueMessageList,
              std::vector<std::string> participantsList,
@@ -193,9 +202,9 @@ public:
 
     void setId(std::string id);
 
-    void pushNewMessage(const Message& newMessage);
+    void pushNewMessage(const Message &newMessage);
 
-    void updateLastMessage(const Message& newMessage);
+    void updateLastMessage(const Message &newMessage);
 
     void pushMessages(const std::vector<Message> &dialogueMessageList);
 
@@ -212,6 +221,7 @@ public:
     bool withYourself() const;
 
     bool operator==(const Dialogue &dialogue) const;
+
     bool operator!=(const Dialogue &dialogue) const;
 
 private:
@@ -228,7 +238,7 @@ struct ComparatorDialogue {
 };
 
 struct paginatedMessages {
-    const CassResult* pagingState;
+    const CassResult *pagingState;
     std::vector<Message> messages;
 };
 

@@ -12,17 +12,14 @@ using std::string;
 
 class ICompilationManager {
 public:
-    virtual Compilation runCompilation(const string &messageCode, const string &executionStdin) = 0;
+    virtual Compilation runCompilation(const string &messageCode, const string &executionStdin, int language) = 0;
 };
 
 class CompilationManager : ICompilationManager {
 private:
-    enum language {
-        NOT_SELECTED = 0,
-        PYTHON3 = 1,
-        C = 2,
-        CPP = 3,
-    };
+
+    std::string languagesNames[5] = {"", "python3", "cpp", "cpp20" "c"};
+    std::string languagesExtensions[5] = {"", "py", "cpp", "cpp" "c"};
 
     static void writeInputToFiles(const Compilation &compilation, const string &code, const string &input);
 
@@ -40,14 +37,14 @@ private:
 
     unsigned long long compilesCount{};
 
-    string pathToTemplate = "python3/test/template";
+    string defaultPathToTemplate = "/test/template"; // add language in start
 
 public:
     CompilationManager();
 
     ~CompilationManager() = default;
 
-    Compilation runCompilation(const string &messageCode, const string &executionStdin) override;
+    Compilation runCompilation(const string &messageCode, const string &executionStdin, int language) override;
 };
 
 #endif  // PROJECT_INCLUDE_COMPILATIONMANAGER_HPP_
