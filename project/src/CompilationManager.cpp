@@ -66,13 +66,9 @@ void CompilationManager::createDir(const Compilation &compilation) {
     system(pcharCommandCopy);
 }
 
-inline bool fileExists(const std::string &name) {
-    if (FILE *file = fopen(name.c_str(), "r")) {
-        fclose(file);
-        return true;
-    } else {
-        return false;
-    }
+bool fileExists (const std::string& name) {
+    std::ifstream f(name.c_str());
+    return f.good();
 }
 
 void CompilationManager::readOutputFromFiles(Compilation &compilation) {
@@ -102,12 +98,6 @@ void CompilationManager::readOutputFromFiles(Compilation &compilation) {
                         (std::istreambuf_iterator<char>()));
     compilation.setCompilerStderr(compileError);
 
-    if (fileExists(pathToRunBox + "tle.stderr")) {
-        compilation.setTimeLimitExceeded(true);
-    } else {
-        compilation.setTimeLimitExceeded(false);
-    }
-
     string time;
     string memory;
     std::ifstream logFile(pathToRunBox + "/time.log");
@@ -115,5 +105,11 @@ void CompilationManager::readOutputFromFiles(Compilation &compilation) {
     std::getline(logFile, memory);
     compilation.setExecutionTime(time);
     compilation.setExecutionUsedMemory(memory);
+
+    if (fileExists(pathToRunBox + "/tle.stderr")) {
+        compilation.setTimeLimitExceeded(true);
+    } else {
+        compilation.setTimeLimitExceeded(false);
+    }
 
 }

@@ -131,7 +131,7 @@ int ChatServer::runCompilation(ChatServer &this_serv, const User &user, const Me
         outputToMessage += "Time limit (5 sec) exceeded!";
     } else {
         if (compilation.getExecutionStdout().empty()) {
-            outputToMessage += "Output is empty!";
+            outputToMessage += "Output is empty!\n";
         } else {
             outputToMessage += "Output: \n" + compilation.getExecutionStdout();
         }
