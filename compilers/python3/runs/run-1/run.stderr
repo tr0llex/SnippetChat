@@ -1,4 +1,0 @@
-  File "./source.py", line 2
-    using namespace std;
-                  ^
-SyntaxError: invalid syntax

@@ -254,6 +254,9 @@ void ChatWidget::startChat() {
                                       "}"
                                       "}");
 
+    Wt::WApplication *app = Wt::WApplication::instance();
+    app->addAutoJavaScript("hljs.highlightAll();");
+
     searchButton_->clicked().connect(this, &ChatWidget::searchUser);
     searchButton_->clicked().connect(clearSearchInput_);
 

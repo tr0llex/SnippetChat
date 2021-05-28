@@ -1,0 +1,10 @@
+std::string CodeWidget::getInput() const {
+    runButton_->disable();
+    std::string input = ws2s(inputEdit_->text());
+    return input;
+}
+
+void CodeWidget::setResultCompilation(const std::string &result) {
+    runButton_->enable();
+    executionResult_->setText(result);
+}

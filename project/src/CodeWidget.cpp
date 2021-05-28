@@ -1,8 +1,22 @@
 #include "CodeWidget.hpp"
 
+static inline std::string langToStyleClass(const Snippet &snippet) {
+    switch (snippet.getLanguage()) {
+        case Snippet::Python_3:
+            return "python";
+        case Snippet::Cpp_14:
+        case Snippet::Cpp_20:
+            return "cpp";
+        case Snippet::C_98:
+            return "c";
+        default:
+            return std::string();
+    }
+}
+
 CodeWidget::CodeWidget(const Snippet &snippet, std::unique_ptr<Wt::WPushButton> runButtonPtr)
 : snippet_(snippet) {
-    setWidth(500);
+    setWidth(580);
 
     auto programTextPtr = std::make_unique<Wt::WPanel>();
     auto inputEditPtr = std::make_unique<Wt::WTextArea>();
@@ -22,12 +36,20 @@ CodeWidget::CodeWidget(const Snippet &snippet, std::unique_ptr<Wt::WPushButton> 
 
     programText_->setAnimation(animation);
     programText_->collapse();
-//    std::string lang = "python";
-//    std::string programTextHtml = "<pre><code class=\"" + lang + "\">" + snippet_.getProgramText() + "</code></pre>";
-    std::string programTextHtml = snippet_.getProgramText();
-    auto codeTextWidget = Wt::cpp14::make_unique<Wt::WText>(programTextHtml);
-    codeTextWidget->setStyleClass("source-view");
-    programText_->setCentralWidget(std::move(codeTextWidget));
+
+    programText_->setMargin(0);
+
+    auto container = std::make_unique<Wt::WContainerWidget>();
+    container->setHtmlTagName("pre");
+    container->setStyleClass("margin-0");
+
+    auto codeTextWidget = Wt::cpp14::make_unique<Wt::WText>(snippet_.getProgramText());
+    codeTextWidget->setHtmlTagName("code class=" + langToStyleClass(snippet_));
+    container->addWidget(std::move(codeTextWidget));
+
+    programText_->setCentralWidget(std::move(container));
+
+    programText_->centralWidget()->parent()->setStyleClass("padding-0");
 
     inputEdit_->setRows(3);
 
@@ -35,8 +57,6 @@ CodeWidget::CodeWidget(const Snippet &snippet, std::unique_ptr<Wt::WPushButton> 
                  std::move(runButtonPtr),
                  std::move(inputEditPtr),
                  std::move(executionResultPtr));
-
-//    doJavaScript("hljs.highlightAll();");
 }
 
 void CodeWidget::createLayout(std::unique_ptr<WWidget> programText, std::unique_ptr<WWidget> runButton,
