@@ -27,6 +27,7 @@ button {
   padding-left: 5px;
   padding-right: 5px;
   font-size: smaller;
+  cursor: pointer;
 }
 
 .chat {
@@ -129,6 +130,7 @@ textarea.chat-noedit {
   border: 2px solid gray;
   border-radius: 3px;
   margin-bottom: 3px;
+  cursor: pointer;
 }
 
 .dialogue-name {
@@ -148,4 +150,8 @@ textarea.chat-noedit {
 
 .attached-code {
   background-color: darkseagreen;
+}
+
+#owhex8j {
+  color:#B42600;
 }

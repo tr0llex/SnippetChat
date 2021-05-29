@@ -134,7 +134,6 @@ void ChatWidget::letSignUp() {
 
 
     auto logIn = vLayout->addWidget(std::make_unique<Wt::WText>("Log in"), 0, Wt::AlignmentFlag::Center);
-    logIn->setStyleClass("text-link");
     logIn->clicked().connect(this, &ChatWidget::letLogin);
 
 
@@ -145,10 +144,12 @@ void ChatWidget::letSignUp() {
 void ChatWidget::letLogin() {
     clear();
 
-    auto vLayout = setLayout(std::make_unique<Wt::WVBoxLayout>());
+    auto vContainer = this->addNew<Wt::WContainerWidget>();
 
+    auto vLayout = vContainer->setLayout(std::make_unique<Wt::WVBoxLayout>());
 
     auto hLayout = std::make_unique<Wt::WHBoxLayout>();
+    // auto formLayout = std::make_unique<Wt::WVBoxLayout>();
 
     hLayout->addWidget(std::make_unique<Wt::WLabel>("Login:"), 1);
 
@@ -168,7 +169,8 @@ void ChatWidget::letLogin() {
     vLayout->addLayout(std::move(hLayout), 0, Wt::AlignmentFlag::Center);
 
 
-    auto logIn = vLayout->addWidget(std::make_unique<Wt::WPushButton>("Log in"), 0, Wt::AlignmentFlag::Center);
+    auto logIn = vLayout->addWidget(std::make_unique<Wt::WPushButton>("Log in"), 0);
+    logIn->setStyleClass("auth-buttons");
 
     logIn->clicked().connect(this, &ChatWidget::login);
     userLoginEdit_->enterPressed().connect(this, [&] {
@@ -177,7 +179,7 @@ void ChatWidget::letLogin() {
     passwordEdit_->enterPressed().connect(this, &ChatWidget::login);
 
 
-    auto signUp = vLayout->addWidget(std::make_unique<Wt::WText>("Sign up"), 0, Wt::AlignmentFlag::Center);
+    auto signUp = vLayout->addWidget(std::make_unique<Wt::WPushButton>("Sign up"), 0);
     signUp->setStyleClass("text-link");
     signUp->clicked().connect(this, &ChatWidget::letSignUp);
 
@@ -188,6 +190,8 @@ void ChatWidget::letLogin() {
 
 void ChatWidget::startChat() {
     clear();
+
+    this->setStyleClass("chat");
 
     userLoginEdit_ = nullptr;
 
@@ -335,11 +339,9 @@ void ChatWidget::createMessengerLayout(std::unique_ptr<WWidget> dialogueName, st
 
     auto hLayout = std::make_unique<Wt::WHBoxLayout>();
 
-    hLayout->setPreferredImplementation(Wt::LayoutImplementation::JavaScript);
-
     /// <Шапка>
-    hLayout->addWidget(std::make_unique<Wt::WText>(tr("projectName")), 1);
-    hLayout->addWidget(std::move(logoutButton));
+    hLayout->addWidget(std::make_unique<Wt::WText>(tr("projectName")), 0, Wt::AlignmentFlag::Left);
+    hLayout->addWidget(std::move(logoutButton), 0, Wt::AlignmentFlag::Right);
     vLayout->addLayout(std::move(hLayout), 0);
     /// </Шапка>
 
