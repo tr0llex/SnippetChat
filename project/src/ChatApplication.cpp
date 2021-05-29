@@ -11,12 +11,12 @@ ChatApplication::ChatApplication(const Wt::WEnvironment& env,
     require("resources/highlight/highlight.pack.js");
 
     messageResourceBundle().use(appRoot() + "resources/SnippetChat");
-
-    ChatWidget *chatWidget =
-            root()->addWidget(std::make_unique<ChatWidget>(server_));
+    
+    ChatWidget *chatWidget = root()->addWidget(std::make_unique<ChatWidget>(server_));
 //     chatWidget->setStyleClass("chat");
+}
 
-//    doJavaScript("<script src=\"resources/highlight/highlight.pack.js\"></script>");
-//    doJavaScript("<script src=\"resources/highlight/highlight.pack.js\"></script>");
-//    appRoot().j
+
+std::unique_ptr<Wt::WApplication> createApplication(const Wt::WEnvironment &env, ChatServer &server) {
+    return std::make_unique<ChatApplication>(env, server);
 }

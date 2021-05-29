@@ -1,8 +1,5 @@
 #include "ChatApplication.hpp"
 
-std::unique_ptr<Wt::WApplication> createApplication(const Wt::WEnvironment &env, ChatServer &server) {
-    return std::make_unique<ChatApplication>(env, server);
-}
 
 int main(int argc, char *argv[]) {
     Wt::WServer server(argc, argv, WTHTTP_CONFIGURATION);
