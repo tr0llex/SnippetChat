@@ -21,5 +21,7 @@ private:
     std::unique_ptr<Wt::WTimer>  timer_;
 };
 
+std::unique_ptr<Wt::WApplication> createApplication(const Wt::WEnvironment &env, ChatServer &server);
+
 
 #endif  // PROJECT_INCLUDE_CHATAPPLICATION_HPP_

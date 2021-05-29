@@ -149,3 +149,14 @@ textarea.chat-noedit {
 .attached-code {
   background-color: darkseagreen;
 }
+
+.source-view {
+  background-color: white;
+  overflow: auto;
+  white-space: pre;
+  font-family: 'Bitstream Vera Sans Mono','Courier',monospace;
+  font-size: 85%;
+  color: #444444;
+  border: 1px solid #C3D9FF;
+  zoom: 1;
+}

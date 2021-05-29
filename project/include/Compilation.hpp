@@ -70,9 +70,9 @@ private:
     uint32_t compilationId_{};
     uint32_t messageId_{};
     std::string messageCode_;
-    std::string compilerStderr_;
+    std::string compilerStderr_; // ошибка компиляции, если есть, выводим только его
     std::string compilerStdout_;
-    std::string executionStderr_;
+    std::string executionStderr_; // время, память, аутпут, и эту ошибку
     std::string executionStdin_;
     std::string executionStdout_;
     std::string executionUsedMemory_;
@@ -80,7 +80,7 @@ private:
     std::string pathToRunBox_;
     std::string pathToTemplate_;
     std::string fileExtension_;
-    bool timeLimitExceeded_;
+    bool timeLimitExceeded_; // время 5 сек
 };
 
 #endif  // PROJECT_INCLUDE_COMPILATION_HPP_

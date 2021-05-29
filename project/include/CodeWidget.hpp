@@ -13,6 +13,7 @@
 #include <pthread.h>
 
 #include "Models.hpp"
+#include "Compilation.hpp"
 
 
 class CodeWidget : public Wt::WContainerWidget {
@@ -21,22 +22,22 @@ public:
 
     std::string getInput() const;
 
-    void setResultCompilation(const std::string &result);
+    void setResultCompilation(const Compilation &result);
 
 protected:
     void createLayout(
             std::unique_ptr<WWidget> programText,
             std::unique_ptr<WWidget> runButton,
             std::unique_ptr<WWidget> stdinEdit,
-            std::unique_ptr<WWidget> executionResult);
+            std::unique_ptr<WWidget> resultContainer);
 
 private:
     Snippet   snippet_;
 
     Wt::WPanel                               *programText_;
     Wt::WTextArea                            *inputEdit_;
-    Wt::WText                                *executionResult_;
     Wt::WPushButton                          *runButton_;
+    Wt::WContainerWidget                     *resultContainer_;
 };
 
 

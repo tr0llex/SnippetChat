@@ -35,7 +35,7 @@ bool MessageWidget::isHaveSnippet() const {
     return message_.isHaveSnippet();
 }
 
-void MessageWidget::setResultCompilation(const std::string &result) {
+void MessageWidget::setResultCompilation(const Compilation &result) {
     if (isHaveSnippet() && snippet_) {
         snippet_->setResultCompilation(result);
     }
