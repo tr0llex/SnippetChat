@@ -15,7 +15,7 @@ public:
         Logout,
         NewDialogue,
         NewMessage,
-        CompilationCode, /// пока не понятно
+        CompilationCode,
     };
 
     [[nodiscard]] Type type() const { return type_; }

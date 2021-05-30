@@ -18,7 +18,9 @@
 
 class CodeWidget : public Wt::WContainerWidget {
 public:
-    CodeWidget(const Snippet &snippet, std::unique_ptr<Wt::WPushButton> runButtonPtr);
+    CodeWidget(const Snippet &snippet);
+
+    void setClickedRunButton(const std::function<void()> &fn);
 
     std::string getInput() const;
 

@@ -1,14 +1,24 @@
+#include <climits>
+
 #include "CompilationManager.hpp"
-#include "Models.hpp"
 
 CompilationManager::CompilationManager() : compilesCount(0) {
     removeOldDirs();
 }
 
-Compilation CompilationManager::runCompilation(const string &messageCode, const string &executionStdin, int language) {
+Compilation CompilationManager::runCompilation(const Snippet &snippet, const string &executionStdin) {
+    int language = snippet.getLanguage();
+    std::string messageCode = snippet.getProgramText();
+
     compilesCount++;
+    if (compilesCount == ULLONG_MAX) {
+        removeOldDirs();
+        compilesCount = 0;
+    }
+
     Compilation currentCompilation;
-    currentCompilation.setMessageCode(messageCode); // TODO: передавать только compilation, без code и input
+    currentCompilation.setMessageCode(
+            snippet.getProgramText()); // TODO: передавать только compilation, без code и input
     currentCompilation.setExecutionStdin(executionStdin);
     currentCompilation.setCompilationId(compilesCount);
     currentCompilation.setFileExtension(languagesExtensions[language]);
@@ -17,14 +27,14 @@ Compilation CompilationManager::runCompilation(const string &messageCode, const 
     currentCompilation.setPathToTemplate("compilers/" + languagesNames[language] + "/template");
 
     createDir(currentCompilation);
-    run(currentCompilation, messageCode, executionStdin);
+    run(currentCompilation);
     readOutputFromFiles(currentCompilation);
 
     return currentCompilation;
 }
 
 void CompilationManager::writeInputToFiles(const Compilation &compilation, const string &code, const string &input) {
-    string pathToRunBox = compilation.getPathToRunBox();
+    std::string pathToRunBox = compilation.getPathToRunBox();
 
     std::ofstream sourceFile(pathToRunBox + "/source." + compilation.getFileExtension());
     sourceFile << code;
@@ -35,12 +45,14 @@ void CompilationManager::writeInputToFiles(const Compilation &compilation, const
     stdinFile.close();
 }
 
-void CompilationManager::run(const Compilation &compilation, const string &code, const string &input) {
-    string pathToRunBox = compilation.getPathToRunBox();
+void CompilationManager::run(const Compilation &compilation) {
+    std::string code = compilation.getMessageCode();
+    std::string input = compilation.getExecutionStdin();
+    std::string pathToRunBox = compilation.getPathToRunBox();
 
     writeInputToFiles(compilation, code, input);
 
-    string sCommandRun = "bash " + pathToRunBox + "/run.sh >" + pathToRunBox + "/log.txt";
+    std::string sCommandRun = "bash " + pathToRunBox + "/run.sh >" + pathToRunBox + "/log.txt";
     const char *pcharCommandRun = sCommandRun.c_str();
     system(pcharCommandRun);
 }
@@ -50,56 +62,57 @@ void CompilationManager::removeOldDirs() {
     system("rm -rf compilers/c/runs/run-*");
     system("rm -rf compilers/cpp/runs/run-*");
     system("rm -rf compilers/cpp20/runs/run-*");
+    system("rm -rf compilers/runs");
 }
 
 void CompilationManager::createDir(const Compilation &compilation) {
     compilesCount++;
 
-    string pathToRunBox = compilation.getPathToRunBox();
+    std::string pathToRunBox = compilation.getPathToRunBox();
 
-    string sCommandMkdir = "mkdir -p " + pathToRunBox;
+    std::string sCommandMkdir = "mkdir -p " + pathToRunBox;
     const char *pcharCommandMkdir = sCommandMkdir.c_str();
     system(pcharCommandMkdir);
 
-    string sCommandCopy = "cp -R " + compilation.getPathToTemplate() + "/. " + pathToRunBox + "/";
+    std::string sCommandCopy = "cp -R " + compilation.getPathToTemplate() + "/. " + pathToRunBox + "/";
     const char *pcharCommandCopy = sCommandCopy.c_str();
     system(pcharCommandCopy);
 }
 
-bool fileExists (const std::string& name) {
+bool fileExists(const std::string &name) {
     std::ifstream f(name.c_str());
     return f.good();
 }
 
 void CompilationManager::readOutputFromFiles(Compilation &compilation) {
-    string pathToRunBox = compilation.getPathToRunBox();
+    std::string pathToRunBox = compilation.getPathToRunBox();
 
     std::ifstream outputFile(pathToRunBox + "/run.stdout");
-    string executionOutput;
+    std::string executionOutput;
     executionOutput.assign((std::istreambuf_iterator<char>(outputFile)),
                            (std::istreambuf_iterator<char>()));
     compilation.setExecutionStdout(executionOutput);
 
     std::ifstream runStderrFile(pathToRunBox + "/run.stderr");
-    string executionError;
+    std::string executionError;
     executionError.assign((std::istreambuf_iterator<char>(runStderrFile)),
                           (std::istreambuf_iterator<char>()));
     compilation.setExecutionStderr(executionError);
 
     std::ifstream compileStdoutFile(pathToRunBox + "/compile.stdout");
-    string compileOutput;
+    std::string compileOutput;
     compileOutput.assign((std::istreambuf_iterator<char>(compileStdoutFile)),
                          (std::istreambuf_iterator<char>()));
     compilation.setCompilerStdout(compileOutput);
 
     std::ifstream compileStderrFile(pathToRunBox + "/compile.stderr");
-    string compileError;
+    std::string compileError;
     compileError.assign((std::istreambuf_iterator<char>(compileStderrFile)),
                         (std::istreambuf_iterator<char>()));
     compilation.setCompilerStderr(compileError);
 
-    string time;
-    string memory;
+    std::string time;
+    std::string memory;
     std::ifstream logFile(pathToRunBox + "/time.log");
     std::getline(logFile, time);
     std::getline(logFile, memory);

@@ -6,21 +6,23 @@ static inline std::string langToStyleClass(const Snippet &snippet) {
         case Snippet::Python_3:
             return "python";
         case Snippet::Cpp_14:
+        case Snippet::Cpp_17:
         case Snippet::Cpp_20:
             return "cpp";
-        case Snippet::C_98:
+        case Snippet::C_17:
             return "c";
         default:
             return std::string();
     }
 }
 
-CodeWidget::CodeWidget(const Snippet &snippet, std::unique_ptr<Wt::WPushButton> runButtonPtr)
+CodeWidget::CodeWidget(const Snippet &snippet)
 : snippet_(snippet) {
     setWidth(580);
 
     auto programTextPtr = std::make_unique<Wt::WPanel>();
     auto inputEditPtr = std::make_unique<Wt::WTextArea>();
+    auto runButtonPtr = std::make_unique<Wt::WPushButton>("Run");
     auto resultContainerPtr = std::make_unique<Wt::WContainerWidget>();
 
     programText_ = programTextPtr.get();
@@ -73,6 +75,10 @@ void CodeWidget::createLayout(std::unique_ptr<WWidget> programText, std::unique_
     this->setLayout(std::move(vLayout));
 }
 
+void CodeWidget::setClickedRunButton(const std::function<void()> &fn) {
+    runButton_->clicked().connect(fn);
+}
+
 std::string CodeWidget::getInput() const {
     runButton_->disable();
     resultContainer_->clear();
@@ -85,7 +91,7 @@ std::string CodeWidget::getInput() const {
 void CodeWidget::setResultCompilation(const Compilation &result) {
     runButton_->enable();
 
-    auto vLayout = resultContainer_->setLayout(Wt::cpp14::make_unique<Wt::WVBoxLayout>());
+    auto vLayout = resultContainer_->setLayout(std::make_unique<Wt::WVBoxLayout>());
 
     resultContainer_->setStyleClass("source-view");
 
@@ -110,7 +116,7 @@ void CodeWidget::setResultCompilation(const Compilation &result) {
             table->elementAt(1, 0)->addWidget(std::move(executionTimePtr));
             table->elementAt(1, 1)->addWidget(std::move(executionUsedMemoryPtr));
 
-            vLayout->addWidget(std::move(table));
+            vLayout->addWidget(std::move(table), 0, Wt::AlignmentFlag::Super);
         }
 
         auto compilerStdoutPtr = std::make_unique<Wt::WText>(result.getExecutionStdout(), Wt::TextFormat::Plain);

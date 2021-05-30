@@ -1,7 +1,7 @@
 #include "MessageWidget.hpp"
 
-MessageWidget::MessageWidget(const Message &message)
-        : message_(message) {
+MessageWidget::MessageWidget(const Message &message, bool myMassage)
+        : message_(message), myMessage_(myMassage) {
     auto textPtr = std::make_unique<Wt::WText>(message.getMessageText());
     auto timePtr = std::make_unique<Wt::WText>(message.getTimeSentStr());
     this->
@@ -14,7 +14,12 @@ MessageWidget::MessageWidget(const Message &message)
 }
 
 void MessageWidget::createLayout(std::unique_ptr<WWidget> text, std::unique_ptr<WWidget> time) {
-    auto vLayout = std::make_unique<Wt::WVBoxLayout>();
+    auto messageContainer = std::make_unique<Wt::WContainerWidget>();
+    messageContainer->setStyleClass("chat-msg");
+    messageContainer->setMargin(5, Wt::Side::Bottom | Wt::Side::Top);
+
+    auto vLayout = messageContainer->setLayout(std::make_unique<Wt::WVBoxLayout>());
+    vLayout->setContentsMargins(0, 0, 0, 0);
 
     auto hLayout = std::make_unique<Wt::WHBoxLayout>();
 
@@ -25,7 +30,21 @@ void MessageWidget::createLayout(std::unique_ptr<WWidget> text, std::unique_ptr<
 
     vLayout->addLayout(std::move(hLayout));
 
-    this->setLayout(std::move(vLayout));
+    if (message_.isHaveSnippet()) {
+        auto snippetPtr = std::make_unique<CodeWidget>(message_.getSnippet());
+        snippet_ = snippetPtr.get();
+
+        vLayout->addWidget(std::move(snippetPtr));
+    }
+
+    // Верхний контейнер для расположения сообщения слева/справа
+    auto vPositionalLayout = std::make_unique<Wt::WVBoxLayout>();
+    vPositionalLayout->setContentsMargins(8, 0, 8, 0);
+
+    auto positionMessage = (myMessage_) ? Wt::AlignmentFlag::Right : Wt::AlignmentFlag::Left;
+    vPositionalLayout->addWidget(std::move(messageContainer), 0, positionMessage);
+
+    this->setLayout(std::move(vPositionalLayout));
 }
 
 std::string MessageWidget::getMessageId() const {
@@ -42,8 +61,10 @@ void MessageWidget::setResultCompilation(const Compilation &result) {
     }
 }
 
-void MessageWidget::setSnippet(std::unique_ptr<CodeWidget> snippetPtr) {
-    snippet_ = snippetPtr.get();
+void MessageWidget::setClickedRunButton(const std::function<void()> &fn) {
+    snippet_->setClickedRunButton(fn);
+}
 
-    layout()->addWidget(std::move(snippetPtr));
+std::string MessageWidget::getInput() const {
+    return snippet_->getInput();
 }

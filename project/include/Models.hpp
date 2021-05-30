@@ -95,8 +95,9 @@ public:
         Not_selected = -1,
         Python_3 = 0,
         Cpp_14 = 1,
-        Cpp_20 = 2,
-        C_98 = 3,
+        Cpp_17 = 2,
+        Cpp_20 = 3,
+        C_17 = 4,
     };
 
     Snippet() : language_(Not_selected) {};

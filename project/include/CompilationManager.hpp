@@ -3,8 +3,10 @@
 
 #include <fstream>
 #include <sstream>
+#include <map>
 
 #include "Compilation.hpp"
+#include "Models.hpp"
 //#include "CompilerDb.hpp"
 //#include "CompilerResultWriter.hpp"
 
@@ -12,18 +14,29 @@ using std::string;
 
 class ICompilationManager {
 public:
-    virtual Compilation runCompilation(const string &messageCode, const string &executionStdin, int language) = 0;
+    virtual Compilation runCompilation(const Snippet &snippet, const string &executionStdin) = 0;
 };
 
 class CompilationManager : ICompilationManager {
 private:
 
-    std::string languagesNames[5] = {"", "python3", "cpp", "cpp20" "c"};
-    std::string languagesExtensions[5] = {"", "py", "cpp", "cpp" "c"};
+    std::map<int, string> languagesNames = {{-1, ""},
+                                            {0,  "python3"},
+                                            {1,  "cpp14"},
+                                            {2,  "cpp17"},
+                                            {3,  "cpp20"},
+                                            {4,  "c17"}};
+
+    std::map<int, string> languagesExtensions = {{-1, ""},
+                                                 {0,  "py"},
+                                                 {1,  "cpp"},
+                                                 {2,  "cpp"},
+                                                 {3,  "cpp"},
+                                                 {4,  "c"}};
 
     static void writeInputToFiles(const Compilation &compilation, const string &code, const string &input);
 
-    static void run(const Compilation &compilation, const string &code, const string &input);
+    static void run(const Compilation &compilation);
 
     static void removeOldDirs();
 
@@ -37,14 +50,12 @@ private:
 
     unsigned long long compilesCount{};
 
-    string defaultPathToTemplate = "/test/template"; // add language in start
-
 public:
     CompilationManager();
 
     ~CompilationManager() = default;
 
-    Compilation runCompilation(const string &messageCode, const string &executionStdin, int language) override;
+    Compilation runCompilation(const Snippet &snippet, const string &executionStdin) override;
 };
 
 #endif  // PROJECT_INCLUDE_COMPILATIONMANAGER_HPP_

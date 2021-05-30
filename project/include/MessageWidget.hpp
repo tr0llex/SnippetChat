@@ -16,13 +16,15 @@
 
 class MessageWidget : public Wt::WContainerWidget {
 public:
-    explicit MessageWidget(const Message &message);
+    MessageWidget(const Message &message, bool myMassage);
 
     std::string getMessageId() const;
 
     bool isHaveSnippet() const;
 
-    void setSnippet(std::unique_ptr<CodeWidget> snippetPtr);
+    void setClickedRunButton(const std::function<void()> &fn);
+
+    std::string getInput() const;
 
     void setResultCompilation(const Compilation &result);
 
@@ -33,6 +35,7 @@ protected:
 
 private:
     Message message_;
+    bool myMessage_;
 
     Wt::WText   *text_;
     Wt::WText   *time_;
