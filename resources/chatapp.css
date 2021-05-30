@@ -1,6 +1,7 @@
 html {
   font-family:arial,sans-serif;
   overflow-x: hidden;
+  /* background-image: url(code.jpg); */
 }
 
 h1 {
@@ -75,6 +76,10 @@ textarea.chat-noedit {
   background: #e0ebed;
   padding: 4px;
   border-radius: 6px;
+  /* border-radius: 20px;
+  padding: 8px 15px;
+  margin-top: 5px;
+  margin-bottom: 5px; */
 }
 
 .msg-right {
@@ -152,18 +157,38 @@ textarea.chat-noedit {
   background-color: darkseagreen;
 }
 
-<<<<<<< HEAD
-#owhex8j {
-  color:#B42600;
-=======
-.source-view {
-  background-color: white;
-  overflow: auto;
-  white-space: pre;
-  font-family: 'Bitstream Vera Sans Mono','Courier',monospace;
-  font-size: 85%;
-  color: #444444;
-  border: 1px solid #C3D9FF;
-  zoom: 1;
->>>>>>> 7cd633869d7610c2ab273b3c40939f6bf909ebd8
+.auth-block {
+  background: linear-gradient(265deg, #8d67ad, #635aab, #8d3b83, #a3035f);
+  background-size: 800% 800%;
+  color:white;
+
+  -webkit-animation: AnimationName 28s ease infinite;
+  -moz-animation: AnimationName 28s ease infinite;
+  animation: AnimationName 28s ease infinite;
+}
+
+@-webkit-keyframes AnimationName {
+  0%{background-position:0% 51%}
+  50%{background-position:100% 50%}
+  100%{background-position:0% 51%}
+}
+@-moz-keyframes AnimationName {
+  0%{background-position:0% 51%}
+  50%{background-position:100% 50%}
+  100%{background-position:0% 51%}
+}
+@keyframes AnimationName {
+  0%{background-position:0% 51%}
+  50%{background-position:100% 50%}
+  100%{background-position:0% 51%}
+}
+
+.block-block {
+  color:orange;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  align-items: center;
 }

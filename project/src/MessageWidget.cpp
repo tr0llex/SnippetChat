@@ -4,6 +4,7 @@ MessageWidget::MessageWidget(const Message &message)
         : message_(message) {
     auto textPtr = std::make_unique<Wt::WText>(message.getMessageText());
     auto timePtr = std::make_unique<Wt::WText>(message.getTimeSentStr());
+    this->
 
     text_ = textPtr.get();
     time_ = timePtr.get();
@@ -18,9 +19,9 @@ void MessageWidget::createLayout(std::unique_ptr<WWidget> text, std::unique_ptr<
     auto hLayout = std::make_unique<Wt::WHBoxLayout>();
 
     text->setStyleClass("text-in-msg");
-    hLayout->addWidget(std::move(text), 1);
+    hLayout->addWidget(std::move(text), 0);
     time->setStyleClass("chat-time");
-    hLayout->addWidget(std::move(time));
+    hLayout->addWidget(std::move(time), 0, Wt::AlignmentFlag::Bottom);
 
     vLayout->addLayout(std::move(hLayout));
 
