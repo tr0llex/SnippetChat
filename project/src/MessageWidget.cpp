@@ -25,6 +25,7 @@ void MessageWidget::createLayout(std::unique_ptr<WWidget> text, std::unique_ptr<
     vLayout->addLayout(std::move(hLayout));
 
     this->setLayout(std::move(vLayout));
+    layout()->setContentsMargins(0, 0, 0, 0);
 }
 
 std::string MessageWidget::getMessageId() const {

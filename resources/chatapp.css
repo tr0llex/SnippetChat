@@ -69,11 +69,10 @@ textarea.chat-noedit {
 
 .chat-msg {
   width: fit-content;
-  margin: 5px;
-  border: 2px solid gray;
+  padding: 0 10px;
+  border: 0 solid;
   background: #e0ebed;
-  padding: 4px;
-  border-radius: 6px;
+  border-radius: 8px;
 }
 
 .msg-right {

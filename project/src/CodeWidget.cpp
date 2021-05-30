@@ -85,7 +85,7 @@ std::string CodeWidget::getInput() const {
 void CodeWidget::setResultCompilation(const Compilation &result) {
     runButton_->enable();
 
-    auto vLayout = resultContainer_->setLayout(Wt::cpp14::make_unique<Wt::WVBoxLayout>());
+    auto vLayout = resultContainer_->setLayout(std::make_unique<Wt::WVBoxLayout>());
 
     resultContainer_->setStyleClass("source-view");
 
@@ -110,7 +110,7 @@ void CodeWidget::setResultCompilation(const Compilation &result) {
             table->elementAt(1, 0)->addWidget(std::move(executionTimePtr));
             table->elementAt(1, 1)->addWidget(std::move(executionUsedMemoryPtr));
 
-            vLayout->addWidget(std::move(table));
+            vLayout->addWidget(std::move(table), 0, Wt::AlignmentFlag::Super);
         }
 
         auto compilerStdoutPtr = std::make_unique<Wt::WText>(result.getExecutionStdout(), Wt::TextFormat::Plain);

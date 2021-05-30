@@ -335,8 +335,6 @@ void ChatWidget::createMessengerLayout(std::unique_ptr<WWidget> dialogueName, st
 
     auto hLayout = std::make_unique<Wt::WHBoxLayout>();
 
-    hLayout->setPreferredImplementation(Wt::LayoutImplementation::JavaScript);
-
     /// <Шапка>
     hLayout->addWidget(std::make_unique<Wt::WText>(tr("projectName")), 1);
     hLayout->addWidget(std::move(logoutButton));
@@ -435,6 +433,8 @@ void ChatWidget::showNewMessage(const Message &message) {
     Wt::WApplication *app = Wt::WApplication::instance();
 
     auto messageWidgetPtr = std::make_unique<MessageWidget>(message);
+    messageWidgetPtr->setStyleClass("chat-msg");
+    messageWidgetPtr->setMargin(5, Wt::Side::Bottom | Wt::Side::Top);
     auto messageWidget = messageWidgetPtr.get();
 
     if (message.isHaveSnippet()) {
@@ -453,15 +453,17 @@ void ChatWidget::showNewMessage(const Message &message) {
         messageWidget->setSnippet(std::move(codeWidgetPtr));
     }
 
-    MessageWidget *w = messages_->addWidget(std::move(messageWidgetPtr));
+    auto messageContainer = std::make_unique<Wt::WContainerWidget>();
+    auto vLayout = messageContainer->setLayout(std::make_unique<Wt::WVBoxLayout>());
+    vLayout->setContentsMargins(8, 0, 8, 0);
+
+    auto positionMessage = (message.getSenderLogin() == user_.getLogin()) ?
+            Wt::AlignmentFlag::Right : Wt::AlignmentFlag::Left;
+
+    vLayout->addWidget(std::move(messageWidgetPtr), 0, positionMessage);
 
 
-    w->setInline(false);
-    w->setStyleClass("chat-msg");
-
-    if (message.getSenderLogin() == user_.getLogin()) {
-        w->addStyleClass("msg-right");
-    }
+    messages_->addWidget(std::move(messageContainer));
 
     if (messages_->count() > 100) {
         messages_->removeChild(messages_->children()[0]);
