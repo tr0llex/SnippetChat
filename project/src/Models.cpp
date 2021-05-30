@@ -46,6 +46,7 @@ std::string User::getToken() const {
 bool User::operator==(const User &user) const {
     return userLogin_ == user.getLogin();
 }
+
 bool User::operator!=(const User &user) const {
     return userLogin_ != user.getLogin();
 }
@@ -126,7 +127,7 @@ bool Snippet::empty() const {
 }
 
 Snippet::Snippet(std::string code, Language lang) :
-    language_(lang), programText_(code) {
+        language_(lang), programText_(code) {
 }
 
 Snippet::Language Snippet::getLanguage() const {
@@ -139,10 +140,12 @@ std::string Snippet::getLanguageStr() const {
             return "Python 3";
         case Cpp_14:
             return "C++ 14";
+        case Cpp_17:
+            return "C++ 17";
         case Cpp_20:
             return "C++ 20";
-        case C_98:
-            return "C";
+        case C_17:
+            return "C 17";
         default:
             return "";
     }
@@ -150,16 +153,16 @@ std::string Snippet::getLanguageStr() const {
 
 Message::Message(const std::string &dialogueParentId, const std::string &senderId, const std::string &messageText,
                  time_t timeSent, const Snippet &snippet)
-                 : dialogueParentId_(dialogueParentId), senderLogin_(senderId), messageText_(messageText),
-                   snippet_(snippet), timeSent_(timeSent), isRead_(false) {
+        : dialogueParentId_(dialogueParentId), senderLogin_(senderId), messageText_(messageText),
+          snippet_(snippet), timeSent_(timeSent), isRead_(false) {
 
 }
 
 Message::Message(const std::string &messageId, const std::string &dialogueParentId, const std::string &senderId,
                  std::string messageText, const Snippet &snippet, time_t timeSent, bool isRead)
-                 : id_(messageId), dialogueParentId_(dialogueParentId), senderLogin_(senderId),
-                   messageText_(std::move(messageText)), snippet_(snippet),
-                   timeSent_(timeSent), isRead_(isRead) {
+        : id_(messageId), dialogueParentId_(dialogueParentId), senderLogin_(senderId),
+          messageText_(std::move(messageText)), snippet_(snippet),
+          timeSent_(timeSent), isRead_(isRead) {
 }
 
 std::string Message::getId() const {

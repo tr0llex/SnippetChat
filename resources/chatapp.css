@@ -27,6 +27,7 @@ button {
   padding-left: 5px;
   padding-right: 5px;
   font-size: smaller;
+  cursor: pointer;
 }
 
 .chat {
@@ -128,6 +129,7 @@ textarea.chat-noedit {
   border: 2px solid gray;
   border-radius: 3px;
   margin-bottom: 3px;
+  cursor: pointer;
 }
 
 .dialogue-name {
@@ -149,6 +151,10 @@ textarea.chat-noedit {
   background-color: darkseagreen;
 }
 
+<<<<<<< HEAD
+#owhex8j {
+  color:#B42600;
+=======
 .source-view {
   background-color: white;
   overflow: auto;
@@ -158,4 +164,5 @@ textarea.chat-noedit {
   color: #444444;
   border: 1px solid #C3D9FF;
   zoom: 1;
+>>>>>>> 7cd633869d7610c2ab273b3c40939f6bf909ebd8
 }
