@@ -24,7 +24,7 @@ public:
 
     void setSnippet(std::unique_ptr<CodeWidget> snippetPtr);
 
-    void setResultCompilation(const std::string &result);
+    void setResultCompilation(const Compilation &result);
 
 protected:
     void createLayout(
