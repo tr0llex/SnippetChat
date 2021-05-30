@@ -90,6 +90,19 @@ void ChatWidget::letSignUp() {
 
     auto vLayout = setLayout(std::make_unique<Wt::WVBoxLayout>());
 
+    auto vContainer = vLayout->addWidget(std::make_unique<Wt::WContainerWidget>());
+
+    vContainer->setStyleClass("auth-block");
+
+    auto vLayout2 = vContainer->setLayout(std::make_unique<Wt::WVBoxLayout>());
+
+    auto image = vLayout2->addWidget(std::make_unique<Wt::WImage>(Wt::WLink("resources/snich.png")));
+    image->setAlternateText("SNICH");
+    image->setMaximumSize(400, 500);
+
+    statusMsg_ = vLayout2->addWidget(std::make_unique<Wt::WText>(), 1, Wt::AlignmentFlag::Center);
+    statusMsg_->setTextFormat(Wt::TextFormat::Plain);
+    statusMsg_->setStyleClass("status-msg");
 
     auto hLayout = std::make_unique<Wt::WHBoxLayout>();
 
@@ -97,8 +110,9 @@ void ChatWidget::letSignUp() {
 
     userLoginEdit_ = hLayout->addWidget(std::make_unique<Wt::WLineEdit>(), 1);
     userLoginEdit_->setFocus();
+    userLoginEdit_->setStyleClass("pass-log");
 
-    vLayout->addLayout(std::move(hLayout), 0, Wt::AlignmentFlag::Center);
+    vLayout2->addLayout(std::move(hLayout));
 
 
     hLayout = std::make_unique<Wt::WHBoxLayout>();
@@ -107,8 +121,10 @@ void ChatWidget::letSignUp() {
 
     passwordEdit_ = hLayout->addWidget(std::make_unique<Wt::WLineEdit>(), 1);
     passwordEdit_->setAttributeValue("type", "password");
+    passwordEdit_->setStyleClass("pass-log");
 
-    vLayout->addLayout(std::move(hLayout), 0, Wt::AlignmentFlag::Center);
+
+    vLayout2->addLayout(std::move(hLayout));
 
 
     hLayout = std::make_unique<Wt::WHBoxLayout>();
@@ -117,11 +133,16 @@ void ChatWidget::letSignUp() {
 
     confirmPasswordEdit_ = hLayout->addWidget(std::make_unique<Wt::WLineEdit>(), 1);
     confirmPasswordEdit_->setAttributeValue("type", "password");
+    confirmPasswordEdit_->setStyleClass("pass-log");
 
-    vLayout->addLayout(std::move(hLayout), 0, Wt::AlignmentFlag::Center);
 
+    vLayout2->addLayout(std::move(hLayout));
 
-    auto signUp = vLayout->addWidget(std::make_unique<Wt::WPushButton>("Sign up"), 0, Wt::AlignmentFlag::Center);
+    auto hLayout2 = std::make_unique<Wt::WHBoxLayout>();
+
+    auto signUp = hLayout2->addWidget(std::make_unique<Wt::WPushButton>("Sign up"));
+
+    signUp->setStyleClass("auth-buttons");
 
     signUp->clicked().connect(this, &ChatWidget::signUp);
     userLoginEdit_->enterPressed().connect(this, [&] {
@@ -133,12 +154,15 @@ void ChatWidget::letSignUp() {
     confirmPasswordEdit_->enterPressed().connect(this, &ChatWidget::signUp);
 
 
-    auto logIn = vLayout->addWidget(std::make_unique<Wt::WText>("Log in"), 0, Wt::AlignmentFlag::Center);
+    auto logIn = hLayout2->addWidget(std::make_unique<Wt::WPushButton>("Log in"));
     logIn->clicked().connect(this, &ChatWidget::letLogin);
+    logIn->setStyleClass("auth-buttons");
+    logIn->addStyleClass("signup-button");
 
 
-    statusMsg_ = vLayout->addWidget(std::make_unique<Wt::WText>(), 1, Wt::AlignmentFlag::Center);
-    statusMsg_->setTextFormat(Wt::TextFormat::Plain);
+    vLayout2->addLayout(std::move(hLayout2));
+
+    this->setStyleClass("block-block");
 }
 
 void ChatWidget::letLogin() {
@@ -146,21 +170,30 @@ void ChatWidget::letLogin() {
 
     auto hPositionalLayout = std::make_unique<Wt::WHBoxLayout>();
 
-    auto vContainer = hPositionalLayout->addWidget(std::make_unique<Wt::WContainerWidget>(), 0, Wt::AlignmentFlag::Center);
+    auto vContainer = hPositionalLayout->addWidget(std::make_unique<Wt::WContainerWidget>());
 
     vContainer->setStyleClass("auth-block");
 
     auto vLayout = vContainer->setLayout(std::make_unique<Wt::WVBoxLayout>());
 
+    auto image = vLayout->addWidget(std::make_unique<Wt::WImage>(Wt::WLink("resources/snich.png")));
+    image->setAlternateText("SNICH");
+    image->setMaximumSize(400, 500);
+
     auto hLayout = std::make_unique<Wt::WHBoxLayout>();
+
+    statusMsg_ = vLayout->addWidget(std::make_unique<Wt::WText>(), 1, Wt::AlignmentFlag::Center);
+    statusMsg_->addStyleClass("status-msg");
+    statusMsg_->setTextFormat(Wt::TextFormat::Plain);
 
     hLayout->addWidget(std::make_unique<Wt::WLabel>("Login:"), 1);
 
     userLoginEdit_ = hLayout->addWidget(std::make_unique<Wt::WLineEdit>(), 1);
     userLoginEdit_->setFocus();
 
-    vLayout->addLayout(std::move(hLayout), 0, Wt::AlignmentFlag::Center);
+    userLoginEdit_->setStyleClass("pass-log");
 
+    vLayout->addLayout(std::move(hLayout));
 
     hLayout = std::make_unique<Wt::WHBoxLayout>();
 
@@ -169,10 +202,11 @@ void ChatWidget::letLogin() {
     passwordEdit_ = hLayout->addWidget(std::make_unique<Wt::WLineEdit>(), 1);
     passwordEdit_->setAttributeValue("type", "password");
 
-    vLayout->addLayout(std::move(hLayout), 0, Wt::AlignmentFlag::Center);
+    passwordEdit_->setStyleClass("pass-log");
 
+    auto hLayout2 = std::make_unique<Wt::WHBoxLayout>();
 
-    auto logIn = vLayout->addWidget(std::make_unique<Wt::WPushButton>("Log in"), 0);
+    auto logIn = hLayout2->addWidget(std::make_unique<Wt::WPushButton>("Log in"), 0);
     logIn->setStyleClass("auth-buttons");
 
     logIn->clicked().connect(this, &ChatWidget::login);
@@ -182,12 +216,14 @@ void ChatWidget::letLogin() {
     passwordEdit_->enterPressed().connect(this, &ChatWidget::login);
 
 
-    auto signUp = vLayout->addWidget(std::make_unique<Wt::WPushButton>("Sign up"), 0);
+    auto signUp = hLayout2->addWidget(std::make_unique<Wt::WPushButton>("Sign up"), 0);
+    signUp->setStyleClass("auth-buttons");
+    signUp->addStyleClass("signup-button");
     signUp->clicked().connect(this, &ChatWidget::letSignUp);
 
+    vLayout->addLayout(std::move(hLayout));
 
-    statusMsg_ = vLayout->addWidget(std::make_unique<Wt::WText>(), 1, Wt::AlignmentFlag::Center);
-    statusMsg_->setTextFormat(Wt::TextFormat::Plain);
+    vLayout->addLayout(std::move(hLayout2));
 
     this->setLayout(std::move(hPositionalLayout));
 

@@ -1,7 +1,10 @@
 html {
   font-family:arial,sans-serif;
   overflow-x: hidden;
-  /* background-image: url(code.jpg); */
+}
+
+body {
+  background-image: url(code.jpg) !important;
 }
 
 h1 {
@@ -157,14 +160,59 @@ textarea.chat-noedit {
   background-color: darkseagreen;
 }
 
+.auth-buttons {
+  background-color: #40E0D0;
+  font-weight: 700;
+  color: black;
+  text-decoration: none;
+  padding: .8em 1em calc(.8em + 3px);
+  border-radius: 8px;
+  box-shadow: 0 -3px rgb(53,167,110) inset;
+  transition: 0.2s;
+  min-width: 130px;
+}
+
+.auth-buttons:hover {
+  background: #00CED1; 
+}
+
+.signup-button {
+  margin-left: 130px !important;
+}
+
 .auth-block {
-  background: linear-gradient(265deg, #8d67ad, #635aab, #8d3b83, #a3035f);
+  background: linear-gradient(265deg, #398dea, #004796, #00CED1);
   background-size: 800% 800%;
   color:white;
-
   -webkit-animation: AnimationName 28s ease infinite;
   -moz-animation: AnimationName 28s ease infinite;
   animation: AnimationName 28s ease infinite;
+  flex: 0 0 auto !important;
+  min-width: 250px;
+  border-radius: 6px;
+  min-height: 110px;
+  box-shadow: 0 0 100px rgba(0,0,0,0.5);
+  padding: 12px 9px !important;
+}
+
+.pass-log {
+  align-self: flex-end;
+  max-width: 200px;
+  min-width: 200px;
+  margin: 0px 8px !important;
+  border-radius: 6px;
+}
+
+.status-msg {
+  color:black !important;
+  font-size: larger;
+  font-weight: bold;
+}
+
+img {
+  border-top-color: antiquewhite;
+  border-top-width: 10px;
+  border-style: dotted;
 }
 
 .source-view {
@@ -196,11 +244,11 @@ textarea.chat-noedit {
 }
 
 .block-block {
-  color:orange;
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
   align-items: center;
+  justify-content: center;
 }
