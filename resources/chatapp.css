@@ -161,3 +161,7 @@ textarea.chat-noedit {
   border: 1px solid #C3D9FF;
   zoom: 1;
 }
+
+.Wt-panel .body {
+  background-color: #F0F0F0 !important;
+}

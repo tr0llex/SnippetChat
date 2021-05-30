@@ -61,14 +61,13 @@ void SnippetEditWidget::createLayout(std::unique_ptr<WWidget> label,
     hLayout->addWidget(std::move(label));
     hLayout->addWidget(std::move(switchLanguage));
     vLayout->addLayout(std::move(hLayout), 0, Wt::AlignmentFlag::Right);
-
     vLayout->addWidget(std::move(editCode));
 
     this->setLayout(std::move(vLayout));
 }
 
 Snippet SnippetEditWidget::getSnippet() {
-    snippet_.setProgramText(ws2s(editCode_->text()));
+    snippet_.setProgramText(snippet_.getProgramText());
     return snippet_;
 }
 

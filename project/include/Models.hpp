@@ -110,6 +110,8 @@ public:
 
     std::string getProgramText() const;
 
+    std::string getProgramTextView() const;
+
     Language getLanguage() const;
 
     std::string getLanguageStr() const;
