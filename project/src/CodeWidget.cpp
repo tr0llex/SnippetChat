@@ -1,5 +1,6 @@
 #include "CodeWidget.hpp"
 #include <Wt/WTable.h>
+#include <Wt/WTemplate.h>
 
 static inline std::string langToStyleClass(const Snippet &snippet) {
     switch (snippet.getLanguage()) {
@@ -20,44 +21,41 @@ CodeWidget::CodeWidget(const Snippet &snippet)
 : snippet_(snippet) {
     setWidth(580);
 
-    auto programTextPtr = std::make_unique<Wt::WPanel>();
+    auto snippetPanelPtr = std::make_unique<Wt::WPanel>();
     auto inputEditPtr = std::make_unique<Wt::WTextArea>();
     auto runButtonPtr = std::make_unique<Wt::WPushButton>("Run");
     auto resultContainerPtr = std::make_unique<Wt::WContainerWidget>();
 
-    programText_ = programTextPtr.get();
+    snippetPanel_ = snippetPanelPtr.get();
     inputEdit_ = inputEditPtr.get();
     runButton_ = runButtonPtr.get();
     resultContainer_ = resultContainerPtr.get();
 
-    programText_->setTitle("Code\t" + snippet_.getLanguageStr());
-    programText_->setCollapsible(true);
+    snippetPanel_->setTitle("Code\t" + snippet_.getLanguageStr());
+    snippetPanel_->setCollapsible(true);
 
     Wt::WAnimation animation(Wt::AnimationEffect::SlideInFromTop,
                              Wt::TimingFunction::EaseOut,
                              100);
 
-    programText_->setAnimation(animation);
-    programText_->collapse();
+    snippetPanel_->setAnimation(animation);
+    snippetPanel_->collapse();
 
-    programText_->setMargin(0);
+    snippetPanel_->setMargin(0);
 
-    auto container = std::make_unique<Wt::WContainerWidget>();
-    container->setHtmlTagName("pre");
-    container->setStyleClass("margin-0");
+    auto snippetTemplate = std::make_unique<Wt::WTemplate>("<pre style=\"padding: 0; margin: 0;\"><code class=\"${lang-class}\" style=\"padding: 0;\">"
+                                                           "${snippet}"
+                                                           "</code></pre>");
+    snippetTemplate->bindString("lang-class", langToStyleClass(snippet_));
+    snippetTemplate->bindString("snippet", snippet_.getProgramTextView());
 
-    auto codeTextWidget = Wt::cpp14::make_unique<Wt::WText>(snippet_.getProgramText());
-    codeTextWidget->setHtmlTagName("code class=" + langToStyleClass(snippet_));
-    container->addWidget(std::move(codeTextWidget));
-
-    programText_->setCentralWidget(std::move(container));
-
-    programText_->centralWidget()->parent()->setStyleClass("padding-0");
+    snippetPanel_->setCentralWidget(std::move(snippetTemplate));
+    snippetPanel_->centralWidget()->setStyleClass("snippet");
 
     inputEdit_->setRows(3);
     inputEdit_->setPlaceholderText("input data");
 
-    createLayout(std::move(programTextPtr),
+    createLayout(std::move(snippetPanelPtr),
                  std::move(runButtonPtr),
                  std::move(inputEditPtr),
                  std::move(resultContainerPtr));
@@ -105,7 +103,7 @@ void CodeWidget::setResultCompilation(const Compilation &result) {
         vLayout->addWidget(std::move(compilerStderrPtr));
     } else {
         if (!result.getTimeLimitExceeded()) {
-            auto executionTimePtr = std::make_unique<Wt::WText>(result.getExecutionTime());
+            auto executionTimePtr = std::make_unique<Wt::WText>(result.getExecutionTime() + "s");
             auto executionUsedMemoryPtr = std::make_unique<Wt::WText>(result.getExecutionUsedMemory());
 
             auto table = std::make_unique<Wt::WTable>();

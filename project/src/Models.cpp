@@ -151,6 +151,20 @@ std::string Snippet::getLanguageStr() const {
     }
 }
 
+std::string Snippet::getProgramTextView() const {
+    std::string programTextView;
+    for (auto symbol : programText_) {
+        if (symbol == '<') {
+            programTextView += "&lt;";
+        } else if (symbol == '>') {
+            programTextView += "&gt;";
+        } else {
+            programTextView += symbol;
+        }
+    }
+    return programTextView;
+}
+
 Message::Message(const std::string &dialogueParentId, const std::string &senderId, const std::string &messageText,
                  time_t timeSent, const Snippet &snippet)
         : dialogueParentId_(dialogueParentId), senderLogin_(senderId), messageText_(messageText),

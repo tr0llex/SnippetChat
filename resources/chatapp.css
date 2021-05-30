@@ -226,6 +226,10 @@ img {
   zoom: 1;
 }
 
+.Wt-panel .body {
+  background-color: #F0F0F0 !important;
+}
+
 @-webkit-keyframes AnimationName {
   0%{background-position:0% 51%}
   50%{background-position:100% 50%}

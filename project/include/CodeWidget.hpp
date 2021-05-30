@@ -36,7 +36,7 @@ protected:
 private:
     Snippet   snippet_;
 
-    Wt::WPanel                               *programText_;
+    Wt::WPanel                               *snippetPanel_;
     Wt::WTextArea                            *inputEdit_;
     Wt::WPushButton                          *runButton_;
     Wt::WContainerWidget                     *resultContainer_;
