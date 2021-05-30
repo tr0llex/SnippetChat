@@ -24,7 +24,7 @@ docker run \
     --read-only \
     -v "$RUN_BOX":/var/box \
     -w /var/box \
-    tr0llex/compiler-worker-cpp \
+    tr0llex/compiler-worker-cpp20 \
     bash -c "/bin/compile.sh && /bin/run.sh"
 
 #ls -lh "${RUN_BOX}"

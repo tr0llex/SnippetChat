@@ -124,8 +124,8 @@ std::string ChatServer::verifyToken(const std::string &token) {
     return auth_.verifyToken(token);
 }
 
-int ChatServer::runCompilation(ChatServer &this_serv, const User &user, const Message &message, const std::string input) {  //
-    Compilation compilation = manager_.runCompilation(message.getMessageCode(), input, message.getSnippet().getLanguage()+1); // TODO
+int ChatServer::runCompilation(ChatServer &this_serv, const User &user, const Message &message, const std::string input) {
+    Compilation compilation = manager_.runCompilation(message.getSnippet(), input);
     std::string outputToMessage;
     if (compilation.getTimeLimitExceeded()) {
         outputToMessage += "Time limit (5 sec) exceeded!";
