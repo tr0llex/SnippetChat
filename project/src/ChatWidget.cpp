@@ -144,12 +144,15 @@ void ChatWidget::letSignUp() {
 void ChatWidget::letLogin() {
     clear();
 
-    auto vContainer = this->addNew<Wt::WContainerWidget>();
+    auto hPositionalLayout = std::make_unique<Wt::WHBoxLayout>();
+
+    auto vContainer = hPositionalLayout->addWidget(std::make_unique<Wt::WContainerWidget>(), 0, Wt::AlignmentFlag::Center);
+
+    vContainer->setStyleClass("auth-block");
 
     auto vLayout = vContainer->setLayout(std::make_unique<Wt::WVBoxLayout>());
 
     auto hLayout = std::make_unique<Wt::WHBoxLayout>();
-    // auto formLayout = std::make_unique<Wt::WVBoxLayout>();
 
     hLayout->addWidget(std::make_unique<Wt::WLabel>("Login:"), 1);
 
@@ -180,12 +183,15 @@ void ChatWidget::letLogin() {
 
 
     auto signUp = vLayout->addWidget(std::make_unique<Wt::WPushButton>("Sign up"), 0);
-    signUp->setStyleClass("text-link");
     signUp->clicked().connect(this, &ChatWidget::letSignUp);
 
 
     statusMsg_ = vLayout->addWidget(std::make_unique<Wt::WText>(), 1, Wt::AlignmentFlag::Center);
     statusMsg_->setTextFormat(Wt::TextFormat::Plain);
+
+    this->setLayout(std::move(hPositionalLayout));
+
+    this->setStyleClass("block-block");
 }
 
 void ChatWidget::startChat() {
