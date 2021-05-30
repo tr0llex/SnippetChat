@@ -434,23 +434,16 @@ void ChatWidget::showNewMessage(const Message &message) {
 
     bool myMessage = message.getSenderLogin() == user_.getLogin();
     auto messageWidgetPtr = std::make_unique<MessageWidget>(message, myMessage);
-
     auto messageWidget = messageWidgetPtr.get();
 
     if (message.isHaveSnippet()) {
-        auto runButtonPtr = std::make_unique<Wt::WPushButton>("Run");
-        ButtonPtr runButton = runButtonPtr.get();
-
-        auto codeWidgetPtr = std::make_unique<CodeWidget>(message.getSnippet(), std::move(runButtonPtr));
-        auto codeWidget = codeWidgetPtr.get();
-
-        runButton->clicked().connect([=] {
-            std::string msg = codeWidget->getInput();
+        auto clickedButton = ([=] {
+            std::string msg = messageWidget->getInput();
             std::thread t(&ChatServer::runCompilation, &server_, std::ref(server_), std::ref(user_), std::ref(message), msg);
             t.detach();
         });
 
-        messageWidget->setSnippet(std::move(codeWidgetPtr));
+        messageWidget->setClickedRunButton(clickedButton);
     }
 
     messages_->addWidget(std::move(messageWidgetPtr));

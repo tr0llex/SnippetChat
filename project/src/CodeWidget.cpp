@@ -15,12 +15,13 @@ static inline std::string langToStyleClass(const Snippet &snippet) {
     }
 }
 
-CodeWidget::CodeWidget(const Snippet &snippet, std::unique_ptr<Wt::WPushButton> runButtonPtr)
+CodeWidget::CodeWidget(const Snippet &snippet)
 : snippet_(snippet) {
     setWidth(580);
 
     auto programTextPtr = std::make_unique<Wt::WPanel>();
     auto inputEditPtr = std::make_unique<Wt::WTextArea>();
+    auto runButtonPtr = std::make_unique<Wt::WPushButton>("Run");
     auto resultContainerPtr = std::make_unique<Wt::WContainerWidget>();
 
     programText_ = programTextPtr.get();
@@ -71,6 +72,10 @@ void CodeWidget::createLayout(std::unique_ptr<WWidget> programText, std::unique_
     vLayout->addWidget(std::move(resultContainer));
 
     this->setLayout(std::move(vLayout));
+}
+
+void CodeWidget::setClickedRunButton(const std::function<void()> &fn) {
+    runButton_->clicked().connect(fn);
 }
 
 std::string CodeWidget::getInput() const {

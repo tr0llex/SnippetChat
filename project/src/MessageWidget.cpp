@@ -29,6 +29,14 @@ void MessageWidget::createLayout(std::unique_ptr<WWidget> text, std::unique_ptr<
 
     vLayout->addLayout(std::move(hLayout));
 
+    if (message_.isHaveSnippet()) {
+        auto snippetPtr = std::make_unique<CodeWidget>(message_.getSnippet());
+        snippet_ = snippetPtr.get();
+
+        vLayout->addWidget(std::move(snippetPtr));
+    }
+
+    // Верхний контейнер для расположения сообщения слева/справа
     auto vPositionalLayout = std::make_unique<Wt::WVBoxLayout>();
     vPositionalLayout->setContentsMargins(8, 0, 8, 0);
 
@@ -52,8 +60,10 @@ void MessageWidget::setResultCompilation(const Compilation &result) {
     }
 }
 
-void MessageWidget::setSnippet(std::unique_ptr<CodeWidget> snippetPtr) {
-    snippet_ = snippetPtr.get();
+void MessageWidget::setClickedRunButton(const std::function<void()> &fn) {
+    snippet_->setClickedRunButton(fn);
+}
 
-    layout()->addWidget(std::move(snippetPtr));
+std::string MessageWidget::getInput() const {
+    return snippet_->getInput();
 }

@@ -22,7 +22,9 @@ public:
 
     bool isHaveSnippet() const;
 
-    void setSnippet(std::unique_ptr<CodeWidget> snippetPtr);
+    void setClickedRunButton(const std::function<void()> &fn);
+
+    std::string getInput() const;
 
     void setResultCompilation(const Compilation &result);
 
