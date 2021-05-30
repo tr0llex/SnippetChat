@@ -6,9 +6,10 @@ static inline std::string langToStyleClass(const Snippet &snippet) {
         case Snippet::Python_3:
             return "python";
         case Snippet::Cpp_14:
+        case Snippet::Cpp_17:
         case Snippet::Cpp_20:
             return "cpp";
-        case Snippet::C_98:
+        case Snippet::C_17:
             return "c";
         default:
             return std::string();

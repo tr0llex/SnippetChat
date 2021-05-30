@@ -125,30 +125,9 @@ std::string ChatServer::verifyToken(const std::string &token) {
 }
 
 int ChatServer::runCompilation(ChatServer &this_serv, const User &user, const Message &message, const std::string input) {
-    Compilation compilation = manager_.runCompilation(message.getSnippet(), input);
-    std::string outputToMessage;
-    if (compilation.getTimeLimitExceeded()) {
-        outputToMessage += "Time limit (5 sec) exceeded!";
-    } else {
-        if (compilation.getExecutionStdout().empty()) {
-            outputToMessage += "Output is empty!\n";
-        } else {
-            outputToMessage += "Output: \n" + compilation.getExecutionStdout();
-        }
+    Compilation compilationResult = manager_.runCompilation(message.getSnippet(), input);
 
-        if (!compilation.getExecutionStderr().empty()) {
-            outputToMessage += "\nExecutionError: \n" + compilation.getExecutionStderr();
-        }
-        if (!compilation.getCompilerStdout().empty()) {
-            outputToMessage += "\nCompilerOutput: \n" + compilation.getCompilerStdout();
-        }
-        if (!compilation.getCompilerStderr().empty()) {
-            outputToMessage += "\nCompilerError: \n" + compilation.getCompilerStderr();
-        }
-
-    }
-
-    this_serv.notifyUser(ChatEvent(ChatEvent::CompilationCode, user.getLogin(), message, outputToMessage));
+    this_serv.notifyUser(ChatEvent(ChatEvent::CompilationCode, user.getLogin(), message, compilationResult));
     std::this_thread::yield();
 
     return 0;
