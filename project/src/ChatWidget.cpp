@@ -432,9 +432,9 @@ void ChatWidget::blankDialoguePage() {
 void ChatWidget::showNewMessage(const Message &message) {
     Wt::WApplication *app = Wt::WApplication::instance();
 
-    auto messageWidgetPtr = std::make_unique<MessageWidget>(message);
-    messageWidgetPtr->setStyleClass("chat-msg");
-    messageWidgetPtr->setMargin(5, Wt::Side::Bottom | Wt::Side::Top);
+    bool myMessage = message.getSenderLogin() == user_.getLogin();
+    auto messageWidgetPtr = std::make_unique<MessageWidget>(message, myMessage);
+
     auto messageWidget = messageWidgetPtr.get();
 
     if (message.isHaveSnippet()) {
@@ -453,17 +453,7 @@ void ChatWidget::showNewMessage(const Message &message) {
         messageWidget->setSnippet(std::move(codeWidgetPtr));
     }
 
-    auto messageContainer = std::make_unique<Wt::WContainerWidget>();
-    auto vLayout = messageContainer->setLayout(std::make_unique<Wt::WVBoxLayout>());
-    vLayout->setContentsMargins(8, 0, 8, 0);
-
-    auto positionMessage = (message.getSenderLogin() == user_.getLogin()) ?
-            Wt::AlignmentFlag::Right : Wt::AlignmentFlag::Left;
-
-    vLayout->addWidget(std::move(messageWidgetPtr), 0, positionMessage);
-
-
-    messages_->addWidget(std::move(messageContainer));
+    messages_->addWidget(std::move(messageWidgetPtr));
 
     if (messages_->count() > 100) {
         messages_->removeChild(messages_->children()[0]);

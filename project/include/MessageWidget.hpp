@@ -16,7 +16,7 @@
 
 class MessageWidget : public Wt::WContainerWidget {
 public:
-    explicit MessageWidget(const Message &message);
+    MessageWidget(const Message &message, bool myMassage);
 
     std::string getMessageId() const;
 
@@ -33,6 +33,7 @@ protected:
 
 private:
     Message message_;
+    bool myMessage_;
 
     Wt::WText   *text_;
     Wt::WText   *time_;
