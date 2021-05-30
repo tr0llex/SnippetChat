@@ -144,9 +144,17 @@ void ChatWidget::letSignUp() {
 void ChatWidget::letLogin() {
     clear();
 
+    setStyleClass("dimensions");
+
+    auto vPositionalLayout = std::make_unique<Wt::WVBoxLayout>();
+
     auto hPositionalLayout = std::make_unique<Wt::WHBoxLayout>();
 
     auto vContainer = hPositionalLayout->addWidget(std::make_unique<Wt::WContainerWidget>(), 0, Wt::AlignmentFlag::Center);
+
+    vPositionalLayout->addLayout(std::move(hPositionalLayout), 0, Wt::AlignmentFlag::Middle);
+
+    this->setLayout(std::move(vPositionalLayout));
 
     vContainer->setStyleClass("auth-block");
 
@@ -188,10 +196,6 @@ void ChatWidget::letLogin() {
 
     statusMsg_ = vLayout->addWidget(std::make_unique<Wt::WText>(), 1, Wt::AlignmentFlag::Center);
     statusMsg_->setTextFormat(Wt::TextFormat::Plain);
-
-    this->setLayout(std::move(hPositionalLayout));
-
-    this->setStyleClass("block-block");
 }
 
 void ChatWidget::startChat() {
