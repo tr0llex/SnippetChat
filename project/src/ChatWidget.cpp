@@ -24,7 +24,7 @@
 #include "ChatWidget.hpp"
 
 
-static inline int64_t getTimeMs() {
+static inline int64_t getCurrentTimeMs() {
     return std::chrono::duration_cast<std::chrono::milliseconds>
             (std::chrono::system_clock::now().time_since_epoch()).count();
 }
@@ -48,7 +48,7 @@ ChatWidget::ChatWidget(ChatServer &server)
             connect(user_);
 
             loggedIn_ = true;
-            dialogueList_ = server_.getDialogueList(user_);
+            dialogueList_ = server_.getDialogueList(user_, kCountLastDialogues);
 
             if (soundLogin_) {
                 soundLogin_->play();
@@ -208,7 +208,7 @@ void ChatWidget::startChat() {
     auto dialogueNamePtr = std::make_unique<Wt::WText>();
     auto userNameSearchPtr = std::make_unique<Wt::WLineEdit>();
     auto searchButtonPtr = std::make_unique<Wt::WPushButton>("find");
-    auto backButtonPtr = std::make_unique<Wt::WPushButton>("back");
+    auto backButtonPtr = std::make_unique<Wt::WPushButton>("endSearch");
     auto snippetButtonPtr = std::make_unique<Wt::WPushButton>("</>");
     auto messagesPtr = std::make_unique<WContainerWidget>();
     auto userListPtr = std::make_unique<WContainerWidget>();
@@ -277,7 +277,7 @@ void ChatWidget::startChat() {
     userNameSearch_->enterPressed().connect(this, &ChatWidget::searchUser);
     userNameSearch_->enterPressed().connect(clearSearchInput_);
 
-    backButton_->clicked().connect(this, &ChatWidget::back);
+    backButton_->clicked().connect(this, &ChatWidget::endSearch);
     backButton_->clicked().connect(clearSearchInput_);
 
     if (sendButton_) {
@@ -313,7 +313,7 @@ void ChatWidget::switchDialogue(const Dialogue &dialogue) {
 
     currentDialogue_ = dialogue;
 
-    std::vector<Message> messages = server_.getMessagesFromDialogue(dialogue.getId());
+    std::vector<Message> messages = server_.getMessagesFromDialogue(dialogue.getId(), kCountLastMessages);
     currentDialogue_.pushMessages(messages);
 
     dialogueName_->setText(currentDialogue_.getName(user_));
@@ -508,7 +508,7 @@ void ChatWidget::signUp() {
 
     user_ = User(username, password);
 
-    if (server_.signUp(user_, getTimeMs())) {
+    if (server_.createUser(user_, getCurrentTimeMs())) {
         login();
     } else {
         statusMsg_->setText("Sorry, name '" + escapeText(username) +
@@ -532,7 +532,7 @@ void ChatWidget::login() {
         connect(user_);
 
         loggedIn_ = true;
-        dialogueList_ = server_.getDialogueList(user_);
+        dialogueList_ = server_.getDialogueList(user_, kCountLastDialogues);
 
         if (soundLogin_) {
             soundLogin_->play();
@@ -555,159 +555,148 @@ void ChatWidget::searchUser() {
 
         dialogues_->clear();
 
-        foundUsers_ = server_.getUsersByUserName(findUser);
-
-        for (const auto& foundUser : foundUsers_) {
-            Wt::WText *w = dialogues_->addWidget(std::make_unique<Wt::WText>(foundUser.getLogin()));
-            w->setStyleClass("dialogue-block");
-            w->addStyleClass("dialogue-name");
-            if (user_ == foundUser) {
-                w->addStyleClass("dialogue-name-self");
-            }
-
-            w->setInline(false);
-
-            w->clicked().connect([&] {
-                for (const auto &dialogue : dialogueList_) {
-                    if (dialogue.getName(user_) == foundUser.getLogin()) {
-                        switchDialogue(dialogue);
-                        updateDialogueList();
-                        return;
-                    }
-                }
-
-                std::vector<std::string> participantsList;
-                participantsList.push_back(user_.getLogin());
-                participantsList.push_back(foundUser.getLogin());
-
-                Dialogue dialogue(participantsList, getTimeMs());
-
-                server_.createDialogue(dialogue);
-            });
+        User foundUser = server_.getUserByLogin(findUser);
+        if (foundUser.empty()) {
+            return;
         }
 
-        foundUsers_.clear(); // TODO no test
-    }
-}
+        Wt::WText *userWidget = dialogues_->addWidget(std::make_unique<Wt::WText>(foundUser.getLogin()));
+        userWidget->setStyleClass("dialogue-block");
+        userWidget->addStyleClass("dialogue-name");
+        if (user_ == foundUser) {
+            userWidget->addStyleClass("dialogue-name-self");
+        }
+        userWidget->setInline(false);
 
-void ChatWidget::back() {
-    updateDialogueList();
-}
+        userWidget->clicked().connect([&] {
+            for (const auto &dialogue : dialogueList_) {
+                if (dialogue.getName(user_) == foundUser.getLogin()) {
+                    switchDialogue(dialogue);
+                    endSearch();
+                    return;
+                }
+            }
+
+            std::vector<std::string> participantsList;
+            participantsList.push_back(user_.getLogin());
+            participantsList.push_back(foundUser.getLogin());
+
+            Dialogue dialogue(participantsList, getCurrentTimeMs());
+
+            server_.createDialogue(dialogue);
+        });
+     }
+ }
+
+ void ChatWidget::endSearch() {
+     updateDialogueList();
+ }
 
 void ChatWidget::send() {
-    if (currentDialogue_.isEmpty()) {
+    if (currentDialogue_.isEmpty() ||
+        (messageEdit_->text().empty() && currentSnippet_.empty())) {
         return;
     }
 
-    if (!messageEdit_->text().empty() || !currentSnippet_.empty()) {
-        Message message(currentDialogue_.getId(),
-                        user_.getLogin(),
-                        ws2s(messageEdit_->text()),
-                        getTimeMs(),
-                        currentSnippet_);
+    Message message(currentDialogue_.getId(),
+                    user_.getLogin(),
+                    ws2s(messageEdit_->text()),
+                    getCurrentTimeMs(),
+                    currentSnippet_);
 
-        currentSnippet_.clear();
-        snippetButton_->removeStyleClass("attached-code");
+    currentSnippet_.clear();
+    snippetButton_->removeStyleClass("attached-code");
 
-        server_.sendMessage(currentDialogue_, message);
-    }
+    server_.sendMessage(currentDialogue_, message);
 }
 
-void ChatWidget::editSnippet() {
-    auto dialog = addChild(Wt::cpp14::make_unique<Wt::WDialog>("Write or copy the program"));
+ void ChatWidget::editSnippet() {
+     auto dialog = addChild(Wt::cpp14::make_unique<Wt::WDialog>("Write or copy the program"));
 
-    auto snippetEdit = dialog->contents()->addNew<SnippetEditWidget>(currentSnippet_);
+     auto snippetEdit = dialog->contents()->addNew<SnippetEditWidget>(currentSnippet_);
 
-    auto save = dialog->footer()->addNew<Wt::WPushButton>("Save");
-    save->setMargin(7, Wt::Side::Right);
-    auto cancel = dialog->footer()->addNew<Wt::WPushButton>("Cancel");
-    dialog->rejectWhenEscapePressed();
+     auto save = dialog->footer()->addNew<Wt::WPushButton>("Save");
+     save->setMargin(7, Wt::Side::Right);
+     auto cancel = dialog->footer()->addNew<Wt::WPushButton>("Cancel");
+     dialog->rejectWhenEscapePressed();
 
-    save->clicked().connect(dialog, &Wt::WDialog::accept);
-    cancel->clicked().connect(dialog, &Wt::WDialog::reject);
+     save->clicked().connect(dialog, &Wt::WDialog::accept);
+     cancel->clicked().connect(dialog, &Wt::WDialog::reject);
 
-    dialog->finished().connect([=] {
-        if (dialog->result() == Wt::DialogCode::Accepted) {
-            currentSnippet_ = snippetEdit->getSnippet();
-            if (!currentSnippet_.empty()) {
-                snippetButton_->addStyleClass("attached-code");
-            }
-        } else {
-            currentSnippet_.clear();
-            snippetButton_->removeStyleClass("attached-code");
-        }
+     dialog->finished().connect([=] {
+         if (dialog->result() == Wt::DialogCode::Accepted) {
+             currentSnippet_ = snippetEdit->getSnippet();
+             if (!currentSnippet_.empty()) {
+                 snippetButton_->addStyleClass("attached-code");
+             }
+         } else {
+             currentSnippet_.clear();
+             snippetButton_->removeStyleClass("attached-code");
+         }
 
-        removeChild(dialog);
+         removeChild(dialog);
 
-        messageEdit_->setFocus();
-    });
+         messageEdit_->setFocus();
+     });
 
-    dialog->show();
-}
+     dialog->show();
+ }
 
-void ChatWidget::processChatEvent(const ChatEvent &event) {
-    Wt::WApplication *app = Wt::WApplication::instance();
+ void ChatWidget::processChatEvent(const ChatEvent &event) {
+     Wt::WApplication *app = Wt::WApplication::instance();
 
-    app->triggerUpdate();
+     app->triggerUpdate();
 
-    switch (event.type()) {
-        case ChatEvent::Login: {
-            updateDialogueList();
-            break;
-        }
-        case ChatEvent::Logout: {
-            updateDialogueList();
-            break;
-        }
-        case ChatEvent::NewDialogue: {
-            dialogueList_.insert(event.dialogue());
-            updateDialogueList();
+     switch (event.type()) {
+         case ChatEvent::kNewDialogue: {
+             dialogueList_.insert(event.dialogue());
+             updateDialogueList();
 
-            if (soundMessageReceived_) {
-                soundMessageReceived_->play();
-            }
-            break;
-        }
-        case ChatEvent::NewMessage: {
-            Dialogue updatedDialogue;
-            for (const auto& dialogue : dialogueList_) {
-                if (dialogue == event.dialogue()) {
-                    updatedDialogue = dialogue;
-                    updatedDialogue.updateLastMessage(event.dialogue().getLastMessage());
-                    dialogueList_.erase(dialogue); // TODO не уверен что удалится нужный
-                    break;
-                }
-            }
-            dialogueList_.insert(updatedDialogue);
-            updateDialogueList();
+             if (soundMessageReceived_) {
+                 soundMessageReceived_->play();
+             }
+             break;
+         }
+         case ChatEvent::kNewMessage: {
+             Dialogue updatedDialogue;
+             for (const auto& dialogue : dialogueList_) {
+                 if (dialogue == event.dialogue()) {
+                     updatedDialogue = dialogue;
+                     updatedDialogue.updateLastMessage(event.dialogue().getLastMessage());
+                     dialogueList_.erase(dialogue); // TODO не уверен что удалится нужный
+                     break;
+                 }
+             }
+             dialogueList_.insert(updatedDialogue);
+             updateDialogueList();
 
-            if (currentDialogue_ == event.dialogue()) {
-                showNewMessage(event.dialogue().getLastMessage());
-            }
+             if (currentDialogue_ == event.dialogue()) {
+                 showNewMessage(event.dialogue().getLastMessage());
+             }
 
-            if (soundMessageReceived_) {
-                soundMessageReceived_->play();
-            }
+             if (soundMessageReceived_) {
+                 soundMessageReceived_->play();
+             }
 
-            break;
-        }
-        case ChatEvent::CompilationCode: {
-            /// TODO не протестировано
-            if (event.getDialogueId() != currentDialogue_.getId()) {
-                break;
-            }
+             break;
+         }
+         case ChatEvent::kCompilationCode: {
+             /// TODO не протестировано
+             if (event.getDialogueId() != currentDialogue_.getId()) {
+                 break;
+             }
 
-            for (int i = 0; i < messages_->count(); ++i) {
-                auto messageWidget = dynamic_cast<MessageWidget*>(messages_->widget(i));
-                if (messageWidget->getMessageId() == event.getMessageId() && messageWidget->isHaveSnippet()) {
-                    messageWidget->setResultCompilation(event.resultCompilation());
-                    break;
-                }
-            }
+             for (int i = 0; i < messages_->count(); ++i) {
+                 auto messageWidget = dynamic_cast<MessageWidget*>(messages_->widget(i));
+                 if (messageWidget->getMessageId() == event.getMessageId() && messageWidget->isHaveSnippet()) {
+                     messageWidget->setResultCompilation(event.resultCompilation());
+                     break;
+                 }
+             }
 
-            break;
-        }
-        default:
-            break;
-    }
-}
+             break;
+         }
+         default:
+             break;
+     }
+ }

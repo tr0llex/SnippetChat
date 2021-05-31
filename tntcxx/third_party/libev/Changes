@@ -442,7 +442,7 @@ TODO: document EV_TSTAMP_T
         - do not try to watch the empty string via inotify.
         - inotify watchers could be leaked under certain circumstances.
         - OS X 10.5 is actually even more broken than earlier versions,
-          so fall back to select on that piece of garbage.
+          so fall endSearch to select on that piece of garbage.
         - fixed some weirdness in the ev_embed documentation.
 
 3.49 Wed Nov 19 11:26:53 CET 2008

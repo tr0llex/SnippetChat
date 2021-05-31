@@ -2601,7 +2601,7 @@ m4_if([$1], [],[
       sys_lib_search_path_spec=`$ECHO "$sys_lib_search_path_spec" | sed -e 's|\\\\|/|g' -e 's| \\([[a-zA-Z]]\\):| /\\1|g' -e 's|^ ||'`
       ;;
     cygwin*)
-      # Convert to unix form, then to dos form, then back to unix form
+      # Convert to unix form, then to dos form, then endSearch to unix form
       # but this time dos style (no spaces!) so that the unix form looks
       # like /cygdrive/c/PROGRA~1:/cygdr...
       sys_lib_search_path_spec=`cygpath --path --unix "$LIB"`

@@ -153,7 +153,7 @@ void MainDb::disconnectFromDb() {
     cass_future_free(close_future_);
 }
 
-User MainDb::searchUserPassword(std::string login, std::string password) {  // function pull dialogues_list
+User MainDb::getUser(std::string login) {  // function pull dialogues_list
     const char* searchUser = "SELECT * FROM maindb.users_by_login "
                              "WHERE login = ? LIMIT 1;";
     CassStatement* returnedUser = cass_statement_new(searchUser, 1);
@@ -190,15 +190,12 @@ User MainDb::searchUserPassword(std::string login, std::string password) {  // f
     cass_value_get_string(passwordColumn, &passwordStr, &passwordStrLength);
     std::string pasStr = passwordStr;
     pasStr = pasStr.substr(0, passwordStrLength);
-    if (pasStr != password) {  // password is incorrect
-        return User();
-    }
 
     cass_result_free(result);
     cass_statement_free(returnedUser);
     cass_future_free(returnedUser_future);
 
-    return User(login, password, "", 1);
+    return User(login, pasStr, "", 1);
 }
 
 bool MainDb::searchUserLogin(std::string login) const {  // function pull dialogues_list
@@ -241,9 +238,9 @@ bool MainDb::searchUserLogin(std::string login) const {  // function pull dialog
     return true;
 }
 
-int MainDb::writeUser(const User& user) {
+bool MainDb::writeUser(const User& user) {
     if (searchUserLogin(user.getLogin())) {
-        return EXIT_FAILURE;  // user is already exists
+        return false;
     }
 
     const char* insertUser = "INSERT INTO maindb.users_by_login "
@@ -261,7 +258,7 @@ int MainDb::writeUser(const User& user) {
     cass_statement_free(newUser);
     cass_future_free(newUser_future);
 
-    return EXIT_SUCCESS;
+    return true;
 }
 
 void MainDb::changePassword(const User& user) {
@@ -421,7 +418,7 @@ void MainDb::writeMessage(Message& message) {
     cass_future_free(insertMessageSt_future);
 }
 
-std::vector<Message> MainDb::getNLastMessagesFromDialogue(std::string dialogueId, long count) const {
+std::vector<Message> MainDb::getNLastMessagesFromDialogue(std::string dialogueId, int count) const {
     std::vector<Message> messages;
 
     const char* getNMessagesQ = "SELECT * FROM maindb.messages_by_id "
@@ -584,7 +581,7 @@ std::vector<std::string> MainDb::getAllDialoguesIdByLogin(std::string login) {
     return dialoguesId;
 }
 
-std::vector<std::string> MainDb::getLastNDialoguesIdByLogin(std::string login, long count) const {
+std::vector<std::string> MainDb::getLastNDialoguesIdByLogin(std::string login, int count) const {
     std::vector <std::string> dialoguesId;
     const char* searchDialogues = "SELECT dialogue_id FROM maindb.user_dialogues "
                                   "WHERE login = ? LIMIT ?;";
@@ -735,7 +732,7 @@ time_t MainDb::getTimeLastUpdateFromDialogue(std::string dialogueId, const User&
     return returnTime;
 }
 
-DialogueList MainDb::getLastNDialoguesWithLastMessage(const User& user, long count) const {
+DialogueList MainDb::getLastNDialoguesWithLastMessage(const User& user, int count) const {
     std::vector<std::string> dialoguesId = getLastNDialoguesIdByLogin(user.getLogin(), count);
     DialogueList dialogues; // select * from user_dialogues
 

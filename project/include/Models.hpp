@@ -33,6 +33,8 @@ public:
             userToken_(std::move(userToken)), userStatus_(userStatus) {
     }
 
+    bool verification(const User &user) const;
+
     std::string getLogin() const;
 
     std::string getPassword() const;
@@ -48,6 +50,8 @@ public:
     void setToken(const std::string &userToken);
 
     void setStatus(int userStatus);
+
+    bool empty() const;
 
     bool operator==(const User &user) const;
 

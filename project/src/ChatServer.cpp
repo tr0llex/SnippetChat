@@ -14,7 +14,7 @@ bool ChatServer::connect(ChatServer::Client *client, const User &user, const Cha
         ClientInfo clientInfo;
 
         clientInfo.sessionId = Wt::WApplication::instance()->sessionId();
-        clientInfo.userId = user.getLogin();
+        clientInfo.userLogin = user.getLogin();
         clientInfo.eventCallback = handleEvent;
 
         clients_[client] = clientInfo;
@@ -31,10 +31,10 @@ bool ChatServer::disconnect(ChatServer::Client *client) {
     return clients_.erase(client) == 1;
 }
 
-bool ChatServer::signUp(User &user, time_t timeOfCreation) {
+bool ChatServer::createUser(User &user, time_t timeOfCreation) {
     std::unique_lock<std::recursive_mutex> lock(mutex_);
 
-    if (db_.writeUser(user) == EXIT_SUCCESS) {
+    if (db_.writeUser(user)) {
         user.setToken(auth_.registerUser(user.getLogin(), user.getPassword()));
 
         std::vector<std::string> participantsList;
@@ -50,15 +50,14 @@ bool ChatServer::signUp(User &user, time_t timeOfCreation) {
 }
 
 bool ChatServer::login(User &user) {
-    std::unique_lock<std::recursive_mutex> lock(mutex_);
+    User userFromDb = db_.getUser(user.getLogin());
 
-    user = db_.searchUserPassword(user.getLogin(), user.getPassword());
+    if (user.verification(userFromDb)) {
+        user = userFromDb;
 
-    if (!user.getLogin().empty()) {
         LoginData loginData(user.getLogin(), user.getPassword());
         loginData.setType(1);
         user.setToken(auth_.loginUser(loginData));
-        /// Оповестить только друзей TODO
 
         return true;
     }
@@ -67,36 +66,23 @@ bool ChatServer::login(User &user) {
 }
 
 void ChatServer::logout(const User &user) {
-    std::unique_lock<std::recursive_mutex> lock(mutex_);
-
     auth_.logoutUser(user.getLogin());
-
-    /// Оповестить только друзей TODO
 }
 
-bool ChatServer::changeProfile(User &user, const User &newUser) {
-    std::unique_lock<std::recursive_mutex> lock(mutex_);
-
-    db_.changePassword(newUser);
-
-    return false;
+DialogueList ChatServer::getDialogueList(const User &user, int count) const {
+    return db_.getLastNDialoguesWithLastMessage(user, count);
 }
 
-DialogueList ChatServer::getDialogueList(const User &user) const {
-    return db_.getLastNDialoguesWithLastMessage(user, 20);
+std::vector<Message> ChatServer::getMessagesFromDialogue(const std::string &dialogueId, int count) const {
+    return db_.getNLastMessagesFromDialogue(dialogueId, count);
 }
 
-std::vector<Message> ChatServer::getMessagesFromDialogue(const std::string &dialogueId) const {
-    return db_.getNLastMessagesFromDialogue(dialogueId, 100);
-}
-
-std::vector<User> ChatServer::getUsersByUserName(const std::string &findUser) const {
-    std::vector<User> users;
-    /// TODO кринж
+User ChatServer::getUserByLogin(const std::string &findUser) const {
     if (db_.searchUserLogin(findUser)) {
-        users.emplace_back(findUser);
+        return User(findUser);
     }
-    return users;
+
+    return User();
 }
 
 void ChatServer::createDialogue(Dialogue &dialogue) {
@@ -105,7 +91,7 @@ void ChatServer::createDialogue(Dialogue &dialogue) {
     db_.createDialogue(dialogue);
 
     for (const auto &participant : dialogue.getParticipantsList()) {
-        notifyUser(ChatEvent(ChatEvent::NewDialogue, participant, dialogue));
+        notifyUser(ChatEvent(ChatEvent::kNewDialogue, participant, dialogue));
     }
 }
 
@@ -116,7 +102,7 @@ void ChatServer::sendMessage(Dialogue &dialogue, Message &message) {
     dialogue.pushNewMessage(message);
 
     for (const auto &participant : dialogue.getParticipantsList()) {
-        notifyUser(ChatEvent(ChatEvent::NewMessage, participant, dialogue));
+        notifyUser(ChatEvent(ChatEvent::kNewMessage, participant, dialogue));
     }
 }
 
@@ -124,36 +110,22 @@ std::string ChatServer::verifyToken(const std::string &token) {
     return auth_.verifyToken(token);
 }
 
-int ChatServer::runCompilation(ChatServer &this_serv, const User &user, const Message &message, const std::string input) {
+void ChatServer::runCompilation(ChatServer &this_serv, const User &user, const Message &message, const std::string input) {
     Compilation compilationResult = manager_.runCompilation(message.getSnippet(), input);
 
-    this_serv.notifyUser(ChatEvent(ChatEvent::CompilationCode, user.getLogin(), message, compilationResult));
-    std::this_thread::yield();
-
-    return 0;
-}
-
-void ChatServer::postChatEvent(const ChatEvent &event) {
-    std::unique_lock<std::recursive_mutex> lock(mutex_);
-
-    Wt::WApplication *app = Wt::WApplication::instance();
-
-    for (const auto &i : clients_) {
-        if (app && app->sessionId() == i.second.sessionId) {
-            i.second.eventCallback(event);
-        }
-        else {
-            auto callback = std::bind(i.second.eventCallback, event);
-            server_.post(i.second.sessionId, callback);
-        }
-    }
+    this_serv.notifyUser(ChatEvent(ChatEvent::kCompilationCode,
+                                   user.getLogin(),
+                                   message.getDialogueParentId(),
+                                   message.getId(),
+                                   compilationResult));
+    std::this_thread::yield();  // TODO
 }
 
 void ChatServer::notifyUser(const ChatEvent& event) {
     std::unique_lock<std::recursive_mutex> lock(mutex_);
 
     for (const auto &i : clients_) {
-        if (i.second.userId == event.userId_) {
+        if (i.second.userLogin == event.userLogin_) {
             auto callback = std::bind(i.second.eventCallback, event);
             server_.post(i.second.sessionId, callback);
         }
