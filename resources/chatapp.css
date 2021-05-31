@@ -1,3 +1,5 @@
+@import url("https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css");
+
 html {
   font-family:arial,sans-serif;
   overflow-x: hidden;
@@ -266,4 +268,12 @@ img {
   height: 100%;
   align-items: center;
   justify-content: center;
+}
+
+.chat-button {
+  padding: 3px 6px;
+}
+
+.bi {
+  font-size: 30px !important;
 }

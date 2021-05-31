@@ -80,7 +80,7 @@ private:
     Wt::WText                 *dialogueName_;
     Wt::WLineEdit             *userNameSearch_;
     ButtonPtr                  searchButton_;
-    ButtonPtr                  backButton_;
+    ButtonPtr                  endSearchButton_;
     ButtonPtr                  snippetButton_;
     Wt::WContainerWidget      *messages_;
     std::list<ButtonPtr>       runCodeButtons_;

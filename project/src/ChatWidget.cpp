@@ -239,19 +239,19 @@ void ChatWidget::startChat() {
 
     auto dialogueNamePtr = std::make_unique<Wt::WText>();
     auto userNameSearchPtr = std::make_unique<Wt::WLineEdit>();
-    auto searchButtonPtr = std::make_unique<Wt::WPushButton>("find");
-    auto backButtonPtr = std::make_unique<Wt::WPushButton>("endSearch");
-    auto snippetButtonPtr = std::make_unique<Wt::WPushButton>("</>");
+    auto searchButtonPtr = std::make_unique<Wt::WPushButton>();
+    auto endSearchButtonPtr = std::make_unique<Wt::WPushButton>();
+    auto snippetButtonPtr = std::make_unique<Wt::WPushButton>();
     auto messagesPtr = std::make_unique<WContainerWidget>();
     auto userListPtr = std::make_unique<WContainerWidget>();
     auto messageEditPtr = std::make_unique<Wt::WTextArea>();
-    auto sendButtonPtr = std::make_unique<Wt::WPushButton>("Send");
+    auto sendButtonPtr = std::make_unique<Wt::WPushButton>();
     auto logoutButtonPtr = std::make_unique<Wt::WPushButton>("Logout");
 
     dialogueName_ = dialogueNamePtr.get();
     userNameSearch_ = userNameSearchPtr.get();
     searchButton_ = searchButtonPtr.get();
-    backButton_ = backButtonPtr.get();
+    endSearchButton_ = endSearchButtonPtr.get();
     snippetButton_ = snippetButtonPtr.get();
     messages_ = messagesPtr.get();
     dialogues_ = userListPtr.get();
@@ -261,6 +261,12 @@ void ChatWidget::startChat() {
 
     dialogueName_->setStyleClass("chat-dialogue-name");
 
+    searchButton_->addStyleClass("chat-button bi-search");
+    endSearchButton_->addStyleClass("chat-button bi-x-lg");
+    snippetButton_->addStyleClass("chat-button bi bi-file-earmark-code");
+    sendButton_->addStyleClass("chat-button bi bi-arrow-right");
+
+
     messageEdit_->setRows(2);
 
     messages_->setOverflow(Wt::Overflow::Auto);
@@ -269,7 +275,7 @@ void ChatWidget::startChat() {
     createMessengerLayout(std::move(dialogueNamePtr),
                           std::move(userNameSearchPtr),
                           std::move(searchButtonPtr),
-                          std::move(backButtonPtr),
+                          std::move(endSearchButtonPtr),
                           std::move(snippetButtonPtr),
                           std::move(messagesPtr),
                           std::move(userListPtr),
@@ -309,8 +315,8 @@ void ChatWidget::startChat() {
     userNameSearch_->enterPressed().connect(this, &ChatWidget::searchUser);
     userNameSearch_->enterPressed().connect(clearSearchInput_);
 
-    backButton_->clicked().connect(this, &ChatWidget::endSearch);
-    backButton_->clicked().connect(clearSearchInput_);
+    endSearchButton_->clicked().connect(this, &ChatWidget::endSearch);
+    endSearchButton_->clicked().connect(clearSearchInput_);
 
     if (sendButton_) {
         sendButton_->clicked().connect(this, &ChatWidget::send);
@@ -637,7 +643,8 @@ void ChatWidget::send() {
                     currentSnippet_);
 
     currentSnippet_.clear();
-    snippetButton_->removeStyleClass("attached-code");
+    snippetButton_->removeStyleClass("bi-file-earmark-code-fill");
+    snippetButton_->addStyleClass("bi-file-earmark-code");
 
     server_.sendMessage(currentDialogue_, message);
 }
@@ -659,11 +666,13 @@ void ChatWidget::send() {
          if (dialog->result() == Wt::DialogCode::Accepted) {
              currentSnippet_ = snippetEdit->getSnippet();
              if (!currentSnippet_.empty()) {
-                 snippetButton_->addStyleClass("attached-code");
+                 snippetButton_->removeStyleClass("bi-file-earmark-code");
+                 snippetButton_->addStyleClass("bi-file-earmark-code-fill");
              }
          } else {
              currentSnippet_.clear();
-             snippetButton_->removeStyleClass("attached-code");
+             snippetButton_->removeStyleClass("bi-file-earmark-code-fill");
+             snippetButton_->addStyleClass("bi-file-earmark-code");
          }
 
          removeChild(dialog);
