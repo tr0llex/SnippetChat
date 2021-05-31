@@ -96,7 +96,7 @@ void ChatWidget::letSignUp() {
 
     auto vLayout2 = vContainer->setLayout(std::make_unique<Wt::WVBoxLayout>());
 
-    auto image = vLayout2->addWidget(std::make_unique<Wt::WImage>(Wt::WLink("resources/snich.png")));
+    auto image = vLayout2->addWidget(std::make_unique<Wt::WImage>(Wt::WLink("resources/LOGO.png")));
     image->setAlternateText("SNICH");
     image->setMaximumSize(400, 500);
 
@@ -176,7 +176,7 @@ void ChatWidget::letLogin() {
 
     auto vLayout = vContainer->setLayout(std::make_unique<Wt::WVBoxLayout>());
 
-    auto image = vLayout->addWidget(std::make_unique<Wt::WImage>(Wt::WLink("resources/snich.png")));
+    auto image = vLayout->addWidget(std::make_unique<Wt::WImage>(Wt::WLink("resources/LOGO.png")));
     image->setAlternateText("SNICH");
     image->setMaximumSize(400, 500);
 
