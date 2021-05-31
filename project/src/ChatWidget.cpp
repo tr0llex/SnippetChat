@@ -98,6 +98,7 @@ void ChatWidget::letSignUp() {
 
     auto image = vLayout2->addWidget(std::make_unique<Wt::WImage>(Wt::WLink("resources/LOGO.png")));
     image->setAlternateText("SNICH");
+    image->setStyleClass("snich");
     image->setMaximumSize(400, 500);
 
     statusMsg_ = vLayout2->addWidget(std::make_unique<Wt::WText>(), 1, Wt::AlignmentFlag::Center);
@@ -178,6 +179,7 @@ void ChatWidget::letLogin() {
 
     auto image = vLayout->addWidget(std::make_unique<Wt::WImage>(Wt::WLink("resources/LOGO.png")));
     image->setAlternateText("SNICH");
+    image->setStyleClass("snich");
     image->setMaximumSize(400, 500);
 
     auto hLayout = std::make_unique<Wt::WHBoxLayout>();
@@ -260,7 +262,7 @@ void ChatWidget::startChat() {
     Wt::Core::observing_ptr<Wt::WPushButton> logoutButton = logoutButtonPtr.get();
 
     dialogueName_->setStyleClass("chat-dialogue-name");
-
+    messageEdit_->setStyleClass("message-edit");
     searchButton_->addStyleClass("chat-button bi-search");
     endSearchButton_->addStyleClass("chat-button bi-x-lg");
     snippetButton_->addStyleClass("chat-button bi bi-file-earmark-code");
@@ -433,7 +435,7 @@ void ChatWidget::createMessengerLayout(std::unique_ptr<WWidget> dialogueName, st
     /// <Поле ввода>
     hRightLayout = std::make_unique<Wt::WHBoxLayout>();
     hRightLayout->addWidget(std::move(snippetButton));
-    messageEdit->setStyleClass("chat-noedit");
+    messageEdit->addStyleClass("chat-noedit");
     hRightLayout->addWidget(std::move(messageEdit), 1);
     hRightLayout->addWidget(std::move(sendButton));
     /// </Поле ввода>

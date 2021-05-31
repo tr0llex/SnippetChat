@@ -19,6 +19,10 @@ h2, h3, h4, h5 {
   margin-bottom: 6px;
 }
 
+.message-edit {
+  resize: none;
+}
+
 h2 {
   padding-left: 30px;
   border-bottom: 1px solid #000;
@@ -220,7 +224,7 @@ textarea.chat-noedit {
   margin-bottom: 15px !important;
 }
 
-img {
+.snich {
   border-top-color: antiquewhite;
   border-top-width: 10px;
   border-style: dotted;
