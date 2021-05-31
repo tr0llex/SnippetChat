@@ -71,6 +71,15 @@ void User::setUserLogin(const std::string &userLogin) {
     userLogin_ = userLogin;
 }
 
+bool User::verification(const User &user) const {
+    return userLogin_ == user.userLogin_ &&
+           userPassword_ == user.userPassword_;
+}
+
+bool User::empty() const {
+    return userLogin_.empty();
+}
+
 void LoginData::setLogin(const std::string &login) {
     login_ = login;
 }

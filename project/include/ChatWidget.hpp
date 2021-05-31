@@ -8,6 +8,9 @@
 #include "ChatServer.hpp"
 
 
+const int kCountLastDialogues = 20;
+const int kCountLastMessages = 100;
+
 class ChatEvent;
 
 class ChatWidget : public Wt::WContainerWidget,
@@ -52,7 +55,7 @@ private:
     void signUp();
     void login();
     void searchUser();
-    void back();
+    void endSearch();
     void send();
     void editSnippet();
 
@@ -65,7 +68,6 @@ private:
     User                user_;
     Dialogue            currentDialogue_;
     DialogueList        dialogueList_;
-    std::vector<User>   foundUsers_;
     Snippet             currentSnippet_;
 
     Wt::WLineEdit *userLoginEdit_;

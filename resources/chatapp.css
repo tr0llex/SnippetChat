@@ -85,6 +85,11 @@ textarea.chat-noedit {
   width: 12ex;
 }
 
+.dimensions {
+  height: 700px;
+  width: 100%;
+}
+
 .chat-msg {
   width: fit-content;
   padding: 0 10px;

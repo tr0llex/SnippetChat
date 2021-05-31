@@ -67,7 +67,7 @@ void SnippetEditWidget::createLayout(std::unique_ptr<WWidget> label,
 }
 
 Snippet SnippetEditWidget::getSnippet() {
-    snippet_.setProgramText(snippet_.getProgramText());
+    snippet_.setProgramText(ws2s(editCode_->text()));
     return snippet_;
 }
 
