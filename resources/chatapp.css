@@ -43,6 +43,10 @@ button:hover {
   background: #00CED1; 
 }
 
+.search-button {
+  background-color: #398dea;
+}
+
 .chat {
   border: 2px solid #CCCCCC;
   margin: 10px auto;
@@ -166,7 +170,7 @@ textarea.chat-noedit {
 }
 
 .attached-code {
-  background-color: darkseagreen;
+  background-color: #B42600;
 }
 
 .auth-buttons {
