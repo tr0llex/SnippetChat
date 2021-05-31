@@ -16,7 +16,6 @@
 #include <chrono>
 
 #include "ChatServer.hpp"
-#include "CodeWidget.hpp"
 #include "DialogueWidget.hpp"
 #include "MessageWidget.hpp"
 #include "SnippetEditWidget.hpp"
@@ -248,7 +247,7 @@ void ChatWidget::startChat() {
     auto userListPtr = std::make_unique<WContainerWidget>();
     auto messageEditPtr = std::make_unique<Wt::WTextArea>();
     auto sendButtonPtr = std::make_unique<Wt::WPushButton>();
-    auto logoutButtonPtr = std::make_unique<Wt::WPushButton>("Logout");
+    auto logoutButtonPtr = std::make_unique<Wt::WPushButton>(" Logout");
 
     dialogueName_ = dialogueNamePtr.get();
     userNameSearch_ = userNameSearchPtr.get();
@@ -263,11 +262,12 @@ void ChatWidget::startChat() {
 
     dialogueName_->setStyleClass("chat-dialogue-name");
     messageEdit_->setStyleClass("message-edit");
+
     searchButton_->addStyleClass("chat-button bi-search");
     endSearchButton_->addStyleClass("chat-button bi-x-lg");
     snippetButton_->addStyleClass("chat-button bi bi-file-earmark-code");
     sendButton_->addStyleClass("chat-button bi bi-arrow-right");
-
+    logoutButton->addStyleClass("chat-button logout-button bi-door-open");
 
     messageEdit_->setRows(2);
 
@@ -346,10 +346,8 @@ void ChatWidget::startChat() {
 void ChatWidget::switchDialogue(const Dialogue &dialogue) {
     messages_->clear();
 
-    messageEdit_->enable();
+    editContainer_->show();
     messageEdit_->setFocus();
-    sendButton_->enable();
-    snippetButton_->enable();
 
     currentDialogue_ = dialogue;
 
@@ -433,14 +431,16 @@ void ChatWidget::createMessengerLayout(std::unique_ptr<WWidget> dialogueName, st
     /// </Сообщения>
 
     /// <Поле ввода>
-    hRightLayout = std::make_unique<Wt::WHBoxLayout>();
-    hRightLayout->addWidget(std::move(snippetButton));
-    messageEdit->addStyleClass("chat-noedit");
-    hRightLayout->addWidget(std::move(messageEdit), 1);
-    hRightLayout->addWidget(std::move(sendButton));
+    auto editContainerPtr = std::make_unique<Wt::WContainerWidget>();
+    editContainer_ = editContainerPtr.get();
+
+    auto hEditLayout = editContainerPtr->setLayout(std::make_unique<Wt::WHBoxLayout>());
+    hEditLayout->addWidget(std::move(snippetButton));
+    hEditLayout->addWidget(std::move(messageEdit), 1);
+    hEditLayout->addWidget(std::move(sendButton));
     /// </Поле ввода>
 
-    vRightLayout->addLayout(std::move(hRightLayout));
+    vRightLayout->addWidget(std::move(editContainerPtr));
     /// </Правая часть>
 
     hLayout->addLayout(std::move(vRightLayout), 1);
@@ -478,9 +478,7 @@ void ChatWidget::blankDialoguePage() {
 
     messages_->clear();
 
-    messageEdit_->disable();
-    sendButton_->disable();
-    snippetButton_->disable();
+    editContainer_->hide();
 }
 
 void ChatWidget::showNewMessage(const Message &message) {
@@ -608,7 +606,7 @@ void ChatWidget::searchUser() {
         }
         userWidget->setInline(false);
 
-        userWidget->clicked().connect([&] {
+        userWidget->clicked().connect([&, foundUser] {
             for (const auto &dialogue : dialogueList_) {
                 if (dialogue.getName(user_) == foundUser.getLogin()) {
                     switchDialogue(dialogue);
