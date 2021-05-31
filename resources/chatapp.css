@@ -281,3 +281,7 @@ textarea.chat-noedit {
 .bi {
   font-size: 30px !important;
 }
+
+.logout-button {
+  font-size: 20px !important;
+}

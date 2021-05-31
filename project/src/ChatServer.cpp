@@ -118,7 +118,6 @@ void ChatServer::runCompilation(ChatServer &this_serv, const User &user, const M
                                    message.getDialogueParentId(),
                                    message.getId(),
                                    compilationResult));
-    std::this_thread::yield();  // TODO
 }
 
 void ChatServer::notifyUser(const ChatEvent& event) {

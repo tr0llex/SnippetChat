@@ -76,19 +76,20 @@ private:
     Wt::WText     *statusMsg_;
 
     typedef Wt::Core::observing_ptr<Wt::WPushButton> ButtonPtr;
+    typedef Wt::Core::observing_ptr<Wt::WContainerWidget> ContainerPtr;
 
-    Wt::WText                 *dialogueName_;
     Wt::WLineEdit             *userNameSearch_;
+    Wt::JSlot                  clearSearchInput_;
     ButtonPtr                  searchButton_;
     ButtonPtr                  endSearchButton_;
-    ButtonPtr                  snippetButton_;
+    ContainerPtr               dialogues_;
+    Wt::WText                 *dialogueName_;
     Wt::WContainerWidget      *messages_;
-    std::list<ButtonPtr>       runCodeButtons_;
+    ButtonPtr                  snippetButton_;
+    Wt::WContainerWidget      *editContainer_;
     Wt::WTextArea             *messageEdit_;
     Wt::JSlot                  clearMessageInput_;
-    Wt::JSlot                  clearSearchInput_;
     ButtonPtr                  sendButton_;
-    Wt::Core::observing_ptr<Wt::WContainerWidget> dialogues_;
 
     std::unique_ptr<Wt::WSound> soundLogin_;
     std::unique_ptr<Wt::WSound> soundMessageReceived_;
