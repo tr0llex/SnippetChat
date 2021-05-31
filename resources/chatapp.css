@@ -6,7 +6,7 @@ html {
 }
 
 body {
-  /* background-image: url(code.jpg) !important; */
+  background-image: url(code.jpg) !important;
 }
 
 h1 {
@@ -58,6 +58,7 @@ button:hover {
   margin: 10px auto;
   width: 85%;
   height: 650px;
+  background-color: #000;
 }
 
 span.chat-info {
@@ -85,6 +86,9 @@ textarea.chat-noedit {
 
 .chat-msgs {
   margin: 0 1px;
+  background-image: url(dialog-bg.jpg) !important;
+  background-repeat: no-repeat;
+  background-attachment: scroll;
 }
 
 .chat-users {
@@ -103,10 +107,8 @@ textarea.chat-noedit {
   background: #e0ebed;
   padding: 4px;
   border-radius: 6px;
-  /* border-radius: 20px;
-  padding: 8px 15px;
-  margin-top: 5px;
-  margin-bottom: 5px; */
+  background: #2229;
+  color:white;
 }
 
 .msg-right {
@@ -163,6 +165,8 @@ textarea.chat-noedit {
   border-radius: 3px;
   margin-bottom: 3px;
   cursor: pointer;
+  background-color: #3b3a3d;
+  color:white;
 }
 
 .dialogue-name {
@@ -230,6 +234,11 @@ textarea.chat-noedit {
   border-style: dotted;
   padding-top: 70px;
   padding-bottom: 40px;
+}
+
+.chat-getDialoguesView {
+  border:3px solid black;
+  border-radius: 8px;
 }
 
 .source-view {
