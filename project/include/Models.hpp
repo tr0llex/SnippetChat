@@ -199,8 +199,6 @@ public:
 
     Message getLastMessage() const;
 
-    std::string getLastMessageView() const;
-
     std::vector<std::string> getParticipantsList();
 
     std::vector<Message> getDialogueMessageList();

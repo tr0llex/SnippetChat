@@ -4,9 +4,34 @@
 
 #include "MessageWidget.hpp"
 
+const int kNumberOfCharInLine = 45;
+
+static inline std::string messageView(const std::string &text) {
+    if (text.size() < kNumberOfCharInLine) {
+        return text;
+    }
+
+    std::string textView;
+    for (int i = 0, line = 1, count = 1; i < text.size(); ++i, ++count) {
+        textView += text[i];
+        if (text[i] < 0) {
+            i++;
+            textView += text[i];
+        }
+
+        if (count == kNumberOfCharInLine * line) {
+            line++;
+            textView += '\n';
+        }
+    }
+
+    return textView;
+}
+
 MessageWidget::MessageWidget(const Message &message, bool myMassage)
         : message_(message), myMessage_(myMassage), snippet_(nullptr) {
-    auto textPtr = std::make_unique<Wt::WText>(message.getMessageText());
+    std::string textView = messageView(message.getMessageText());
+    auto textPtr = std::make_unique<Wt::WText>(textView, Wt::TextFormat::Plain);
     auto timePtr = std::make_unique<Wt::WText>(message.getTimeSentStr());
 
     text_ = textPtr.get();

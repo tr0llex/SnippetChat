@@ -131,7 +131,7 @@ textarea.chat-noedit {
 }
 
 .chat-search {
-  width: 200px;
+  width: 240px;
 }
 
 .text-in-msg {
@@ -311,4 +311,8 @@ textarea.chat-noedit {
 
 .input-snippet {
   background: lightgray;
+}
+
+.snippet-in-dialogue-list {
+  font-size: 20px;
 }
