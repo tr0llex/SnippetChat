@@ -3,16 +3,10 @@
 
 
 #include <Wt/WContainerWidget.h>
-#include <Wt/WVBoxLayout.h>
-#include <Wt/WHBoxLayout.h>
-#include <Wt/WPanel.h>
-#include <Wt/WLineEdit.h>
-#include <Wt/WPushButton.h>
-#include <Wt/WText.h>
-#include <Wt/WTextArea.h>
 
+#include "SnippetWidget.hpp"
 #include "Models.hpp"
-#include "CodeWidget.hpp"
+
 
 class MessageWidget : public Wt::WContainerWidget {
 public:
@@ -22,7 +16,7 @@ public:
 
     bool isHaveSnippet() const;
 
-    void setClickedRunButton(const std::function<void()> &fn);
+    void setClickedRunButton(const std::function<void ()> &fn);
 
     std::string getInput() const;
 
@@ -39,7 +33,7 @@ private:
 
     Wt::WText   *text_;
     Wt::WText   *time_;
-    CodeWidget  *snippet_;
+    SnippetWidget  *snippet_;
 };
 
 

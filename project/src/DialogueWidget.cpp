@@ -1,10 +1,29 @@
 #include "DialogueWidget.hpp"
 
+const int kCountSymbolLastMessage = 20;
+
+static inline std::string lastMessageView(const Message &message) {
+    std::string messageStr = message.getMessageText();
+    if (messageStr.size() < kCountSymbolLastMessage) {
+        return messageStr;
+    }
+
+    std::string messageView;
+    for (int i = 0, pos = 0; i < kCountSymbolLastMessage; ++i, ++pos) {
+        messageView += messageStr[pos];
+        if (messageStr[i] < 0) {
+            pos++;
+            messageView += messageStr[pos];
+        }
+    }
+
+    return messageView + " ...";
+}
+
 DialogueWidget::DialogueWidget(const std::string &dialogueName, const Dialogue &dialogue)
 : dialogue_(dialogue) {
     auto dialogueNamePtr = std::make_unique<Wt::WText>(dialogueName);
-    std::string lastMessageStr = (dialogue.getLastMessage().isHaveSnippet()) ?
-            "code ..." : dialogue.getLastMessageView();
+    std::string lastMessageStr = lastMessageView(dialogue.getLastMessage());
     auto lastMessagePtr = std::make_unique<Wt::WText>(lastMessageStr);
     auto timePtr = std::make_unique<Wt::WText>(dialogue.getTimeOfLastUpdateStr());
 
@@ -33,11 +52,13 @@ void DialogueWidget::createLayout(std::unique_ptr<WWidget> dialogueName, std::un
     vLayout->addLayout(std::move(hLayout), 0);
 
     hLayout = std::make_unique<Wt::WHBoxLayout>();
+    hLayout->addWidget(std::move(lastMessage), 0, Wt::AlignmentFlag::Left);
     if (dialogue_.getLastMessage().isHaveSnippet()) {
-        lastMessage->setStyleClass("dialogue-code");
+        auto snippetIcon = std::make_unique<Wt::WText>();
+        snippetIcon->addStyleClass("snippet-in-dialogue-list bi-file-earmark-code-fill");
+        hLayout->addWidget(std::move(snippetIcon), 1, Wt::AlignmentFlag::Left);
     }
-    hLayout->addWidget(std::move(lastMessage));
-    vLayout->addLayout(std::move(hLayout), 1);
+    vLayout->addLayout(std::move(hLayout), 0);
 
     this->setLayout(std::move(vLayout));
 }

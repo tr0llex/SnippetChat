@@ -2,6 +2,8 @@
 #define SNIPPETCHAT_SNIPPETEDITWIDGET_H
 
 
+#include <Wt/WContainerWidget.h>
+
 #include "Models.hpp"
 
 
@@ -23,7 +25,6 @@ private:
 private:
     Snippet         snippet_;
 
-    Wt::WLabel      *label_;
     Wt::WComboBox   *switchLanguage_;
     Wt::WTextArea   *editCode_;
 };

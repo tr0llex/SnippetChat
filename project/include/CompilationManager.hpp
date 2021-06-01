@@ -7,8 +7,6 @@
 
 #include "Compilation.hpp"
 #include "Models.hpp"
-//#include "CompilerDb.hpp"
-//#include "CompilerResultWriter.hpp"
 
 using std::string;
 

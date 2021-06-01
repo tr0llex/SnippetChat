@@ -1,10 +1,8 @@
-#include <Wt/WDialog.h>
+#include <Wt/WComboBox.h>
+#include <Wt/WHBoxLayout.h>
 #include <Wt/WLabel.h>
 #include <Wt/WTextArea.h>
-#include <Wt/WPushButton.h>
-#include <Wt/WComboBox.h>
 #include <Wt/WVBoxLayout.h>
-#include <Wt/WHBoxLayout.h>
 
 #include "SnippetEditWidget.hpp"
 
@@ -19,14 +17,14 @@ static inline Snippet::Language convertIndexToLanguage(int index) {
 
 SnippetEditWidget::SnippetEditWidget(const Snippet &snippet)
 : snippet_(snippet) {
-    auto labelPtr = std::make_unique<Wt::WLabel>("Language: ");
     auto switchLanguagePtr = std::make_unique<Wt::WComboBox>();
     auto editCodePtr = std::make_unique<Wt::WTextArea>(snippet.getProgramText());
 
-    label_ = labelPtr.get();
     switchLanguage_ = switchLanguagePtr.get();
     editCode_ = editCodePtr.get();
 
+    auto labelPtr = std::make_unique<Wt::WLabel>("Language: ");
+    labelPtr->setBuddy(switchLanguage_);
 
     switchLanguage_->addItem("Python 3");
     switchLanguage_->addItem("C++ 14");
@@ -38,8 +36,6 @@ SnippetEditWidget::SnippetEditWidget(const Snippet &snippet)
         snippet_.setLanguage(Snippet::Language::Python_3);
     }
     switchLanguage_->setCurrentIndex(convertLanguageToIndex(snippet_.getLanguage()));
-
-    label_->setBuddy(switchLanguage_);
 
     editCode_->setRows(30);
     editCode_->setWidth(700);

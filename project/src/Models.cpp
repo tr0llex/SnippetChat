@@ -240,15 +240,6 @@ Message Dialogue::getLastMessage() const {
     return dialogueMessageList_.back();
 }
 
-std::string Dialogue::getLastMessageView() const {
-    std::string view = getLastMessage().getMessageText();
-    if (view.size() < 25) {
-        return view;
-    }
-
-    return view.substr(0, 24) + " ...";
-}
-
 std::vector<Message> Dialogue::getDialogueMessageList() {
     return dialogueMessageList_;
 }

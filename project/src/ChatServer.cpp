@@ -101,7 +101,7 @@ void ChatServer::sendMessage(Dialogue &dialogue, Message &message) {
     db_.writeMessage(message);
     dialogue.pushNewMessage(message);
 
-    for (const auto &participant : dialogue.getParticipantsList()) {
+    for (auto &participant : dialogue.getParticipantsList()) {
         notifyUser(ChatEvent(ChatEvent::kNewMessage, participant, dialogue));
     }
 }
