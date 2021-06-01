@@ -1,7 +1,6 @@
 #ifndef SNIPPETCHAT_CODEWIDGET_H
 #define SNIPPETCHAT_CODEWIDGET_H
 
-//#include <pthread.h>
 
 #include <Wt/WContainerWidget.h>
 #include <Wt/WPanel.h>

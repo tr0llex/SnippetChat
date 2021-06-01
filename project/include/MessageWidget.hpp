@@ -3,16 +3,10 @@
 
 
 #include <Wt/WContainerWidget.h>
-#include <Wt/WVBoxLayout.h>
-#include <Wt/WHBoxLayout.h>
-#include <Wt/WPanel.h>
-#include <Wt/WLineEdit.h>
-#include <Wt/WPushButton.h>
-#include <Wt/WText.h>
-#include <Wt/WTextArea.h>
 
-#include "Models.hpp"
 #include "CodeWidget.hpp"
+#include "Models.hpp"
+
 
 class MessageWidget : public Wt::WContainerWidget {
 public:
