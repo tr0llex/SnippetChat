@@ -296,6 +296,11 @@ textarea.chat-noedit {
   padding: 3px 6px;
 }
 
+.run-button {
+  font-size: 30px;
+  padding: 0 8px;
+}
+
 .bi {
   font-size: 30px !important;
 }

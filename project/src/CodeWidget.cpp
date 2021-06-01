@@ -28,7 +28,7 @@ CodeWidget::CodeWidget(const Snippet &snippet)
 
     auto snippetPanelPtr = std::make_unique<Wt::WPanel>();
     auto inputEditPtr = std::make_unique<Wt::WTextArea>();
-    auto runButtonPtr = std::make_unique<Wt::WPushButton>("Run");
+    auto runButtonPtr = std::make_unique<Wt::WPushButton>(/*"Run"*/);
     auto resultContainerPtr = std::make_unique<Wt::WContainerWidget>();
 
     snippetPanel_ = snippetPanelPtr.get();
@@ -49,7 +49,7 @@ CodeWidget::CodeWidget(const Snippet &snippet)
     snippetPanel_->setMargin(0);
 
     auto snippetTemplate = std::make_unique<Wt::WTemplate>("<pre style=\"padding: 0; margin: 0;\">"
-                                                           "<code class=\"${lang-class}\" style=\"padding: 0;\">"
+                                                           "<code class=\"${lang-class}\" style=\"padding: 7px;\">"
                                                            "${snippet}"
                                                            "</code></pre>");
     snippetTemplate->bindString("lang-class", langToStyleClass(snippet_));
@@ -61,6 +61,8 @@ CodeWidget::CodeWidget(const Snippet &snippet)
     inputEdit_->setRows(3);
     inputEdit_->setPlaceholderText("input data");
     inputEdit_->setStyleClass("input-snippet");
+
+    runButton_->addStyleClass("run-button bi-play");
 
     createLayout(std::move(snippetPanelPtr),
                  std::move(runButtonPtr),
@@ -74,6 +76,9 @@ void CodeWidget::setClickedRunButton(const std::function<void()> &fn) {
 
 std::string CodeWidget::getInput() const {
     runButton_->disable();
+    runButton_->removeStyleClass("bi-play");
+    runButton_->addStyleClass("bi-play-fill");
+
     resultContainer_->clear();
 
     resultContainer_->hide();
@@ -85,6 +90,8 @@ std::string CodeWidget::getInput() const {
 
 void CodeWidget::setResultCompilation(const Compilation &result) {
     runButton_->enable();
+    runButton_->removeStyleClass("bi-play-fill");
+    runButton_->addStyleClass("bi-play");
 
     auto timeLimitExceededPtr = std::make_unique<Wt::WText>("Time limit (5 sec) exceeded!");
     auto compilerStderrPtr = std::make_unique<Wt::WText>(result.getCompilerStderr(), Wt::TextFormat::Plain);
