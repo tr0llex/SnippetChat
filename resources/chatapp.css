@@ -242,7 +242,7 @@ textarea.chat-noedit {
 }
 
 .source-view {
-  background-color: white;
+  background: lightgray;
   overflow: auto;
   white-space: pre;
   font-family: 'Bitstream Vera Sans Mono','Courier',monospace;
@@ -252,8 +252,17 @@ textarea.chat-noedit {
   zoom: 1;
 }
 
+.Wt-panel {
+  border: #3b3a3d !important;
+  background: #3b3a3d !important;
+}
+
+.Wt-panel .titlebar {
+  background: #3b3a3d !important;
+}
+
 .Wt-panel .body {
-  background-color: #F0F0F0 !important;
+  background-color: #282c34 !important;
 }
 
 @-webkit-keyframes AnimationName {
@@ -293,4 +302,8 @@ textarea.chat-noedit {
 
 .logout-button {
   font-size: 20px !important;
+}
+
+.input-snippet {
+  background: lightgray;
 }

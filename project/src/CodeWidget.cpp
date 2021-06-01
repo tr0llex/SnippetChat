@@ -1,6 +1,11 @@
-#include "CodeWidget.hpp"
+#include <Wt/WAnimation.h>
+#include <Wt/WPushButton.h>
+#include <Wt/WText.h>
 #include <Wt/WTable.h>
 #include <Wt/WTemplate.h>
+#include <Wt/WVBoxLayout.h>
+
+#include "CodeWidget.hpp"
 
 static inline std::string langToStyleClass(const Snippet &snippet) {
     switch (snippet.getLanguage()) {
@@ -36,14 +41,15 @@ CodeWidget::CodeWidget(const Snippet &snippet)
 
     Wt::WAnimation animation(Wt::AnimationEffect::SlideInFromTop,
                              Wt::TimingFunction::EaseOut,
-                             100);
+                             150);
 
     snippetPanel_->setAnimation(animation);
     snippetPanel_->collapse();
 
     snippetPanel_->setMargin(0);
 
-    auto snippetTemplate = std::make_unique<Wt::WTemplate>("<pre style=\"padding: 0; margin: 0;\"><code class=\"${lang-class}\" style=\"padding: 0;\">"
+    auto snippetTemplate = std::make_unique<Wt::WTemplate>("<pre style=\"padding: 0; margin: 0;\">"
+                                                           "<code class=\"${lang-class}\" style=\"padding: 0;\">"
                                                            "${snippet}"
                                                            "</code></pre>");
     snippetTemplate->bindString("lang-class", langToStyleClass(snippet_));
@@ -54,11 +60,56 @@ CodeWidget::CodeWidget(const Snippet &snippet)
 
     inputEdit_->setRows(3);
     inputEdit_->setPlaceholderText("input data");
+    inputEdit_->setStyleClass("input-snippet");
 
     createLayout(std::move(snippetPanelPtr),
                  std::move(runButtonPtr),
                  std::move(inputEditPtr),
                  std::move(resultContainerPtr));
+}
+
+void CodeWidget::setClickedRunButton(const std::function<void()> &fn) {
+    runButton_->clicked().connect(fn);
+}
+
+std::string CodeWidget::getInput() const {
+    runButton_->disable();
+    resultContainer_->clear();
+
+    resultContainer_->hide();
+
+    std::string input = ws2s(inputEdit_->text());
+
+    return input;
+}
+
+void CodeWidget::setResultCompilation(const Compilation &result) {
+    runButton_->enable();
+
+    auto timeLimitExceededPtr = std::make_unique<Wt::WText>("Time limit (5 sec) exceeded!");
+    auto compilerStderrPtr = std::make_unique<Wt::WText>(result.getCompilerStderr(), Wt::TextFormat::Plain);
+    auto executionTimePtr = std::make_unique<Wt::WText>(result.getExecutionTime() + "s");
+    auto executionUsedMemoryPtr = std::make_unique<Wt::WText>(result.getExecutionUsedMemory());
+    auto metricTablePtr = std::make_unique<Wt::WTable>();
+    auto compilerStdoutPtr = std::make_unique<Wt::WText>(result.getExecutionStdout(), Wt::TextFormat::Plain);
+    auto executionStderrPtr = std::make_unique<Wt::WText>(result.getExecutionStderr(), Wt::TextFormat::Plain);
+
+    metricTablePtr->setHeaderCount(1);
+
+    metricTablePtr->elementAt(0, 0)->addNew<Wt::WText>("Time");
+    metricTablePtr->elementAt(0, 1)->addNew<Wt::WText>("Memory");
+    metricTablePtr->elementAt(1, 0)->addWidget(std::move(executionTimePtr));
+    metricTablePtr->elementAt(1, 1)->addWidget(std::move(executionUsedMemoryPtr));
+
+    createResultLayout(result,
+                       std::move(timeLimitExceededPtr),
+                       std::move(compilerStderrPtr),
+                       std::move(metricTablePtr),
+                       std::move(compilerStdoutPtr),
+                       std::move(executionStderrPtr));
+
+    resultContainer_->setStyleClass("source-view");
+    resultContainer_->show();
 }
 
 void CodeWidget::createLayout(std::unique_ptr<WWidget> programText, std::unique_ptr<WWidget> runButton,
@@ -73,56 +124,27 @@ void CodeWidget::createLayout(std::unique_ptr<WWidget> programText, std::unique_
     this->setLayout(std::move(vLayout));
 }
 
-void CodeWidget::setClickedRunButton(const std::function<void()> &fn) {
-    runButton_->clicked().connect(fn);
-}
-
-std::string CodeWidget::getInput() const {
-    runButton_->disable();
-    resultContainer_->clear();
-
-    std::string input = ws2s(inputEdit_->text());
-
-    return input;
-}
-
-void CodeWidget::setResultCompilation(const Compilation &result) {
-    runButton_->enable();
-
+void CodeWidget::createResultLayout(const Compilation &result, std::unique_ptr<WWidget> timeLimitExceeded,
+                                    std::unique_ptr<WWidget> compilerStderr,
+                                    std::unique_ptr<WWidget> metricTable, std::unique_ptr<WWidget> compilerStdout,
+                                    std::unique_ptr<WWidget> executionStderr) {
     auto vLayout = resultContainer_->setLayout(std::make_unique<Wt::WVBoxLayout>());
 
-    resultContainer_->setStyleClass("source-view");
-
     if (result.getTimeLimitExceeded()) {
-        auto timeLimitExceeded = std::make_unique<Wt::WText>("Time limit (5 sec) exceeded!");
         vLayout->addWidget(std::move(timeLimitExceeded));
     }
 
     if (!result.getCompilerStderr().empty()) {
-        auto compilerStderrPtr = std::make_unique<Wt::WText>(result.getCompilerStderr(), Wt::TextFormat::Plain);
-        vLayout->addWidget(std::move(compilerStderrPtr));
+        vLayout->addWidget(std::move(compilerStderr));
     } else {
         if (!result.getTimeLimitExceeded()) {
-            auto executionTimePtr = std::make_unique<Wt::WText>(result.getExecutionTime() + "s");
-            auto executionUsedMemoryPtr = std::make_unique<Wt::WText>(result.getExecutionUsedMemory());
-
-            auto table = std::make_unique<Wt::WTable>();
-            table->setHeaderCount(1);
-
-            table->elementAt(0, 0)->addNew<Wt::WText>("Time");
-            table->elementAt(0, 1)->addNew<Wt::WText>("Memory");
-            table->elementAt(1, 0)->addWidget(std::move(executionTimePtr));
-            table->elementAt(1, 1)->addWidget(std::move(executionUsedMemoryPtr));
-
-            vLayout->addWidget(std::move(table), 0, Wt::AlignmentFlag::Super);
+            vLayout->addWidget(std::move(metricTable), 0, Wt::AlignmentFlag::Super);
         }
 
-        auto compilerStdoutPtr = std::make_unique<Wt::WText>(result.getExecutionStdout(), Wt::TextFormat::Plain);
-        vLayout->addWidget(std::move(compilerStdoutPtr));
+        vLayout->addWidget(std::move(compilerStdout));
 
         if (!result.getExecutionStderr().empty()) {
-            auto executionStderrPtr = std::make_unique<Wt::WText>(result.getExecutionStderr(), Wt::TextFormat::Plain);
-            vLayout->addWidget(std::move(executionStderrPtr));
+            vLayout->addWidget(std::move(executionStderr));
         }
     }
 }

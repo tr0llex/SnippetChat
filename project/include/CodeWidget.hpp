@@ -1,24 +1,19 @@
 #ifndef SNIPPETCHAT_CODEWIDGET_H
 #define SNIPPETCHAT_CODEWIDGET_H
 
-#include <Wt/WAnimation.h>
-#include <Wt/WContainerWidget.h>
-#include <Wt/WVBoxLayout.h>
-#include <Wt/WHBoxLayout.h>
-#include <Wt/WPanel.h>
-#include <Wt/WLineEdit.h>
-#include <Wt/WPushButton.h>
-#include <Wt/WText.h>
-#include <Wt/WTextArea.h>
-#include <pthread.h>
+//#include <pthread.h>
 
-#include "Models.hpp"
+#include <Wt/WContainerWidget.h>
+#include <Wt/WPanel.h>
+#include <Wt/WTextArea.h>
+
 #include "Compilation.hpp"
+#include "Models.hpp"
 
 
 class CodeWidget : public Wt::WContainerWidget {
 public:
-    CodeWidget(const Snippet &snippet);
+    explicit CodeWidget(const Snippet &snippet);
 
     void setClickedRunButton(const std::function<void()> &fn);
 
@@ -33,13 +28,21 @@ protected:
             std::unique_ptr<WWidget> stdinEdit,
             std::unique_ptr<WWidget> resultContainer);
 
+    void createResultLayout(
+            const Compilation &result,
+            std::unique_ptr<WWidget> timeLimitExceeded,
+            std::unique_ptr<WWidget> compilerStderr,
+            std::unique_ptr<WWidget> metricTable,
+            std::unique_ptr<WWidget> compilerStdout,
+            std::unique_ptr<WWidget> executionStderr);
+
 private:
     Snippet   snippet_;
 
-    Wt::WPanel                               *snippetPanel_;
-    Wt::WTextArea                            *inputEdit_;
-    Wt::WPushButton                          *runButton_;
-    Wt::WContainerWidget                     *resultContainer_;
+    Wt::WPanel               *snippetPanel_;
+    Wt::WTextArea            *inputEdit_;
+    Wt::WPushButton          *runButton_;
+    Wt::WContainerWidget     *resultContainer_;
 };
 
 

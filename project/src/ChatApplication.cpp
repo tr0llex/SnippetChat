@@ -7,7 +7,8 @@ ChatApplication::ChatApplication(const Wt::WEnvironment& env,
           env_(env) {
     setTitle("SnippetChat");
     useStyleSheet("resources/chatapp.css");
-    useStyleSheet("resources/highlight/styles/default.css");
+//    useStyleSheet("resources/highlight/styles/default.css");
+    useStyleSheet("resources/highlight/styles/atom-one-dark.css");
     require("resources/highlight/highlight.pack.js");
 
     messageResourceBundle().use(appRoot() + "resources/SnippetChat");
