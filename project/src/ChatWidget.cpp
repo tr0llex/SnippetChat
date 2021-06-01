@@ -389,6 +389,10 @@ void ChatWidget::createMessengerLayout(std::unique_ptr<WWidget> dialogueName, st
 
     /// <Шапка>
     hLayout->addWidget(std::make_unique<Wt::WText>(tr("projectName")), 0, Wt::AlignmentFlag::Left);
+    auto image = hLayout->addWidget(std::make_unique<Wt::WImage>(Wt::WLink("resources/LOGO1.png")));
+    image->setAlternateText("SNICH");
+    image->setStyleClass("snich-small");
+    image->setMaximumSize(50, 20);
     hLayout->addWidget(std::move(logoutButton), 0, Wt::AlignmentFlag::Right);
     vLayout->addLayout(std::move(hLayout), 0);
     /// </Шапка>

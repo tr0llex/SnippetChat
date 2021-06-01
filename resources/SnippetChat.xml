@@ -2,7 +2,7 @@
 <messages>
     <message id="projectName">
         <h4>
-            <span>SnippetChat</span>
+            <span class="snip-chat">SnippetChat</span>
         </h4>
     </message>
 
