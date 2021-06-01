@@ -1,4 +1,4 @@
-#include "../include/Compilation.hpp"
+#include "Compilation.hpp"
 
 
 Compilation::Compilation() : timeLimitExceeded_(false) {

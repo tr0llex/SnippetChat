@@ -30,7 +30,7 @@ void MessageWidget::setResultCompilation(const Compilation &result) {
     }
 }
 
-void MessageWidget::setClickedRunButton(const std::function<void()> &fn) {
+void MessageWidget::setClickedRunButton(const std::function<void ()> &fn) {
     snippet_->setClickedRunButton(fn);
 }
 
@@ -56,7 +56,7 @@ void MessageWidget::createLayout(std::unique_ptr<WWidget> text, std::unique_ptr<
     vLayout->addLayout(std::move(hLayout));
 
     if (message_.isHaveSnippet()) {
-        auto snippetPtr = std::make_unique<CodeWidget>(message_.getSnippet());
+        auto snippetPtr = std::make_unique<SnippetWidget>(message_.getSnippet());
         snippet_ = snippetPtr.get();
 
         vLayout->addWidget(std::move(snippetPtr));

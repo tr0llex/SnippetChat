@@ -4,7 +4,7 @@
 
 #include <Wt/WContainerWidget.h>
 
-#include "CodeWidget.hpp"
+#include "SnippetWidget.hpp"
 #include "Models.hpp"
 
 
@@ -16,7 +16,7 @@ public:
 
     bool isHaveSnippet() const;
 
-    void setClickedRunButton(const std::function<void()> &fn);
+    void setClickedRunButton(const std::function<void ()> &fn);
 
     std::string getInput() const;
 
@@ -33,7 +33,7 @@ private:
 
     Wt::WText   *text_;
     Wt::WText   *time_;
-    CodeWidget  *snippet_;
+    SnippetWidget  *snippet_;
 };
 
 

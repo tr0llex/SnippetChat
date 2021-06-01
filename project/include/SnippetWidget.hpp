@@ -10,11 +10,11 @@
 #include "Models.hpp"
 
 
-class CodeWidget : public Wt::WContainerWidget {
+class SnippetWidget : public Wt::WContainerWidget {
 public:
-    explicit CodeWidget(const Snippet &snippet);
+    explicit SnippetWidget(const Snippet &snippet);
 
-    void setClickedRunButton(const std::function<void()> &fn);
+    void setClickedRunButton(const std::function<void ()> &fn);
 
     std::string getInput() const;
 

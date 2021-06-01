@@ -5,7 +5,7 @@
 #include <Wt/WTemplate.h>
 #include <Wt/WVBoxLayout.h>
 
-#include "CodeWidget.hpp"
+#include "SnippetWidget.hpp"
 
 static inline std::string langToStyleClass(const Snippet &snippet) {
     switch (snippet.getLanguage()) {
@@ -22,7 +22,7 @@ static inline std::string langToStyleClass(const Snippet &snippet) {
     }
 }
 
-CodeWidget::CodeWidget(const Snippet &snippet)
+SnippetWidget::SnippetWidget(const Snippet &snippet)
 : snippet_(snippet) {
     setWidth(580);
 
@@ -70,11 +70,11 @@ CodeWidget::CodeWidget(const Snippet &snippet)
                  std::move(resultContainerPtr));
 }
 
-void CodeWidget::setClickedRunButton(const std::function<void()> &fn) {
+void SnippetWidget::setClickedRunButton(const std::function<void ()> &fn) {
     runButton_->clicked().connect(fn);
 }
 
-std::string CodeWidget::getInput() const {
+std::string SnippetWidget::getInput() const {
     runButton_->disable();
     runButton_->removeStyleClass("bi-play");
     runButton_->addStyleClass("bi-play-fill");
@@ -88,7 +88,7 @@ std::string CodeWidget::getInput() const {
     return input;
 }
 
-void CodeWidget::setResultCompilation(const Compilation &result) {
+void SnippetWidget::setResultCompilation(const Compilation &result) {
     runButton_->enable();
     runButton_->removeStyleClass("bi-play-fill");
     runButton_->addStyleClass("bi-play");
@@ -119,7 +119,7 @@ void CodeWidget::setResultCompilation(const Compilation &result) {
     resultContainer_->show();
 }
 
-void CodeWidget::createLayout(std::unique_ptr<WWidget> programText, std::unique_ptr<WWidget> runButton,
+void SnippetWidget::createLayout(std::unique_ptr<WWidget> programText, std::unique_ptr<WWidget> runButton,
                               std::unique_ptr<WWidget> inputEdit, std::unique_ptr<WWidget> resultContainer) {
     auto vLayout = std::make_unique<Wt::WVBoxLayout>();
 
@@ -131,7 +131,7 @@ void CodeWidget::createLayout(std::unique_ptr<WWidget> programText, std::unique_
     this->setLayout(std::move(vLayout));
 }
 
-void CodeWidget::createResultLayout(const Compilation &result, std::unique_ptr<WWidget> timeLimitExceeded,
+void SnippetWidget::createResultLayout(const Compilation &result, std::unique_ptr<WWidget> timeLimitExceeded,
                                     std::unique_ptr<WWidget> compilerStderr,
                                     std::unique_ptr<WWidget> metricTable, std::unique_ptr<WWidget> compilerStdout,
                                     std::unique_ptr<WWidget> executionStderr) {
