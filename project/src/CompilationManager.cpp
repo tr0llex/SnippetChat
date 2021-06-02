@@ -1,4 +1,6 @@
 #include <climits>
+#include <algorithm>
+#include <iostream>
 
 #include "CompilationManager.hpp"
 
@@ -89,11 +91,22 @@ void CompilationManager::readOutputFromFiles(Compilation &compilation) {
 
     std::ifstream outputFile(pathToRunBox + "/run.stdout");
     std::string executionOutput;
-    executionOutput.assign((std::istreambuf_iterator<char>(outputFile)),
-                           (std::istreambuf_iterator<char>()));
-    if (executionOutput.length() > 5000){
-        executionOutput = executionOutput.substr(0, 5000);
+
+    char c;
+    const int outputLimit = 5000;
+    int symbolsWritten = 0;
+    if(outputFile.is_open()) {
+        while(outputFile.good()) {
+            symbolsWritten += 1;
+            outputFile.get(c);
+            executionOutput += c;
+            if (symbolsWritten == outputLimit)
+                break;
+        }
     }
+    if(!outputFile.eof() && outputFile.fail())
+        std::cout << "error reading " << pathToRunBox + "/run.stdout" << std::endl;
+    outputFile.close();
     compilation.setExecutionStdout(executionOutput);
 
     std::ifstream runStderrFile(pathToRunBox + "/run.stderr");
