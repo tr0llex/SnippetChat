@@ -39,16 +39,16 @@ ln -s /usr/local/lib/libwt.so /usr/lib/
 1)Install cassandra
 ```
 sudo apt install openjdk-8-jre-headless
-sudo apt install curl
-echo "deb http://downloads.apache.org/cassandra/debian 40x main" | sudo tee -a /etc/apt/$ sources.list.d/cassandra.sources.list
-curl https://downloads.apache.org/cassandra/KEYS | sudo apt-key add -
+sudo apt install apt-transport-https
+sudo sh -c 'echo "deb http://www.apache.org/dist/cassandra/debian 40x main" > /etc/apt/sources.list.d/cassandra.list'
+wget -q -O - https://www.apache.org/dist/cassandra/KEYS | sudo apt-key add -
 sudo apt-get update
 sudo apt-get install cassandra
 ```
 
 2)Install cpp driver
 ```
-apt-get install libssl-deb libkrb5-deb zlib1g-deb
+apt-get install libssl-dev libkrb5-dev zlib1g-dev
 wget https://downloads.datastax.com/cpp-driver/ubuntu/18.04/dependencies/libuv/v1.35.0/libuv1-dev_1.35.0-1_amd64.deb
 wget https://downloads.datastax.com/cpp-driver/ubuntu/18.04/dependencies/libuv/v1.35.0/libuv1_1.35.0-1_amd64.deb
 wget https://downloads.datastax.com/cpp-driver/ubuntu/18.04/cassandra/v2.16.0/cassandra-cpp-driver_2.16.0-1_amd64.deb
