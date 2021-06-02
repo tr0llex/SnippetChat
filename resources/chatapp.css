@@ -349,4 +349,7 @@ td {
   background: #3b3a3d;
 }
 
-
+.Wt-dialogcover {
+  opacity: 0.6 !important;
+  background: black !important;
+}
