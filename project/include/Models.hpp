@@ -96,15 +96,16 @@ private:
 class Snippet {
 public:
     enum Language {
-        Not_selected = -1,
-        Python_3 = 0,
-        Cpp_14 = 1,
-        Cpp_17 = 2,
-        Cpp_20 = 3,
-        C_17 = 4,
+        kNot_selected = -1,
+        kPython_3 = 0,
+        kCpp_14,
+        kCpp_17,
+        kCpp_20,
+        kC_17,
+        kAnother,
     };
 
-    Snippet() : language_(Not_selected) {};
+    Snippet() : language_(kAnother) {};
 
     Snippet(std::string code, Language lang);
 
@@ -123,6 +124,8 @@ public:
     void clear();
 
     bool empty() const;
+
+    bool withLaunch() const;
 
 private:
     Language language_;
@@ -164,6 +167,7 @@ public:
     bool isRead();
 
     bool isHaveSnippet() const;
+    bool isHaveLaunchSnippet() const;
 
 private:
     std::string id_;

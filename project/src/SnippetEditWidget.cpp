@@ -31,9 +31,10 @@ SnippetEditWidget::SnippetEditWidget(const Snippet &snippet)
     switchLanguage_->addItem("C++ 17");
     switchLanguage_->addItem("C++ 20");
     switchLanguage_->addItem("C 17");
+    switchLanguage_->addItem("Another");
 
     if (snippet_.empty()) {
-        snippet_.setLanguage(Snippet::Language::Python_3);
+        snippet_.setLanguage(Snippet::Language::kAnother);
     }
     switchLanguage_->setCurrentIndex(convertLanguageToIndex(snippet_.getLanguage()));
 

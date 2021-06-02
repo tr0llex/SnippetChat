@@ -1211,7 +1211,7 @@ then you can't do more than 100 transactions per second).
 Setting the \fItimeout collect interval\fR can improve the opportunity for
 saving power, as the program will \*(L"bundle\*(R" timer callback invocations that
 are \*(L"near\*(R" in time together, by delaying some, thus reducing the number of
-times the process sleeps and wakes up again. Another useful technique to
+times the process sleeps and wakes up again. kAnother useful technique to
 reduce iterations/wake\-ups is to use \f(CW\*(C`ev_periodic\*(C'\fR watchers and make sure
 they fire on, say, one-second boundaries only.
 .Sp
@@ -1798,7 +1798,7 @@ fd as you want (as long as you don't confuse yourself). Setting all file
 descriptors to non-blocking mode is also usually a good idea (but not
 required if you know what you are doing).
 .PP
-Another thing you have to watch out for is that it is quite easy to
+kAnother thing you have to watch out for is that it is quite easy to
 receive \*(L"spurious\*(R" readiness notifications, that is, your callback might
 be called with \f(CW\*(C`EV_READ\*(C'\fR but a subsequent \f(CW\*(C`read\*(C'\fR(2) will actually block
 because there is no data. It is very easy to get into this situation even
@@ -1863,7 +1863,7 @@ there, and in the case of open files, that's always the case, so you
 always get a readiness notification instantly, and your read (or possibly
 write) will still block on the disk I/O.
 .PP
-Another way to view it is that in the case of sockets, pipes, character
+kAnother way to view it is that in the case of sockets, pipes, character
 devices and so on, there is another party (the sender) that delivers data
 on its own, but in the case of files, there is no such thing: the disk
 will not sendMessage data on its own, simply because it doesn't know what you
@@ -2524,7 +2524,7 @@ but only that the callback will be called when the system time shows a
 full hour (\s-1UTC\s0), or more correctly, when the system time is evenly divisible
 by 3600.
 .Sp
-Another way to think about it (for the mathematically inclined) is that
+kAnother way to think about it (for the mathematically inclined) is that
 \&\f(CW\*(C`ev_periodic\*(C'\fR will try to run the callback in this mode at the next possible
 time where \f(CW\*(C`time = offset (mod interval)\*(C'\fR, regardless of any time jumps.
 .Sp
@@ -3274,7 +3274,7 @@ pointless.
 There are a number of principal ways to embed other event loops or modules
 into libev. Here are some ideas on how to include libadns into libev
 (there is a Perl module named \f(CW\*(C`EV::ADNS\*(C'\fR that does this, which you could
-use as a working example. Another Perl module named \f(CW\*(C`EV::Glib\*(C'\fR embeds a
+use as a working example. kAnother Perl module named \f(CW\*(C`EV::Glib\*(C'\fR embeds a
 Glib main context into libev, and finally, \f(CW\*(C`Glib::EV\*(C'\fR embeds \s-1EV\s0 into the
 Glib event loop).
 .PP
@@ -3865,7 +3865,7 @@ More interesting and less C\-conformant ways of casting your callback
 function type instead have been omitted.
 .SS "\s-1BUILDING YOUR OWN COMPOSITE WATCHERS\s0"
 .IX Subsection "BUILDING YOUR OWN COMPOSITE WATCHERS"
-Another common scenario is to use some data structure with multiple
+kAnother common scenario is to use some data structure with multiple
 embedded watchers, in effect creating your own watcher that combines
 multiple libev event sources into one \*(L"super-watcher\*(R":
 .PP
@@ -5330,7 +5330,7 @@ has different warnings, and each user has different tastes regarding
 warning options. \*(L"Warn-free\*(R" code therefore cannot be a goal except when
 targeting a specific compiler and compiler-version.
 .PP
-Another reason is that some compiler warnings require elaborate
+kAnother reason is that some compiler warnings require elaborate
 workarounds, or other changes to the code that make it less clear and less
 maintainable.
 .PP
@@ -5565,7 +5565,7 @@ to some high number (e.g. \f(CW2048\fR) before compiling the winsocket select
 call (which might be in libev or elsewhere, for example, perl and many
 other interpreters do their own select emulation on windows).
 .PP
-Another limit is the number of file descriptors in the Microsoft runtime
+kAnother limit is the number of file descriptors in the Microsoft runtime
 libraries, which by default is \f(CW64\fR (there must be a hidden \fI64\fR
 fetish or something like this inside Microsoft). You can increase this
 by calling \f(CW\*(C`_setmaxstdio\*(C'\fR, which can increase this limit to \f(CW2048\fR

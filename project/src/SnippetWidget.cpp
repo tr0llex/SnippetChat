@@ -9,13 +9,13 @@
 
 static inline std::string langToStyleClass(const Snippet &snippet) {
     switch (snippet.getLanguage()) {
-        case Snippet::Python_3:
+        case Snippet::kPython_3:
             return "python";
-        case Snippet::Cpp_14:
-        case Snippet::Cpp_17:
-        case Snippet::Cpp_20:
+        case Snippet::kCpp_14:
+        case Snippet::kCpp_17:
+        case Snippet::kCpp_20:
             return "cpp";
-        case Snippet::C_17:
+        case Snippet::kC_17:
             return "c";
         default:
             return std::string();
@@ -23,12 +23,12 @@ static inline std::string langToStyleClass(const Snippet &snippet) {
 }
 
 SnippetWidget::SnippetWidget(const Snippet &snippet)
-: snippet_(snippet) {
+        : snippet_(snippet) {
     setWidth(580);
 
     auto snippetPanelPtr = std::make_unique<Wt::WPanel>();
     auto inputEditPtr = std::make_unique<Wt::WTextArea>();
-    auto runButtonPtr = std::make_unique<Wt::WPushButton>(/*"Run"*/);
+    auto runButtonPtr = std::make_unique<Wt::WPushButton>();
     auto resultContainerPtr = std::make_unique<Wt::WContainerWidget>();
 
     snippetPanel_ = snippetPanelPtr.get();
@@ -53,7 +53,8 @@ SnippetWidget::SnippetWidget(const Snippet &snippet)
                                                            "${snippet}"
                                                            "</code></pre>");
     snippetTemplate->bindString("lang-class", langToStyleClass(snippet_));
-    snippetTemplate->bindString("snippet", snippet_.getProgramTextView());
+    auto programText = std::make_unique<Wt::WText>(snippet_.getProgramTextView(), Wt::TextFormat::UnsafeXHTML);
+    snippetTemplate->bindWidget("snippet", std::move(programText));
 
     snippetPanel_->setCentralWidget(std::move(snippetTemplate));
     snippetPanel_->centralWidget()->setStyleClass("snippet");
@@ -124,9 +125,11 @@ void SnippetWidget::createLayout(std::unique_ptr<WWidget> programText, std::uniq
     auto vLayout = std::make_unique<Wt::WVBoxLayout>();
 
     vLayout->addWidget(std::move(programText));
-    vLayout->addWidget(std::move(inputEdit));
-    vLayout->addWidget(std::move(runButton), 0, Wt::AlignmentFlag::Right);
-    vLayout->addWidget(std::move(resultContainer));
+    if (snippet_.withLaunch()) {
+        vLayout->addWidget(std::move(inputEdit));
+        vLayout->addWidget(std::move(runButton), 0, Wt::AlignmentFlag::Right);
+        vLayout->addWidget(std::move(resultContainer));
+    }
 
     this->setLayout(std::move(vLayout));
 }

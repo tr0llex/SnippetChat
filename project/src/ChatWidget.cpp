@@ -494,11 +494,11 @@ void ChatWidget::showNewMessage(const Message &message) {
     auto messageWidgetPtr = std::make_unique<MessageWidget>(message, myMessage);
     auto messageWidget = messageWidgetPtr.get();
 
-    if (message.isHaveSnippet()) {
+    if (message.isHaveLaunchSnippet()) {
         auto clickedButton = ([=] {
             std::string msg = messageWidget->getInput();
-            std::thread t(&ChatServer::runCompilation, &server_, std::ref(server_), std::ref(user_), std::ref(message),
-                          msg);
+            std::thread t(&ChatServer::runCompilation, &server_, std::ref(server_),
+                          std::ref(user_), std::ref(message), msg);
             t.detach();
         });
 

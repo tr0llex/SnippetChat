@@ -145,15 +145,15 @@ Snippet::Language Snippet::getLanguage() const {
 
 std::string Snippet::getLanguageStr() const {
     switch (language_) {
-        case Python_3:
+        case kPython_3:
             return "Python 3";
-        case Cpp_14:
+        case kCpp_14:
             return "C++ 14";
-        case Cpp_17:
+        case kCpp_17:
             return "C++ 17";
-        case Cpp_20:
+        case kCpp_20:
             return "C++ 20";
-        case C_17:
+        case kC_17:
             return "C 17";
         default:
             return "";
@@ -172,6 +172,10 @@ std::string Snippet::getProgramTextView() const {
         }
     }
     return programTextView;
+}
+
+bool Snippet::withLaunch() const {
+    return language_ != kAnother;
 }
 
 Message::Message(const std::string &dialogueParentId, const std::string &senderId, const std::string &messageText,
@@ -231,6 +235,10 @@ std::string Message::getTimeSentStr() const {
 
 bool Message::isHaveSnippet() const {
     return !snippet_.getProgramText().empty();
+}
+
+bool Message::isHaveLaunchSnippet() const {
+    return isHaveSnippet() && snippet_.withLaunch();
 }
 
 Message Dialogue::getLastMessage() const {
