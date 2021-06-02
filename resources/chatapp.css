@@ -20,6 +20,7 @@ h2, h3, h4, h5 {
 
 .message-edit {
   resize: none;
+  background: lightgray;
 }
 
 h2 {
@@ -87,6 +88,8 @@ textarea.chat-noedit {
   background: linear-gradient(36deg, rgba(40,44,52,1) 40%, rgba(152,156,149,0.957037917706145) 89%);
   background-repeat: no-repeat;
   background-attachment: scroll;
+  /* display: flex; */
+  /* justify-content: center; */
 }
 
 .chat-users {
@@ -95,6 +98,11 @@ textarea.chat-noedit {
 
 td {
   text-align: center !important;
+  padding: 7px;
+}
+
+table {
+  color: lightgray;
 }
 
 .dimensions {
@@ -168,7 +176,7 @@ td {
   margin-bottom: 3px;
   cursor: pointer;
   background-color: #3b3a3d;
-  color:white;
+  color:lightgray;
 }
 
 .dialogue-name {
@@ -176,6 +184,15 @@ td {
   font-weight: 500;
   font-family: system-ui, serif;
   color:#c678dd;
+}
+
+thead tr {
+  border: 2px solid #3b3a3d;
+  background-color: #3b3a3d;
+}
+
+tbody tr {
+  border: 2px solid #3b3a3d;
 }
 
 .dialogue-name-self {
@@ -328,7 +345,12 @@ td {
 }
 
 .help-msg {
-  color: chartreuse;
+  color: darkorange;
+  padding: 5px;
+  border: 2px solid;
+  border-radius: 4px;
+  background: seashell;
+  align-self: center;
 }
 
 /*.Wt-dialog {*/
@@ -338,6 +360,7 @@ td {
 .edit-code {
   color: #abb2bf;
   background: #282c34;
+  resize: inherit;
 }
 
 .edit-snippet-dialog {
