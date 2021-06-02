@@ -11,7 +11,7 @@ mkdir build && cd build
 cmake ..
 make
 cd ..
-./build/SnippetChat --docroot . --http-address 0.0.0.0 --http-port 8888 --resources-dir=/resources --config ./wt_config.xml
+./build/SnippetChat --docroot . --config ./wt_config.xml --http-address 0.0.0.0 --http-port 8888 --resources-dir=/resources --config ./wt_config.xml
 ```
 
 ### Wt
