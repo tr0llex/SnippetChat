@@ -504,7 +504,7 @@ void ChatWidget::showNewMessage(const Message &message) {
         auto clickedButton = ([=] {
             std::string msg = messageWidget->getInput();
             std::thread t(&ChatServer::runCompilation, &server_, std::ref(server_),
-                          std::ref(user_), std::ref(message), msg);
+                          user_, message, msg);
             t.detach();
         });
 

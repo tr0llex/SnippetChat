@@ -95,8 +95,8 @@ void CompilationManager::readOutputFromFiles(Compilation &compilation) {
     char c;
     const int outputLimit = 5000;
     int symbolsWritten = 0;
-    if(outputFile.is_open()) {
-        while(outputFile.good()) {
+    if (outputFile.is_open()) {
+        while (outputFile.good()) {
             symbolsWritten += 1;
             outputFile.get(c);
             executionOutput += c;
@@ -104,7 +104,7 @@ void CompilationManager::readOutputFromFiles(Compilation &compilation) {
                 break;
         }
     }
-    if(!outputFile.eof() && outputFile.fail())
+    if (!outputFile.eof() && outputFile.fail())
         std::cout << "error reading " << pathToRunBox + "/run.stdout" << std::endl;
     outputFile.close();
     compilation.setExecutionStdout(executionOutput);

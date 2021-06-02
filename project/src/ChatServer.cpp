@@ -110,7 +110,7 @@ std::string ChatServer::verifyToken(const std::string &token) {
     return auth_.verifyToken(token);
 }
 
-void ChatServer::runCompilation(ChatServer &this_serv, const User &user, const Message &message, const std::string input) {
+void ChatServer::runCompilation(ChatServer &this_serv, User user, Message message, std::string input) {
     Compilation compilationResult = manager_.runCompilation(message.getSnippet(), input);
 
     this_serv.notifyUser(ChatEvent(ChatEvent::kCompilationCode,
@@ -120,7 +120,7 @@ void ChatServer::runCompilation(ChatServer &this_serv, const User &user, const M
                                    compilationResult));
 }
 
-void ChatServer::notifyUser(const ChatEvent& event) {
+void ChatServer::notifyUser(const ChatEvent &event) {
     std::unique_lock<std::recursive_mutex> lock(mutex_);
 
     for (const auto &i : clients_) {

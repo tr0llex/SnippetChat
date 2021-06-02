@@ -15,51 +15,58 @@
 
 class ChatServer {
 public:
-    class Client {};
+    class Client {
+    };
 
-    explicit ChatServer(Wt::WServer& server, const MainDb &db);
+    explicit ChatServer(Wt::WServer &server, const MainDb &db);
 
     ChatServer(const ChatServer &) = delete;
+
     ChatServer &operator=(const ChatServer &) = delete;
 
-    bool connect(Client *client, const User &user, const ChatEventCallback& handleEvent);
+    bool connect(Client *client, const User &user, const ChatEventCallback &handleEvent);
+
     bool disconnect(Client *client);
 
-    bool createUser(User& user, time_t timeOfCreation);
-    bool login(User& user);
+    bool createUser(User &user, time_t timeOfCreation);
+
+    bool login(User &user);
+
     void logout(const User &user);
 
     DialogueList getDialogueList(const User &user, int count) const;
+
     std::vector<Message> getMessagesFromDialogue(const std::string &dialogueId, int count) const;
 
     User getUserByLogin(const std::string &findUser) const;
+
     void createDialogue(Dialogue &dialogue);
 
     void sendMessage(Dialogue &dialogue, Message &message);
 
-    std::string  verifyToken(const std::string &token);
+    std::string verifyToken(const std::string &token);
 
-    void runCompilation(ChatServer &this_serv, const User &user, const Message &message, const std::string input);
+    void runCompilation(ChatServer &this_serv, User user, Message message, std::string input);
 
 private:
     struct ClientInfo {
-        std::string       sessionId;
-        std::string       userLogin;
+        std::string sessionId;
+        std::string userLogin;
         ChatEventCallback eventCallback;
     };
     typedef std::map<Client *, ClientInfo> ClientMap;
 
-    void notifyUser(const ChatEvent& event);
+    void notifyUser(const ChatEvent &event);
 
 private:
-    Wt::WServer&            server_;
-    std::recursive_mutex    mutex_;
-    ClientMap               clients_;
-    MainDb                  db_;
+    Wt::WServer &server_;
+    std::recursive_mutex mutex_;
+    ClientMap clients_;
+    MainDb db_;
 
-    Auth                    auth_;
+    Auth auth_;
 
-    CompilationManager      manager_;
+    CompilationManager manager_;
 };
 
 
