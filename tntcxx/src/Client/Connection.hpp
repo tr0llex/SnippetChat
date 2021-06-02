@@ -235,7 +235,7 @@ private:
 	ResponseDecoder<BUFFER> m_Decoder;
 	iterator m_EndDecoded;
 	/**
-	 * NetworkProvider can send data up to this iterator (i.e. border
+	 * NetworkProvider can sendMessage data up to this iterator (i.e. border
 	 * of already encoded requests).
 	 */
 	iterator m_EndEncoded;
@@ -442,7 +442,7 @@ std::string
 Connection<BUFFER, NetProvider>::toString()
 {
 	return "Socket " + std::to_string(socket) + ", OutBuf: " +
-		std::to_string(m_EndEncoded - m_OutBuf.begin()) + " bytes to send;" +
+		std::to_string(m_EndEncoded - m_OutBuf.begin()) + " bytes to sendMessage;" +
 		"InBuf: " + std::to_string(m_EndDecoded - m_InBuf.begin()) + " bytes to decode";
 }
 #endif

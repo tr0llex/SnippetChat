@@ -2,11 +2,7 @@
 <messages>
     <message id="projectName">
         <h4>
-            <span>SnippetChat</span>
+            <span class="bi-check2-square">SnippetChat</span>
         </h4>
-    </message>
-
-    <message id="join-msg.template">
-        <span class='chat-info'>You are joining as ${name}.</span>
     </message>
 </messages>

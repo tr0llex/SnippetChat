@@ -79,7 +79,7 @@ private:
 	int setPollSetting(int socket, int setting);
 	int registerEpoll(int socket);
 
-	/** <socket : connection> map. Contains both ready to read/send connections */
+	/** <socket : connection> map. Contains both ready to read/sendMessage connections */
 	std::unordered_map<int, Conn_t *> m_Connections;
 	rlist m_ready_to_write;
 	int m_EpollFd;
@@ -312,7 +312,7 @@ DefaultNetProvider<BUFFER, NETWORK>::send(Conn_t &conn)
 		int rc = NETWORK::sendall(conn.socket, iov, iov_cnt,
 						 &sent_bytes);
 		hasSentBytes(conn, sent_bytes);
-		LOG_DEBUG("send %d bytes to the %d socket", sent_bytes, conn.socket);
+		LOG_DEBUG("sendMessage %d bytes to the %d socket", sent_bytes, conn.socket);
 		if (rc != 0) {
 			if (errno == EWOULDBLOCK || errno == EAGAIN) {
 				int setting = EPOLLIN | EPOLLOUT;
@@ -324,7 +324,7 @@ DefaultNetProvider<BUFFER, NETWORK>::send(Conn_t &conn)
 				}
 				conn.status.is_send_blocked = true;
 			} else {
-				conn.setError(std::string("Failed to send request: ") +
+				conn.setError(std::string("Failed to sendMessage request: ") +
 					      strerror(errno));
 				if (errno == EBADF || errno == ENOTSOCK ||
 				    errno == EFAULT || errno == EINVAL ||

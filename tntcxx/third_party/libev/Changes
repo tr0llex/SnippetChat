@@ -183,7 +183,7 @@ TODO: document EV_TSTAMP_T
           common reported usage bug in ev_io_start.
         - choose socket vs. WSASocket at compiletime using EV_USE_WSASOCKET.
         - always use WSASend/WSARecv directly on windows, hoping that this
-          works in all cases (unlike read/write/send/recv...).
+          works in all cases (unlike read/write/sendMessage/recv...).
         - try to detect signals around a fork faster (test program by
           Denis Bilenko).
         - work around recent glibc versions that leak memory in realloc.

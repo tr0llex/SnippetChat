@@ -314,7 +314,7 @@ ltmain=$ac_aux_dir/ltmain.sh
 
 
 # So that we can recreate a full libtool script including additional
-# tags, we accumulate the chunks of code to send to AC_CONFIG_COMMANDS
+# tags, we accumulate the chunks of code to sendMessage to AC_CONFIG_COMMANDS
 # in macros and then make a single call at the end using the 'libtool'
 # label.
 

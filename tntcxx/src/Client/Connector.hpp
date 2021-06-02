@@ -64,7 +64,7 @@ public:
 private:
 	NetProvider m_NetProvider;
 	/**
-	 * Lists of asynchronous connections which are ready to send
+	 * Lists of asynchronous connections which are ready to sendMessage
 	 * requests or read responses.
 	 */
 	struct rlist m_ready_to_read;
