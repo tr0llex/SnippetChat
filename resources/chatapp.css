@@ -34,14 +34,12 @@ h2 span {
 
 button {
   background-color: #40E0D0;
-  /* font-weight: 700; */
   color: black;
   text-decoration: none;
   padding: .8em 1em calc(.8em + 3px);
   border-radius: 8px;
   box-shadow: 0 -3px rgb(53,167,110) inset;
   transition: 0.2s;
-  /* min-width: 130px; */
   cursor: pointer;
 }
 
@@ -58,7 +56,7 @@ button:hover {
   margin: 10px auto;
   width: 85%;
   height: 650px;
-  background-color: #000;
+  background-color: #282c34;
 }
 
 span.chat-info {
@@ -86,7 +84,8 @@ textarea.chat-noedit {
 
 .chat-msgs {
   margin: 0 1px;
-  background-image: url(dialog-bg.jpg) !important;
+  /* background-image: url(wallpaper.jpg) !important; */
+  background: linear-gradient(84deg, rgba(40,44,52,1) 40%, rgba(152,156,149,0.957037917706145) 89%);
   background-repeat: no-repeat;
   background-attachment: scroll;
 }
@@ -124,7 +123,7 @@ textarea.chat-noedit {
 }
 
 .chat-dialogue-name {
-  color: blue;
+  color: #c678dd;
   font-size: 20px;
   font-weight: 400;
   text-align: center;
@@ -173,10 +172,11 @@ textarea.chat-noedit {
   font-size: 120%;
   font-weight: 500;
   font-family: system-ui, serif;
+  color:#c678dd;
 }
 
 .dialogue-name-self {
-  color: #B42600;
+  color: white;
 }
 
 .dialogue-code {
@@ -211,6 +211,10 @@ textarea.chat-noedit {
   min-height: 110px;
   box-shadow: 0 0 100px rgba(0,0,0,0.5);
   padding: 12px 16px !important;
+}
+
+.snip-chat {
+  color:#61aeee;
 }
 
 .pass-log {
@@ -294,11 +298,13 @@ textarea.chat-noedit {
 
 .chat-button {
   padding: 3px 6px;
+  background-color: #98c379 !important;
 }
 
 .run-button {
   font-size: 30px;
   padding: 0 8px;
+  background-color: #98c379 !important;
 }
 
 .bi {
