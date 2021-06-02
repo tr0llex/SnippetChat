@@ -85,13 +85,17 @@ textarea.chat-noedit {
 .chat-msgs {
   margin: 0 1px;
   /* background-image: url(wallpaper.jpg) !important; */
-  background: linear-gradient(84deg, rgba(40,44,52,1) 40%, rgba(152,156,149,0.957037917706145) 89%);
+  background: linear-gradient(36deg, rgba(40,44,52,1) 40%, rgba(152,156,149,0.957037917706145) 89%);
   background-repeat: no-repeat;
   background-attachment: scroll;
 }
 
 .chat-users {
   width: 12ex;
+}
+
+td {
+  text-align: center !important;
 }
 
 .dimensions {
@@ -317,6 +321,7 @@ textarea.chat-noedit {
 
 .input-snippet {
   background: lightgray;
+  resize: none;
 }
 
 .snippet-in-dialogue-list {

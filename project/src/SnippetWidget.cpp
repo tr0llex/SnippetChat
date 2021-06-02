@@ -103,6 +103,7 @@ void SnippetWidget::setResultCompilation(const Compilation &result) {
     auto executionStderrPtr = std::make_unique<Wt::WText>(result.getExecutionStderr(), Wt::TextFormat::Plain);
 
     metricTablePtr->setHeaderCount(1);
+    metricTablePtr->setStyleClass("metric-table");
 
     metricTablePtr->elementAt(0, 0)->addNew<Wt::WText>("Time");
     metricTablePtr->elementAt(0, 1)->addNew<Wt::WText>("Memory");
