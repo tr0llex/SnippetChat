@@ -91,6 +91,9 @@ void CompilationManager::readOutputFromFiles(Compilation &compilation) {
     std::string executionOutput;
     executionOutput.assign((std::istreambuf_iterator<char>(outputFile)),
                            (std::istreambuf_iterator<char>()));
+    if (executionOutput.length() > 5000){
+        executionOutput = executionOutput.substr(0, 5000);
+    }
     compilation.setExecutionStdout(executionOutput);
 
     std::ifstream runStderrFile(pathToRunBox + "/run.stderr");
