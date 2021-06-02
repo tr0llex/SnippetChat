@@ -88,8 +88,6 @@ textarea.chat-noedit {
   background: linear-gradient(36deg, rgba(40,44,52,1) 40%, rgba(152,156,149,0.957037917706145) 89%);
   background-repeat: no-repeat;
   background-attachment: scroll;
-  /* display: flex; */
-  /* justify-content: center; */
 }
 
 .chat-users {
@@ -345,17 +343,11 @@ tbody tr {
 }
 
 .help-msg {
-  color: darkorange;
-  padding: 5px;
-  border: 2px solid;
-  border-radius: 4px;
-  background: seashell;
-  align-self: center;
+  color: #61aeee;
+  padding: 6px;
+  border-radius: 10px;
+  background: #282c34;
 }
-
-/*.Wt-dialog {*/
-/*  background-color: orangered !important;*/
-/*}*/
 
 .edit-code {
   color: #abb2bf;
