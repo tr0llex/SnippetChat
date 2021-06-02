@@ -483,9 +483,11 @@ void ChatWidget::blankDialoguePage() {
 
     messages_->clear();
 
+    auto vLayout = messages_->setLayout(std::make_unique<Wt::WVBoxLayout>());
+
     auto helpMsg = std::make_unique<Wt::WText>("Select a chat to start messaging");
     helpMsg->setStyleClass("help-msg");
-    messages_->addWidget(std::move(helpMsg));
+    vLayout->addWidget(std::move(helpMsg), 1, Wt::AlignmentFlag::Center | Wt::AlignmentFlag::Middle);
 
     editContainer_->hide();
 }
