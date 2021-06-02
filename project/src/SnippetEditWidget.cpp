@@ -58,6 +58,7 @@ void SnippetEditWidget::createLayout(std::unique_ptr<WWidget> label,
     hLayout->addWidget(std::move(label));
     hLayout->addWidget(std::move(switchLanguage));
     vLayout->addLayout(std::move(hLayout), 0, Wt::AlignmentFlag::Right);
+    editCode->setStyleClass("edit-code");
     vLayout->addWidget(std::move(editCode));
 
     this->setLayout(std::move(vLayout));

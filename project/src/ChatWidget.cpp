@@ -644,12 +644,17 @@ void ChatWidget::sendMessage() {
 
 void ChatWidget::editSnippet() {
     auto dialog = addChild(Wt::cpp14::make_unique<Wt::WDialog>("Write or copy the program"));
+    dialog->setStyleClass("edit-snippet-dialog");
+
+    dialog->titleBar()->setStyleClass("title-bar-dialog");
 
     auto snippetEdit = dialog->contents()->addNew<SnippetEditWidget>(currentSnippet_);
 
     auto save = dialog->footer()->addNew<Wt::WPushButton>("Save");
     save->setMargin(7, Wt::Side::Right);
+    save->addStyleClass("chat-button");
     auto cancel = dialog->footer()->addNew<Wt::WPushButton>("Cancel");
+    cancel->addStyleClass("chat-button");
     dialog->rejectWhenEscapePressed();
 
     save->clicked().connect(dialog, &Wt::WDialog::accept);

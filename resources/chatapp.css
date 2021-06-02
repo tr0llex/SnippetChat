@@ -14,7 +14,6 @@ h1 {
 }
 
 h2, h3, h4, h5 {
-  color: #505050;
   margin-top: 4px;
   margin-bottom: 6px;
 }
@@ -331,3 +330,23 @@ td {
 .help-msg {
   color: chartreuse;
 }
+
+/*.Wt-dialog {*/
+/*  background-color: orangered !important;*/
+/*}*/
+
+.edit-code {
+  color: #abb2bf;
+  background: #282c34;
+}
+
+.edit-snippet-dialog {
+  background: lightgrey;
+}
+
+.title-bar-dialog {
+  color: lightgrey;
+  background: #3b3a3d;
+}
+
+

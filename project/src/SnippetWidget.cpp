@@ -103,7 +103,6 @@ void SnippetWidget::setResultCompilation(const Compilation &result) {
     auto executionStderrPtr = std::make_unique<Wt::WText>(result.getExecutionStderr(), Wt::TextFormat::Plain);
 
     metricTablePtr->setHeaderCount(1);
-    metricTablePtr->setStyleClass("metric-table");
 
     metricTablePtr->elementAt(0, 0)->addNew<Wt::WText>("Time");
     metricTablePtr->elementAt(0, 1)->addNew<Wt::WText>("Memory");
@@ -146,14 +145,14 @@ void SnippetWidget::createResultLayout(const Compilation &result, std::unique_pt
         vLayout->addWidget(std::move(timeLimitExceeded));
     } else {
         if (result.getCompilerStderr().empty()) {
-            metricTable->setStyleClass("");
+            metricTable->setStyleClass("metric-table");
             vLayout->addWidget(std::move(metricTable), 0, Wt::AlignmentFlag::Left);
         }
     }
 
-    auto resultContainer = std::make_unique<Wt::WContainerWidget>();
-    resultContainer->setStyleClass("source-view");
-    auto vResultLayout = resultContainer->setLayout(std::make_unique<Wt::WVBoxLayout>());
+    auto outputContainer = std::make_unique<Wt::WContainerWidget>();
+    outputContainer->setStyleClass("source-view");
+    auto vResultLayout = outputContainer->setLayout(std::make_unique<Wt::WVBoxLayout>());
 
     if (!result.getCompilerStderr().empty()) {
         compilerStderr->setStyleClass("");
@@ -166,5 +165,5 @@ void SnippetWidget::createResultLayout(const Compilation &result, std::unique_pt
         }
     }
 
-    vLayout->addWidget(std::move(resultContainer));
+    vLayout->addWidget(std::move(outputContainer));
 }
