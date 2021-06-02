@@ -5,6 +5,7 @@
 #include <Wt/WEnvironment.h>
 #include <Wt/WHBoxLayout.h>
 #include <Wt/WInPlaceEdit.h>
+#include <Wt/WValidator.h>
 #include <Wt/WLabel.h>
 #include <Wt/WLineEdit.h>
 #include <Wt/WPushButton.h>
@@ -24,7 +25,7 @@
 
 
 const int kCountLastDialogues = 20;
-const int kCountLastMessages = 100;
+const int kCountLastMessages = 1000;
 
 static inline int64_t getCurrentTimeMs() {
     return std::chrono::duration_cast<std::chrono::milliseconds>
@@ -512,7 +513,7 @@ void ChatWidget::showNewMessage(const Message &message) {
 
     messages_->addWidget(std::move(messageWidgetPtr));
 
-    if (messages_->count() > 100) {
+    if (messages_->count() > 1000) {
         messages_->removeChild(messages_->children()[0]);
     }
 
@@ -626,14 +627,15 @@ void ChatWidget::endSearch() {
 }
 
 void ChatWidget::sendMessage() {
+    std::string messageText = ws2s(messageEdit_->text());
     if (currentDialogue_.isEmpty() ||
-        (messageEdit_->text().empty() && currentSnippet_.empty())) {
+        (messageEdit_->validate() != Wt::ValidationState::Valid && currentSnippet_.empty())) {
         return;
     }
 
     Message message(currentDialogue_.getId(),
                     user_.getLogin(),
-                    ws2s(messageEdit_->text()),
+                    messageText,
                     getCurrentTimeMs(),
                     currentSnippet_);
 
