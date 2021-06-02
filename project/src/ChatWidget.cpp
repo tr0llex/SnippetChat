@@ -702,7 +702,7 @@ void ChatWidget::processChatEvent(const ChatEvent &event) {
                 if (dialogue == event.dialogue()) {
                     updatedDialogue = dialogue;
                     updatedDialogue.updateLastMessage(event.dialogue().getLastMessage());
-                    dialogueList_.erase(dialogue); // TODO не уверен что удалится нужный
+                    dialogueList_.erase(dialogue);
                     break;
                 }
             }
@@ -713,14 +713,13 @@ void ChatWidget::processChatEvent(const ChatEvent &event) {
                 showNewMessage(event.dialogue().getLastMessage());
             }
 
-            if (soundMessageReceived_) {
+            if (soundMessageReceived_ && user_.getLogin() != event.getSenderLogin()) {
                 soundMessageReceived_->play();
             }
 
             break;
         }
         case ChatEvent::kCompilationCode: {
-            /// TODO не протестировано
             if (event.getDialogueId() != currentDialogue_.getId()) {
                 break;
             }
