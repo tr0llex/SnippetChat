@@ -116,7 +116,7 @@ void SnippetWidget::setResultCompilation(const Compilation &result) {
                        std::move(compilerStdoutPtr),
                        std::move(executionStderrPtr));
 
-    resultContainer_->setStyleClass("source-view");
+    resultContainer_->setStyleClass("");
     resultContainer_->show();
 }
 
@@ -141,20 +141,29 @@ void SnippetWidget::createResultLayout(const Compilation &result, std::unique_pt
     auto vLayout = resultContainer_->setLayout(std::make_unique<Wt::WVBoxLayout>());
 
     if (result.getTimeLimitExceeded()) {
+        timeLimitExceeded->setStyleClass("");
         vLayout->addWidget(std::move(timeLimitExceeded));
+    } else {
+        if (result.getCompilerStderr().empty()) {
+            metricTable->setStyleClass("");
+            vLayout->addWidget(std::move(metricTable), 0, Wt::AlignmentFlag::Left);
+        }
     }
+
+    auto resultContainer = std::make_unique<Wt::WContainerWidget>();
+    resultContainer->setStyleClass("source-view");
+    auto vResultLayout = resultContainer->setLayout(std::make_unique<Wt::WVBoxLayout>());
 
     if (!result.getCompilerStderr().empty()) {
-        vLayout->addWidget(std::move(compilerStderr));
+        compilerStderr->setStyleClass("");
+        vResultLayout->addWidget(std::move(compilerStderr));
     } else {
-        if (!result.getTimeLimitExceeded()) {
-            vLayout->addWidget(std::move(metricTable), 0, Wt::AlignmentFlag::Super);
-        }
-
-        vLayout->addWidget(std::move(compilerStdout));
+        vResultLayout->addWidget(std::move(compilerStdout));
 
         if (!result.getExecutionStderr().empty()) {
-            vLayout->addWidget(std::move(executionStderr));
+            vResultLayout->addWidget(std::move(executionStderr));
         }
     }
+
+    vLayout->addWidget(std::move(resultContainer));
 }

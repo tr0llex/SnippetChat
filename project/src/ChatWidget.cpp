@@ -368,7 +368,6 @@ void ChatWidget::logout() {
         loggedIn_ = false;
         currentDialogue_ = Dialogue();
         dialogueList_.clear();
-        // TODO удалять все обьекты
         dialogueName_ = nullptr;
 
         server_.logout(user_);
@@ -483,6 +482,10 @@ void ChatWidget::blankDialoguePage() {
     dialogueName_->setText("");
 
     messages_->clear();
+
+    auto helpMsg = std::make_unique<Wt::WText>("Select a chat to start messaging");
+    helpMsg->setStyleClass("help-msg");
+    messages_->addWidget(std::move(helpMsg));
 
     editContainer_->hide();
 }
