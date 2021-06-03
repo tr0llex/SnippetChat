@@ -145,6 +145,7 @@ table {
 .text-in-msg {
   font-size: medium;
   padding: 4px;
+  word-break: break-all;
 }
 
 .chat-time {
@@ -367,4 +368,8 @@ tbody tr {
 .Wt-dialogcover {
   opacity: 0.6 !important;
   background: black !important;
+}
+
+.long-message {
+  width: 50px;
 }

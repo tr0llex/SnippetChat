@@ -5,8 +5,8 @@
 #include <Wt/WEnvironment.h>
 #include <Wt/WHBoxLayout.h>
 #include <Wt/WInPlaceEdit.h>
-#include <Wt/WValidator.h>
 #include <Wt/WLabel.h>
+#include <Wt/WLengthValidator.h>
 #include <Wt/WLineEdit.h>
 #include <Wt/WPushButton.h>
 #include <Wt/WTemplate.h>
@@ -334,6 +334,23 @@ void ChatWidget::startChat() {
     messageEdit_->enterPressed().connect((WWidget *) messageEdit_.get(),
                                          &WWidget::setFocus);
 
+    auto validator = std::make_shared<Wt::WLengthValidator>(0, 1000);
+    messageEdit_->setValidator(validator);
+
+/*    Wt::WApplication::instance()->setConnectionMonitor(
+            "window.monitor={ "
+            "'onChange':function(type, newV) {"
+            "var connected = window.monitor.status.connectionStatus != 0;"
+            "if(connected) {"
+            + messageEdit_->jsRef() + ".disabled=false;"
+            + messageEdit_->jsRef() + ".placeholder='';"
+                                      "} else { "
+            + messageEdit_->jsRef() + ".disabled=true;"
+            + messageEdit_->jsRef() + ".placeholder='connection lost';"
+                                      "}"
+                                      "}"
+                                      "}"
+    );*/
     messageEdit_->enterPressed().preventDefaultAction();
 
     snippetButton_->clicked().connect(this, &ChatWidget::editSnippet);
@@ -627,9 +644,20 @@ void ChatWidget::endSearch() {
 }
 
 void ChatWidget::sendMessage() {
-    std::string messageText = ws2s(messageEdit_->text());
+    std::string messageText;
+    bool space = true;
+    for (auto ch : ws2s(messageEdit_->text())) {
+        if (ch != ' ') {
+            space = false;
+            messageText += ch;
+        } else if (!space) {
+            messageText += ch;
+        }
+    }
+
     if (currentDialogue_.isEmpty() ||
-        (messageEdit_->validate() != Wt::ValidationState::Valid && currentSnippet_.empty())) {
+        messageEdit_->validate() != Wt::ValidationState::Valid ||
+        (messageText.empty() && currentSnippet_.empty())) {
         return;
     }
 

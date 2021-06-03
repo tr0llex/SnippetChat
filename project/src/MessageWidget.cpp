@@ -4,7 +4,7 @@
 
 #include "MessageWidget.hpp"
 
-const int kNumberOfCharInLine = 45;
+const int kNumberOfCharInLine = 4500;
 
 static inline std::string messageView(const std::string &text) {
     if (text.size() < kNumberOfCharInLine) {
@@ -31,7 +31,7 @@ static inline std::string messageView(const std::string &text) {
 MessageWidget::MessageWidget(const Message &message, bool myMassage)
         : message_(message), myMessage_(myMassage), snippet_(nullptr) {
     std::string textView = messageView(message.getMessageText());
-    auto textPtr = std::make_unique<Wt::WText>(textView, Wt::TextFormat::Plain);
+    auto textPtr = std::make_unique<Wt::WText>(message.getMessageText(), Wt::TextFormat::UnsafeXHTML);
     auto timePtr = std::make_unique<Wt::WText>(message.getTimeSentStr());
 
     text_ = textPtr.get();
@@ -73,6 +73,10 @@ void MessageWidget::createLayout(std::unique_ptr<WWidget> text, std::unique_ptr<
 
     auto hLayout = std::make_unique<Wt::WHBoxLayout>();
 
+    if (message_.getMessageText().size() > 45) {
+//        text.setHt
+        text->setWidth(500);
+    }
     text->setStyleClass("text-in-msg");
     hLayout->addWidget(std::move(text), 0);
     time->setStyleClass("chat-time");
