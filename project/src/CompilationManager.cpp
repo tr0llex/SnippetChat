@@ -20,7 +20,7 @@ Compilation CompilationManager::runCompilation(const Snippet &snippet, const str
 
     Compilation currentCompilation;
     currentCompilation.setMessageCode(
-            snippet.getProgramText()); // TODO: передавать только compilation, без code и input
+            snippet.getProgramText());
     currentCompilation.setExecutionStdin(executionStdin);
     currentCompilation.setCompilationId(compilesCount);
     currentCompilation.setFileExtension(languagesExtensions[language]);

@@ -42,10 +42,6 @@ private:
 
     static void readOutputFromFiles(Compilation &compilation);
 
-    //std::string getCodeFromDb(uint32_t messageId); TODO
-
-    //void logCompilaton(Compilation *compilation); TODO
-
     unsigned long long compilesCount{};
 
 public:
