@@ -22,6 +22,7 @@ docker run \
     --ulimit nofile=64:64 \
     --rm \
     --read-only \
+    --network none \
     -v "$RUN_BOX":/var/box \
     -w /var/box \
     tr0llex/compiler-worker-python3 \
