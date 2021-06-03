@@ -31,7 +31,7 @@ static inline std::string messageView(const std::string &text) {
 MessageWidget::MessageWidget(const Message &message, bool myMassage)
         : message_(message), myMessage_(myMassage), snippet_(nullptr) {
     std::string textView = messageView(message.getMessageText());
-    auto textPtr = std::make_unique<Wt::WText>(message.getMessageText(), Wt::TextFormat::UnsafeXHTML);
+    auto textPtr = std::make_unique<Wt::WText>(message.getMessageText(), Wt::TextFormat::Plain);
     auto timePtr = std::make_unique<Wt::WText>(message.getTimeSentStr());
 
     text_ = textPtr.get();
