@@ -3,6 +3,7 @@
 #include <Wt/WLabel.h>
 #include <Wt/WTextArea.h>
 #include <Wt/WVBoxLayout.h>
+#include <Wt/WLengthValidator.h>
 
 #include "SnippetEditWidget.hpp"
 
@@ -38,6 +39,8 @@ SnippetEditWidget::SnippetEditWidget(const Snippet &snippet)
     }
     switchLanguage_->setCurrentIndex(convertLanguageToIndex(snippet_.getLanguage()));
 
+    auto validator = std::make_shared<Wt::WLengthValidator>(1, 10000);
+    editCode_->setValidator(validator);
     editCode_->setRows(30);
     editCode_->setWidth(700);
     editCode_->setFocus();
@@ -71,4 +74,8 @@ Snippet SnippetEditWidget::getSnippet() {
 
 void SnippetEditWidget::updateLanguage() {
     snippet_.setLanguage(convertIndexToLanguage(switchLanguage_->currentIndex()));
+}
+
+Wt::ValidationState SnippetEditWidget::validate() const {
+    return editCode_->validate();
 }

@@ -337,7 +337,7 @@ void ChatWidget::startChat() {
     auto validator = std::make_shared<Wt::WLengthValidator>(0, 1000);
     messageEdit_->setValidator(validator);
 
-/*    Wt::WApplication::instance()->setConnectionMonitor(
+    Wt::WApplication::instance()->setConnectionMonitor(
             "window.monitor={ "
             "'onChange':function(type, newV) {"
             "var connected = window.monitor.status.connectionStatus != 0;"
@@ -350,7 +350,7 @@ void ChatWidget::startChat() {
                                       "}"
                                       "}"
                                       "}"
-    );*/
+    );
     messageEdit_->enterPressed().preventDefaultAction();
 
     snippetButton_->clicked().connect(this, &ChatWidget::editSnippet);
@@ -689,7 +689,11 @@ void ChatWidget::editSnippet() {
     cancel->addStyleClass("chat-button");
     dialog->rejectWhenEscapePressed();
 
-    save->clicked().connect(dialog, &Wt::WDialog::accept);
+    save->clicked().connect([=] {
+        if (snippetEdit->validate() == Wt::ValidationState::Valid) {
+            dialog->accept();
+        }
+    });
     cancel->clicked().connect(dialog, &Wt::WDialog::reject);
 
     dialog->finished().connect([=] {

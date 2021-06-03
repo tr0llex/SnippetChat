@@ -11,6 +11,8 @@ class SnippetEditWidget : public Wt::WContainerWidget {
 public:
     explicit SnippetEditWidget(const Snippet &snippet);
 
+    Wt::ValidationState validate() const;
+
     Snippet getSnippet();
 
 protected:
