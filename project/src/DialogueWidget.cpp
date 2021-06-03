@@ -2,28 +2,23 @@
 
 const int kCountSymbolLastMessage = 20;
 
-static inline std::string lastMessageView(const Message &message) {
-    std::string messageStr = message.getMessageText();
-    if (messageStr.size() < kCountSymbolLastMessage) {
+static inline Wt::WString lastMessageView(const Message &message) {
+    Wt::WString messageStr(message.getMessageText());
+
+    if (messageStr.toUTF16().size() < kCountSymbolLastMessage) {
         return messageStr;
     }
 
-    std::string messageView;
-    for (int i = 0, pos = 0; i < kCountSymbolLastMessage; ++i, ++pos) {
-        messageView += messageStr[pos];
-        if (messageStr[i] < 0) {
-            pos++;
-            messageView += messageStr[pos];
-        }
-    }
+    messageStr = messageStr.toUTF16().substr(0, kCountSymbolLastMessage);
+    messageStr += Wt::WString(" ...");
 
-    return messageView + " ...";
+    return messageStr;
 }
 
 DialogueWidget::DialogueWidget(const std::string &dialogueName, const Dialogue &dialogue)
 : dialogue_(dialogue) {
     auto dialogueNamePtr = std::make_unique<Wt::WText>(dialogueName);
-    std::string lastMessageStr = lastMessageView(dialogue.getLastMessage());
+    Wt::WString lastMessageStr = lastMessageView(dialogue.getLastMessage());
     auto lastMessagePtr = std::make_unique<Wt::WText>(lastMessageStr);
     auto timePtr = std::make_unique<Wt::WText>(dialogue.getTimeOfLastUpdateStr());
 
