@@ -73,9 +73,8 @@ void MessageWidget::createLayout(std::unique_ptr<WWidget> text, std::unique_ptr<
 
     auto hLayout = std::make_unique<Wt::WHBoxLayout>();
 
-    if (message_.getMessageText().size() > 45) {
-//        text.setHt
-        text->setWidth(500);
+    if (Wt::WString(message_.getMessageText()).toUTF16().size() > 45) {
+        text->setWidth(350);
     }
     text->setStyleClass("text-in-msg");
     hLayout->addWidget(std::move(text), 0);
