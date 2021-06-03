@@ -114,6 +114,9 @@ void ChatWidget::letSignUp() {
     userLoginEdit_ = hLayout->addWidget(std::make_unique<Wt::WLineEdit>(), 1);
     userLoginEdit_->setFocus();
     userLoginEdit_->setStyleClass("pass-log");
+    auto validatorLogin = std::make_shared<Wt::WLengthValidator>(4, 16);
+    validatorLogin->setMandatory(true);
+    userLoginEdit_->setValidator(validatorLogin);
 
     vLayout2->addLayout(std::move(hLayout));
 
@@ -127,6 +130,11 @@ void ChatWidget::letSignUp() {
     passwordEdit_->setStyleClass("pass-log");
 
 
+    auto validatorPassword = std::make_shared<Wt::WLengthValidator>(4, 16);
+    validatorPassword->setMandatory(true);
+    passwordEdit_->setValidator(validatorPassword);
+
+
     vLayout2->addLayout(std::move(hLayout));
 
 
@@ -137,6 +145,10 @@ void ChatWidget::letSignUp() {
     confirmPasswordEdit_ = hLayout->addWidget(std::make_unique<Wt::WLineEdit>(), 1);
     confirmPasswordEdit_->setAttributeValue("type", "password");
     confirmPasswordEdit_->setStyleClass("pass-log");
+
+    auto validatorConfirmPassword = std::make_shared<Wt::WLengthValidator>(4, 16);
+    validatorConfirmPassword->setMandatory(true);
+    confirmPasswordEdit_->setValidator(validatorConfirmPassword);
 
 
     vLayout2->addLayout(std::move(hLayout));
@@ -195,6 +207,10 @@ void ChatWidget::letLogin() {
     userLoginEdit_ = hLayout->addWidget(std::make_unique<Wt::WLineEdit>(), 1);
     userLoginEdit_->setFocus();
 
+    auto validator = std::make_shared<Wt::WLengthValidator>(4, 16);
+    validator->setMandatory(true);
+    userLoginEdit_->setValidator(validator);
+
     userLoginEdit_->setStyleClass("pass-log");
 
     vLayout->addLayout(std::move(hLayout));
@@ -205,6 +221,7 @@ void ChatWidget::letLogin() {
 
     passwordEdit_ = hLayout->addWidget(std::make_unique<Wt::WLineEdit>(), 1);
     passwordEdit_->setAttributeValue("type", "password");
+    passwordEdit_->setValidator(validator);
 
     passwordEdit_->setStyleClass("pass-log");
 
@@ -547,6 +564,13 @@ void ChatWidget::signUp() {
         return;
     }
 
+    if (userLoginEdit_->validate() != Wt::ValidationState::Valid ||
+        passwordEdit_->validate() != Wt::ValidationState::Valid ||
+        confirmPasswordEdit_->validate() != Wt::ValidationState::Valid) {
+        statusMsg_->setText("Data is not valid");
+        return;
+    }
+
     std::string username = ws2s(userLoginEdit_->text());
     std::string password = ws2s(passwordEdit_->text());
     std::string confirmPassword = ws2s(confirmPasswordEdit_->text());
@@ -572,6 +596,12 @@ void ChatWidget::signUp() {
 
 void ChatWidget::login() {
     if (loggedIn()) {
+        return;
+    }
+
+    if (userLoginEdit_->validate() != Wt::ValidationState::Valid ||
+        passwordEdit_->validate() != Wt::ValidationState::Valid) {
+        statusMsg_->setText("Data is not valid");
         return;
     }
 
