@@ -34,3 +34,11 @@
 cmake-build-*/
 .idea/
 build/
+.vscode/
+.DS_Store
+
+compilers/python3/test/run-*
+compilers/*/runs/
+compilers/runs
+*.snap
+*.xlog
